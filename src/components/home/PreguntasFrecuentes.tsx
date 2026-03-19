@@ -47,7 +47,7 @@ export default function PreguntasFrecuentes() {
         <div className="faq__cta">
           <p>¿Tenés alguna otra consulta?</p>
           <a
-            href="https://wa.me/NUMERO"
+            href="https://wa.me/5493412479055"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary"

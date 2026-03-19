@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { useCarrito } from '../../context/CarritoContext'
 import './ModalCarrito.css'
 
-const WHATSAPP = 'NUMERO'
+const WHATSAPP = '5493412479055'
 
 function armarMensaje(items: ReturnType<typeof useCarrito>['items']): string {
   const lineas = items.map((i) => {

@@ -3,11 +3,13 @@ import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import promo1 from '../../assets/promo.webp'
 import promo2 from '../../assets/promo2.png'
+import promo3 from '../../assets/promo3.webp'
 import './Hero.css'
  
 const slides = [
   { id: 1, imagen: promo1, alt: 'Babysec Ultra Soft — Oferta mayorista' },
   { id: 2, imagen: promo2, alt: 'Huggies Flexi Comfort — Precio bomba' },
+  { id: 3, imagen: promo3, alt: 'Duffy Cotton — Precio bomba' }
 ]
  
 export default function Hero() {

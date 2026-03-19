@@ -1,0 +1,74 @@
+/* src/components/carrito/Toast.css */
+
+.toast {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--color-bg-section);
+  border: 1px solid var(--color-celeste-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg), 0 0 0 1px var(--color-celeste-border);
+  animation: toast-slide 300ms ease, toast-out 300ms ease 2.2s forwards;
+  max-width: 300px;
+}
+
+@keyframes toast-slide {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toast-out {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(20px); }
+}
+
+.toast__icono {
+  width: 28px;
+  height: 28px;
+  background: var(--color-celeste);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0A0A0A;
+  flex-shrink: 0;
+}
+
+.toast__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.toast__titulo {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-celeste);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.toast__producto {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+  .toast {
+    top: auto;
+    bottom: 20px;
+    right: 16px;
+    left: 16px;
+    max-width: 100%;
+  }
+}

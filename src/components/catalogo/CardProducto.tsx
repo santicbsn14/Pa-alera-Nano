@@ -1,4 +1,5 @@
 // src/components/catalogo/CardProducto.tsx
+import { useCarrito } from '../../context/CarritoContext'
 import type { Producto } from '../../types'
 import { CATEGORIAS } from '../../data/mocks'
 import './CardProducto.css'
@@ -8,11 +9,12 @@ interface Props {
 }
 
 export default function CardProducto({ producto }: Props) {
+  const { agregar, items } = useCarrito()
   const categoriaLabel = CATEGORIAS.find((c) => c.value === producto.categoria)?.label ?? producto.categoria
+  const enCarrito = items.some((i) => i.producto._id === producto._id)
 
   return (
     <div className="card">
-      {/* Imagen */}
       <div className="card__img-wrap">
         {producto.foto ? (
           <img
@@ -30,24 +32,17 @@ export default function CardProducto({ producto }: Props) {
             </svg>
           </div>
         )}
-
-        {/* Badge categoría */}
         <span className="card__cat">{categoriaLabel}</span>
-
-        {/* Badge sin stock */}
         {!producto.enStock && (
           <span className="card__sin-stock">Sin stock</span>
         )}
       </div>
 
-      {/* Info */}
       <div className="card__info">
         <h3 className="card__nombre">{producto.nombre}</h3>
-
         {producto.descripcion && (
           <p className="card__desc">{producto.descripcion}</p>
         )}
-
         <div className="card__footer">
           <div className="card__meta">
             {producto.talle && producto.talle !== 'unico' && (
@@ -59,14 +54,13 @@ export default function CardProducto({ producto }: Props) {
           </span>
         </div>
 
-        <a
-          href="https://wa.me/NUMERO"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="card__btn"
+        <button
+          className={`card__btn ${enCarrito ? 'card__btn--agregado' : ''}`}
+          onClick={() => agregar(producto)}
+          disabled={!producto.enStock}
         >
-          Pedir por WhatsApp
-        </a>
+          {enCarrito ? '✓ Agregado' : 'Agregar al pedido'}
+        </button>
       </div>
     </div>
   )

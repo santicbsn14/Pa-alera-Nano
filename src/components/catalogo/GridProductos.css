@@ -68,14 +68,7 @@
 
 @media (max-width: 768px) {
   .catalogo__wrap {
-    flex-direction: column;
-    padding-top: 80px;
-    gap: var(--spacing-md);
-  }
-
-  .catalogo__grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-sm);
+    display: none;
   }
 }
 

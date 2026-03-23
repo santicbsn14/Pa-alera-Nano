@@ -7,20 +7,20 @@
   --color-celeste-hover: #3BB8D8;
   --color-celeste-dark: #2A9DBF;
   --color-celeste-subtle: rgba(77, 200, 232, 0.1);
-  --color-celeste-border: rgba(77, 200, 232, 0.25);
+  --color-celeste-border: rgba(77, 200, 232, 0.35);
 
-  /* Negros y grises */
-  --color-bg: #0A0A0A;
-  --color-bg-card: #141414;
-  --color-bg-section: #1A1A1A;
-  --color-bg-hover: #222222;
-  --color-border: #2A2A2A;
-  --color-border-light: #333333;
+  /* Fondos */
+  --color-bg: #FFFFFF;
+  --color-bg-card: #F4F7FB;
+  --color-bg-section: #EEF2F7;
+  --color-bg-hover: #E8EDF4;
+  --color-border: #E2E8F0;
+  --color-border-light: #CBD5E0;
 
   /* Textos */
-  --color-text: #FFFFFF;
-  --color-text-secondary: #A0A0A0;
-  --color-text-muted: #666666;
+  --color-text: #0A0A0A;
+  --color-text-secondary: #4A5568;
+  --color-text-muted: #718096;
 
   /* Estados */
   --color-success: #27AE60;
@@ -166,7 +166,7 @@ ul, ol {
   gap: var(--spacing-sm);
   padding: 12px 24px;
   background: var(--color-celeste);
-  color: #0A0A0A;
+  color: #FFFFFF;
   font-size: 15px;
   font-weight: 600;
   border-radius: var(--radius-md);

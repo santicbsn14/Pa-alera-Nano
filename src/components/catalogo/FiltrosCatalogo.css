@@ -242,7 +242,7 @@
 
 .filtros__sheet {
   width: 100%;
-  background: var(--color-bg-section);
+  background: var(--color-bg);
   border-top: 1px solid var(--color-border);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   padding: var(--spacing-lg);

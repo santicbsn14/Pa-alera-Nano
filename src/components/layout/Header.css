@@ -231,6 +231,34 @@
 
 /* ── Responsive ───────────────────────────────────────────────── */
 @media (max-width: 768px) {
+  .header {
+    background: var(--color-celeste);
+    padding: 12px 0;
+  }
+
+  .header--scrolled {
+    background: var(--color-celeste);
+    box-shadow: none;
+  }
+
+  .header__logo-name {
+    color: #0A0A0A;
+  }
+
+  .header__logo-sub {
+    color: #0A0A0A;
+  }
+
+  .header__burger span {
+    background: #0A0A0A;
+  }
+
+  .header__carrito {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #0A0A0A;
+  }
+
   .header__nav,
   .header__cta {
     display: none;

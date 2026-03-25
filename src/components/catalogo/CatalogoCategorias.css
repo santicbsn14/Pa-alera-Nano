@@ -320,5 +320,6 @@
 @media (max-width: 768px) {
   .cat-mobile {
     display: flex;
+    padding-top: var(--spacing-lg);
   }
 }

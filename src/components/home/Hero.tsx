@@ -5,38 +5,38 @@ import promo1 from '../../assets/promo.webp'
 import promo2 from '../../assets/promo2.png'
 import promo3 from '../../assets/promo3.webp'
 import './Hero.css'
- 
+
 const slides = [
   { id: 1, imagen: promo1, alt: 'Babysec Ultra Soft — Oferta mayorista' },
   { id: 2, imagen: promo2, alt: 'Huggies Flexi Comfort — Precio bomba' },
-  { id: 3, imagen: promo3, alt: 'Duffy Cotton — Precio bomba' }
+  { id: 3, imagen: promo3, alt: 'Duffy Cotton — Precio bomba' },
 ]
- 
+
 export default function Hero() {
   const [current, setCurrent] = useState(0)
   const [transitioning, setTransitioning] = useState(false)
- 
+
   const goTo = useCallback((index: number) => {
     if (transitioning) return
     setTransitioning(true)
     setCurrent(index)
     setTimeout(() => setTransitioning(false), 500)
   }, [transitioning])
- 
+
   const prev = useCallback(() => {
     goTo(current === 0 ? slides.length - 1 : current - 1)
   }, [current, goTo])
- 
+
   const next = useCallback(() => {
     goTo(current === slides.length - 1 ? 0 : current + 1)
   }, [current, goTo])
- 
+
   // Autoplay
   useEffect(() => {
     const timer = setInterval(next, 5000)
     return () => clearInterval(timer)
   }, [next])
- 
+
   // Swipe mobile
   useEffect(() => {
     let startX = 0
@@ -52,7 +52,7 @@ export default function Hero() {
       window.removeEventListener('touchend', onTouchEnd)
     }
   }, [next, prev])
- 
+
   return (
     <>
       <section className="hero">
@@ -68,9 +68,9 @@ export default function Hero() {
             </div>
           ))}
         </div>
- 
+
         <div className="hero__overlay" />
- 
+
         <button className="hero__arrow hero__arrow--prev" onClick={prev} aria-label="Anterior">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M15 18l-6-6 6-6" />
@@ -81,7 +81,7 @@ export default function Hero() {
             <path d="M9 18l6-6-6-6" />
           </svg>
         </button>
- 
+
         <div className="hero__dots">
           {slides.map((_, i) => (
             <button
@@ -93,12 +93,12 @@ export default function Hero() {
           ))}
         </div>
       </section>
- 
+
       {/* Barra CTA */}
       <div className="hero__bar">
         <p className="hero__bar-text">
           <span>¿Te interesa alguna promo?</span>
-          Escribinos o entrá al catálogo y hacé tu pedido.
+          Entrá al catálogo y armá tu pedido.
         </p>
         <div className="hero__bar-actions">
           <Link to="/catalogo" className="btn-primary">
@@ -107,14 +107,6 @@ export default function Hero() {
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </Link>
-          <a
-            href="https://wa.me/5493412479055"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-secondary"
-          >
-            Hacer pedido
-          </a>
         </div>
       </div>
     </>

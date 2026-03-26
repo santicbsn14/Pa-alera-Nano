@@ -1,12 +1,24 @@
 // src/components/catalogo/CatalogoCategorias.tsx
-import { useState, useMemo } from 'react'
-import { mockProductos, CATEGORIAS } from '../../data/mocks'
+import { useState, useMemo, useEffect } from 'react'
+import { getProductos } from '../../lib/sanity'
+import { CATEGORIAS } from '../../data/mocks'
+import type { Producto } from '../../types'
 import CardProducto from './CardProducto'
 import './CatalogoCategorias.css'
 
 export default function CatalogoCategorias() {
+  const [productos, setProductos] = useState<Producto[]>([])
+  const [cargando, setCargando] = useState(true)
   const [abierta, setAbierta] = useState<string | null>(null)
   const [busqueda, setBusqueda] = useState('')
+
+  useEffect(() => {
+    setCargando(true)
+    getProductos()
+      .then((data) => setProductos(data))
+      .catch(() => setProductos([]))
+      .finally(() => setCargando(false))
+  }, [])
 
   const toggle = (valor: string) => {
     setAbierta((prev) => (prev === valor ? null : valor))
@@ -16,20 +28,30 @@ export default function CatalogoCategorias() {
     const q = busqueda.toLowerCase().trim()
     return CATEGORIAS.filter((cat) => cat.value !== 'todas').map((cat) => ({
       ...cat,
-      productos: mockProductos.filter((p) => {
+      productos: productos.filter((p) => {
         const matchCategoria = p.categoria === cat.value
         const matchBusqueda = q === '' || p.nombre.toLowerCase().includes(q)
         return matchCategoria && matchBusqueda
       }),
     })).filter((cat) => cat.productos.length > 0)
-  }, [busqueda])
+  }, [busqueda, productos])
 
-  // Si hay búsqueda activa, abrir automáticamente las categorías con resultados
   const categoriaAbierta = busqueda.trim()
     ? categoriasFiltradas.length === 1
       ? categoriasFiltradas[0].value
       : abierta
     : abierta
+
+  if (cargando) {
+    return (
+      <div className="cat-mobile">
+        <div className="cat-mobile__loading">
+          <div className="cat-mobile__spinner" />
+          <p>Cargando productos...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="cat-mobile">

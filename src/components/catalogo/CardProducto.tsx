@@ -1,5 +1,6 @@
 // src/components/catalogo/CardProducto.tsx
 import { useCarrito } from '../../context/CarritoContext'
+import { urlFor } from '../../lib/sanity'
 import type { Producto } from '../../types'
 import { CATEGORIAS } from '../../data/mocks'
 import './CardProducto.css'
@@ -18,7 +19,7 @@ export default function CardProducto({ producto }: Props) {
       <div className="card__img-wrap">
         {producto.foto ? (
           <img
-            src={producto.foto.asset._ref}
+            src={urlFor(producto.foto).width(400).height(400).fit('crop').url()}
             alt={producto.nombre}
             className="card__img"
             loading="lazy"

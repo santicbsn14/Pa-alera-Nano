@@ -1,6 +1,6 @@
 // src/components/layout/Header.tsx
 import { useState, useEffect } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, Link } from 'react-router-dom'
 import { useCarrito } from '../../context/CarritoContext'
 import bebe from '../../assets/bebe.png'
 import './Header.css'
@@ -17,12 +17,10 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Cerrar menú al cambiar de página
   useEffect(() => {
     return () => setMenuOpen(false)
   }, [location])
 
-  // Bloquear scroll cuando el menú está abierto en mobile
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
@@ -67,14 +65,9 @@ export default function Header() {
         </button>
 
         {/* CTA desktop */}
-        <a
-          href="https://wa.me/NUMERO"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-primary header__cta"
-        >
-          Hacer pedido
-        </a>
+        <Link to="/catalogo" className="btn-primary header__cta">
+          Ver catálogo
+        </Link>
 
         {/* Hamburguesa mobile */}
         <button
@@ -100,14 +93,9 @@ export default function Header() {
           <a href="/#precios" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Precios</a>
           <a href="/#contacto" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Contacto</a>
 
-          <a
-            href="https://wa.me/NUMERO"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary header__mobile-cta"
-          >
-            Hacer pedido
-          </a>
+          <Link to="/catalogo" className="btn-primary header__mobile-cta" onClick={() => setMenuOpen(false)}>
+            Ver catálogo
+          </Link>
         </nav>
       </div>
     </header>

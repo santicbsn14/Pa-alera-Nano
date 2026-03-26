@@ -1,6 +1,6 @@
 // src/lib/sanity.ts
 import { createClient } from '@sanity/client'
-import imageUrlBuilder from '@sanity/image-url'
+import { createImageUrlBuilder } from '@sanity/image-url'
 import type { Producto, Flete, PreguntaFrecuente, Promo } from '../types'
 import type { SanityImageSource } from '@sanity/image-url'
 export const client = createClient({
@@ -11,7 +11,7 @@ export const client = createClient({
 })
 
 // ── Optimizador de imágenes ────────────────────────────────────────
-const builder = imageUrlBuilder(client)
+const builder = createImageUrlBuilder(client)
 
 export function urlFor(source: SanityImageSource) {
   return builder.image(source)

@@ -302,3 +302,125 @@
     padding: 0;
   }
 }
+/* Agregar al final de ModalCarrito.css */
+
+/* ── Back button ──────────────────────────────────────────────── */
+.modal__back {
+  width: 28px;
+  height: 28px;
+  background: var(--color-bg-hover);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.modal__back:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+/* ── Formulario ───────────────────────────────────────────────── */
+.modal__form {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md) var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  scrollbar-width: thin;
+}
+
+.modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.modal__opcional {
+  font-weight: 400;
+  color: var(--color-text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.modal__input,
+.modal__textarea {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--color-text);
+  font-family: inherit;
+  transition: border-color var(--transition-fast);
+  outline: none;
+  resize: none;
+  width: 100%;
+}
+
+.modal__input:focus,
+.modal__textarea:focus {
+  border-color: var(--color-celeste);
+}
+
+.modal__input--error {
+  border-color: var(--color-error);
+}
+
+.modal__input::placeholder,
+.modal__textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+.modal__error {
+  font-size: 12px;
+  color: var(--color-error);
+}
+
+/* ── Opciones ─────────────────────────────────────────────────── */
+.modal__opciones {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.modal__opciones--col {
+  flex-direction: column;
+}
+
+.modal__opcion {
+  flex: 1;
+  padding: 10px 14px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+
+.modal__opcion:hover {
+  border-color: var(--color-celeste-border);
+  color: var(--color-celeste);
+}
+
+.modal__opcion--active {
+  background: var(--color-celeste-subtle);
+  border-color: var(--color-celeste);
+  color: var(--color-celeste);
+  font-weight: 600;
+}

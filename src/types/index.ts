@@ -11,8 +11,27 @@ export interface Producto {
     }
   }
   precio: number
-  categoria: 'paniales' | 'toallitas' | 'higiene' | 'combos' | 'otros'
-  talle?: 'RN' | 'P' | 'M' | 'G' | 'XG' | 'XXG' | 'XXXG' | 'unico'
+  categoria:
+    | 'combos'
+    | 'paniales'
+    | 'paniales_adulto'
+    | 'apositos_adultos'
+    | 'toallitas'
+    | 'algodones'
+    | 'oleo_calcareo'
+    | 'desodorantes_cannon'
+    | 'perfumes_cannon'
+    | 'perfumeria_bebes'
+    | 'mamaderas'
+    | 'maternidad'
+    | 'proteccion_femenina'
+    | 'papeles_higienicos'
+    | 'papeles_cocina'
+    | 'panuelos_servilletas'
+    | 'filos_gillette'
+    | 'perfumeria_adultos'
+    | 'tinturas_nantyr'
+  talle?: string
   enStock: boolean
 }
 

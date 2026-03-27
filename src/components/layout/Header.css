@@ -1,21 +1,18 @@
 /* src/components/layout/Header.css */
 
 .header {
-  position: fixed;
+  position: relative;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
-  padding: 20px 0;
-  transition: background var(--transition-base), padding var(--transition-base), box-shadow var(--transition-base);
+  padding: 12px 0;
+  background: var(--color-celeste);
+  transition: box-shadow var(--transition-base);
 }
 
 .header--scrolled {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  padding: 12px 0;
-  box-shadow: 0 1px 0 var(--color-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .header__inner {
@@ -56,13 +53,13 @@
 .header__logo-name {
   font-size: 17px;
   font-weight: 700;
-  color: var(--color-text);
+  color: #0A0A0A;
 }
 
 .header__logo-sub {
   font-size: 10px;
   font-weight: 500;
-  color: var(--color-celeste);
+  color: #0A0A0A;
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
@@ -78,7 +75,7 @@
 .header__link {
   font-size: 14px;
   font-weight: 500;
-  color: var(--color-text-secondary);
+  color: #0A0A0A;
   transition: color var(--transition-fast);
   position: relative;
 }
@@ -90,14 +87,14 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--color-celeste);
+  background: #0A0A0A;
   border-radius: var(--radius-full);
   transform: scaleX(0);
   transition: transform var(--transition-fast);
 }
 
 .header__link:hover {
-  color: var(--color-text);
+  color: #fff;
 }
 
 .header__link:hover::after,
@@ -106,7 +103,7 @@
 }
 
 .header__link--active {
-  color: var(--color-text);
+  color: #fff;
 }
 
 /* ── Carrito ──────────────────────────────────────────────────── */
@@ -114,28 +111,28 @@
   position: relative;
   width: 40px;
   height: 40px;
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-secondary);
+  color: #0A0A0A;
   transition: all var(--transition-fast);
   flex-shrink: 0;
 }
 
 .header__carrito:hover {
-  border-color: var(--color-celeste-border);
-  color: var(--color-celeste);
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .header__carrito-badge {
   position: absolute;
   top: -6px;
   right: -6px;
-  background: var(--color-celeste);
-  color: #0A0A0A;
+  background: #0A0A0A;
+  color: var(--color-celeste);
   font-size: 11px;
   font-weight: 700;
   width: 18px;
@@ -151,6 +148,12 @@
   flex-shrink: 0;
   font-size: 14px;
   padding: 10px 20px;
+  background: #0A0A0A;
+  color: var(--color-celeste) !important;
+}
+
+.header__cta:hover {
+  background: #222 !important;
 }
 
 /* ── Hamburguesa ──────────────────────────────────────────────── */
@@ -166,7 +169,7 @@
   display: block;
   width: 22px;
   height: 2px;
-  background: var(--color-text);
+  background: #0A0A0A;
   border-radius: var(--radius-full);
   transition: transform var(--transition-base), opacity var(--transition-base);
   transform-origin: center;
@@ -231,34 +234,6 @@
 
 /* ── Responsive ───────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .header {
-    background: var(--color-celeste);
-    padding: 12px 0;
-  }
-
-  .header--scrolled {
-    background: var(--color-celeste);
-    box-shadow: none;
-  }
-
-  .header__logo-name {
-    color: #0A0A0A;
-  }
-
-  .header__logo-sub {
-    color: #0A0A0A;
-  }
-
-  .header__burger span {
-    background: #0A0A0A;
-  }
-
-  .header__carrito {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: #0A0A0A;
-  }
-
   .header__nav,
   .header__cta {
     display: none;

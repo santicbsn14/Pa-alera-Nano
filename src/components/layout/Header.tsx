@@ -47,7 +47,7 @@ export default function Header() {
             Inicio
           </NavLink>
           <NavLink to="/catalogo" className={({ isActive }) => `header__link ${isActive ? 'header__link--active' : ''}`}>
-            Catálogo
+            Pedidos Nano
           </NavLink>
           <a href="/#precios" className="header__link">Precios</a>
           <a href="/#contacto" className="header__link">Contacto</a>
@@ -66,7 +66,7 @@ export default function Header() {
 
         {/* CTA desktop */}
         <Link to="/catalogo" className="btn-primary header__cta">
-          Ver catálogo
+          Pedidos Nano
         </Link>
 
         {/* Hamburguesa mobile */}
@@ -88,13 +88,13 @@ export default function Header() {
             Inicio
           </NavLink>
           <NavLink to="/catalogo" className={({ isActive }) => `header__mobile-link ${isActive ? 'header__mobile-link--active' : ''}`}>
-            Catálogo
+            Pedidos Nano
           </NavLink>
           <a href="/#precios" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Precios</a>
           <a href="/#contacto" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Contacto</a>
 
           <Link to="/catalogo" className="btn-primary header__mobile-cta" onClick={() => setMenuOpen(false)}>
-            Ver catálogo
+            Pedidos Nano
           </Link>
         </nav>
       </div>

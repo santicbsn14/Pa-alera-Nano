@@ -31,13 +31,11 @@ export default function Hero() {
     goTo(current === slides.length - 1 ? 0 : current + 1)
   }, [current, goTo])
 
-  // Autoplay
   useEffect(() => {
     const timer = setInterval(next, 5000)
     return () => clearInterval(timer)
   }, [next])
 
-  // Swipe mobile
   useEffect(() => {
     let startX = 0
     const onTouchStart = (e: TouchEvent) => { startX = e.touches[0].clientX }
@@ -69,8 +67,6 @@ export default function Hero() {
           ))}
         </div>
 
-        <div className="hero__overlay" />
-
         <button className="hero__arrow hero__arrow--prev" onClick={prev} aria-label="Anterior">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M15 18l-6-6 6-6" />
@@ -98,11 +94,11 @@ export default function Hero() {
       <div className="hero__bar">
         <p className="hero__bar-text">
           <span>¿Te interesa alguna promo?</span>
-          Entrá al catálogo y armá tu pedido.
+          Entrá a Pedidos Nano y armá tu pedido.
         </p>
         <div className="hero__bar-actions">
           <Link to="/catalogo" className="btn-primary">
-            Ver catálogo
+            Pedidos Nano
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>

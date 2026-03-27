@@ -55,7 +55,7 @@ export default function Footer() {
           <h4 className="footer__links-title">Navegación</h4>
           <ul className="footer__links-list">
             <li><NavLink to="/">Inicio</NavLink></li>
-            <li><NavLink to="/catalogo">Catálogo</NavLink></li>
+            <li><NavLink to="/catalogo">Pedidos Nano</NavLink></li>
             <li><a href="/#precios">Lista de precios</a></li>
             <li><a href="/#logistica">Envíos</a></li>
             <li><a href="/#faq">Preguntas frecuentes</a></li>

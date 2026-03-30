@@ -152,9 +152,8 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--color-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .modal__item-precio {
@@ -291,15 +290,19 @@
 
 /* ── Responsive ───────────────────────────────────────────────── */
 @media (max-width: 480px) {
-  .modal {
-    max-height: 95vh;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    margin-top: auto;
+  .modal__item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
   }
 
-  .modal-overlay {
-    align-items: flex-end;
-    padding: 0;
+  .modal__item-info {
+    width: 100%;
+  }
+
+  .modal__item-controles {
+    width: 100%;
+    justify-content: space-between;
   }
 }
 /* Agregar al final de ModalCarrito.css */

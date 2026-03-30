@@ -25,6 +25,7 @@ export async function getProductos(): Promise<Producto[]> {
       _id,
       idSistema,
       nombre,
+      marca,
       descripcion,
       foto,
       precio,

@@ -4,6 +4,7 @@ export interface Producto {
   _id: string
   idSistema: string
   nombre: string
+  marca:string
   descripcion?: string
   foto?: {
     asset: {

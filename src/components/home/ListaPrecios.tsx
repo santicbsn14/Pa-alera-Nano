@@ -1,5 +1,5 @@
 // src/components/home/ListaPrecios.tsx
-import './ListaPrecios.css'
+import './Listaprecios.css'
 
 const LINK_PRECIOS = 'https://drive.google.com/uc?export=download&id=1m2a2ziUqNsiMKjYGIbiziqVyq7RhAX4x'
 

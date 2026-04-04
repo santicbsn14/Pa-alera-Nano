@@ -237,3 +237,6 @@
   font-weight: 700;
   color: var(--color-celeste);
 }
+.card__cat {
+  display: none;
+}

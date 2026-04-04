@@ -6,6 +6,7 @@ import ModalCarrito from './components/carrito/ModalCarrito'
 import Toast from './components/carrito/Toast'
 import Home from './pages/Home'
 import Catalogo from './pages/Catalogo'
+import Comprobante from './pages/Comprobante'
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="catalogo" element={<Catalogo />} />
+            <Route path="comprobante" element={<Comprobante />} />
           </Route>
         </Routes>
       </CarritoProvider>

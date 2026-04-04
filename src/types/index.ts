@@ -33,6 +33,7 @@ export interface Producto {
     | 'perfumeria_adultos'
     | 'tinturas_nantyr'
   talle?: string
+  presentacion?: string
   enStock: boolean
 }
 
@@ -58,12 +59,13 @@ export interface PreguntaFrecuente {
 
 export interface Promo {
   _id: string
-  titulo: string
+  alt?: string
   imagen?: {
     asset: {
       _ref: string
     }
   }
+  orden?: number
   activa: boolean
 }
 

@@ -180,3 +180,60 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+/* ── Badge cantidad ───────────────────────────────────────────── */
+.card__cantidad-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--color-celeste);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Presentación ─────────────────────────────────────────────── */
+.card__presentacion {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+/* ── Contador en card ─────────────────────────────────────────── */
+.card__contador {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-celeste-subtle);
+  border: 1px solid var(--color-celeste-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-top: var(--spacing-sm);
+}
+
+.card__contador-btn {
+  width: 40px;
+  height: 38px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-celeste);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast);
+}
+
+.card__contador-btn:hover {
+  background: var(--color-celeste-subtle);
+}
+
+.card__contador-num {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-celeste);
+}

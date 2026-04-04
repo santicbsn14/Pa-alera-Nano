@@ -31,6 +31,7 @@ export async function getProductos(): Promise<Producto[]> {
       precio,
       categoria,
       talle,
+      presentacion,
       enStock
     }
   `)
@@ -62,10 +63,11 @@ export async function getPreguntas(): Promise<PreguntaFrecuente[]> {
 
 export async function getPromos(): Promise<Promo[]> {
   return client.fetch(`
-    *[_type == "promo" && activa == true] {
+    *[_type == "promo" && activa == true] | order(orden asc) {
       _id,
-      titulo,
+      alt,
       imagen,
+      orden,
       activa
     }
   `)

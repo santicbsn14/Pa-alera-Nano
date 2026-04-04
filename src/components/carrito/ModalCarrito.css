@@ -427,3 +427,31 @@
   color: var(--color-celeste);
   font-weight: 600;
 }
+.modal__item-presentacion {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+/* ── Mínimo de compra ─────────────────────────────────────────── */
+.modal__minimo {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(244, 196, 48, 0.1);
+  border: 1px solid rgba(244, 196, 48, 0.3);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.modal__minimo svg {
+  color: #F4C430;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.modal__minimo strong {
+  color: var(--color-text);
+}

@@ -1,20 +1,23 @@
 // src/components/home/Hero.tsx
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import promo1 from '../../assets/promo.webp'
-import promo2 from '../../assets/promo2.png'
-import promo3 from '../../assets/promo3.webp'
+import { getPromos } from '../../lib/sanity'
+import { urlFor } from '../../lib/sanity'
+import type { Promo } from '../../types'
 import './Hero.css'
 
-const slides = [
-  { id: 1, imagen: promo1, alt: 'Babysec Ultra Soft — Oferta mayorista' },
-  { id: 2, imagen: promo2, alt: 'Huggies Flexi Comfort — Precio bomba' },
-  { id: 3, imagen: promo3, alt: 'Duffy Cotton — Precio bomba' },
-]
-
 export default function Hero() {
+  const [slides, setSlides] = useState<Promo[]>([])
   const [current, setCurrent] = useState(0)
   const [transitioning, setTransitioning] = useState(false)
+  const [cargando, setCargando] = useState(true)
+
+  useEffect(() => {
+    getPromos()
+      .then((data) => setSlides(data))
+      .catch(() => setSlides([]))
+      .finally(() => setCargando(false))
+  }, [])
 
   const goTo = useCallback((index: number) => {
     if (transitioning) return
@@ -25,16 +28,17 @@ export default function Hero() {
 
   const prev = useCallback(() => {
     goTo(current === 0 ? slides.length - 1 : current - 1)
-  }, [current, goTo])
+  }, [current, goTo, slides.length])
 
   const next = useCallback(() => {
     goTo(current === slides.length - 1 ? 0 : current + 1)
-  }, [current, goTo])
+  }, [current, goTo, slides.length])
 
   useEffect(() => {
+    if (slides.length === 0) return
     const timer = setInterval(next, 5000)
     return () => clearInterval(timer)
-  }, [next])
+  }, [next, slides.length])
 
   useEffect(() => {
     let startX = 0
@@ -54,40 +58,48 @@ export default function Hero() {
   return (
     <>
       <section className="hero">
-        <div className="hero__track">
-          {slides.map((slide, i) => (
-            <div key={slide.id} className={`hero__slide ${i === current ? 'hero__slide--active' : ''}`}>
-              <img
-                src={slide.imagen}
-                alt={slide.alt}
-                className="hero__img"
-                loading={i === 0 ? 'eager' : 'lazy'}
-              />
+        {cargando || slides.length === 0 ? (
+          <div className="hero__placeholder" />
+        ) : (
+          <>
+            <div className="hero__track">
+              {slides.map((slide, i) => (
+                <div key={slide._id} className={`hero__slide ${i === current ? 'hero__slide--active' : ''}`}>
+                  {slide.imagen && (
+                    <img
+                      src={urlFor(slide.imagen).width(1200).fit('max').url()}
+                      alt={slide.alt ?? 'Promo'}
+                      className="hero__img"
+                      loading={i === 0 ? 'eager' : 'lazy'}
+                    />
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        <button className="hero__arrow hero__arrow--prev" onClick={prev} aria-label="Anterior">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
-        <button className="hero__arrow hero__arrow--next" onClick={next} aria-label="Siguiente">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 18l6-6-6-6" />
-          </svg>
-        </button>
+            <button className="hero__arrow hero__arrow--prev" onClick={prev} aria-label="Anterior">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </button>
+            <button className="hero__arrow hero__arrow--next" onClick={next} aria-label="Siguiente">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
 
-        <div className="hero__dots">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              className={`hero__dot ${i === current ? 'hero__dot--active' : ''}`}
-              onClick={() => goTo(i)}
-              aria-label={`Ir al slide ${i + 1}`}
-            />
-          ))}
-        </div>
+            <div className="hero__dots">
+              {slides.map((_, i) => (
+                <button
+                  key={i}
+                  className={`hero__dot ${i === current ? 'hero__dot--active' : ''}`}
+                  onClick={() => goTo(i)}
+                  aria-label={`Ir al slide ${i + 1}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </section>
 
       {/* Barra CTA */}

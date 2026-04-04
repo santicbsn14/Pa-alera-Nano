@@ -10,9 +10,10 @@ interface Props {
 }
 
 export default function CardProducto({ producto }: Props) {
-  const { agregar, items } = useCarrito()
+  const { agregar, quitar, cambiarCantidad, items } = useCarrito()
   const categoriaLabel = CATEGORIAS.find((c) => c.value === producto.categoria)?.label ?? producto.categoria
-  const enCarrito = items.some((i) => i.producto._id === producto._id)
+  const itemEnCarrito = items.find((i) => i.producto._id === producto._id)
+  const cantidad = itemEnCarrito?.cantidad ?? 0
 
   return (
     <div className="card">
@@ -37,13 +38,20 @@ export default function CardProducto({ producto }: Props) {
         {!producto.enStock && (
           <span className="card__sin-stock">Sin stock</span>
         )}
+        {/* Badge cantidad en carrito */}
+        {cantidad > 0 && (
+          <span className="card__cantidad-badge">{cantidad}</span>
+        )}
       </div>
 
       <div className="card__info">
         <h3 className="card__nombre">{producto.nombre}</h3>
-        {producto.descripcion && (
-          <p className="card__desc">{producto.descripcion}</p>
+
+        {/* Presentación en lugar de descripción */}
+        {producto.presentacion && (
+          <p className="card__presentacion">{producto.presentacion}</p>
         )}
+
         <div className="card__footer">
           <div className="card__meta">
             {producto.talle && producto.talle !== 'unico' && (
@@ -55,13 +63,34 @@ export default function CardProducto({ producto }: Props) {
           </span>
         </div>
 
-        <button
-          className={`card__btn ${enCarrito ? 'card__btn--agregado' : ''}`}
-          onClick={() => agregar(producto)}
-          disabled={!producto.enStock}
-        >
-          {enCarrito ? '✓ Agregado' : 'Agregar al pedido'}
-        </button>
+        {/* Botón o contador según si está en carrito */}
+        {cantidad === 0 ? (
+          <button
+            className="card__btn"
+            onClick={() => agregar(producto)}
+            disabled={!producto.enStock}
+          >
+            Agregar al pedido
+          </button>
+        ) : (
+          <div className="card__contador">
+            <button
+              className="card__contador-btn"
+              onClick={() => cantidad === 1 ? quitar(producto._id) : cambiarCantidad(producto._id, cantidad - 1)}
+              aria-label="Restar"
+            >
+              −
+            </button>
+            <span className="card__contador-num">{cantidad}</span>
+            <button
+              className="card__contador-btn"
+              onClick={() => cambiarCantidad(producto._id, cantidad + 1)}
+              aria-label="Sumar"
+            >
+              +
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

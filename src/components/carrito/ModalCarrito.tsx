@@ -4,7 +4,7 @@ import { useCarrito } from '../../context/CarritoContext'
 import './ModalCarrito.css'
 
 const WHATSAPP = '5493412479055'
-const WEB_URL = 'https://panaleranano.com'
+const WEB_URL = 'https://pa-alera-nano.vercel.app/'
 const SERVER_URL = 'https://nano-server-h25x.onrender.com'
 const MINIMO_COMPRA = 150000
 

@@ -217,17 +217,14 @@ export const mockPreguntas: PreguntaFrecuente[] = [
 export const mockPromos: Promo[] = [
   {
     _id: 'pr1',
-    titulo: 'Combo Huggies Flexi + Duffy',
     activa: true,
   },
   {
     _id: 'pr2',
-    titulo: 'Se viene el otoño con muchas ofertas',
     activa: true,
   },
   {
     _id: 'pr3',
-    titulo: 'Babysec Ultra — Nuevos precios',
     activa: true,
   },
 ]

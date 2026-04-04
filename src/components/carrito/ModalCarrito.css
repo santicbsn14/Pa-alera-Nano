@@ -455,3 +455,50 @@
 .modal__minimo strong {
   color: var(--color-text);
 }
+/* ── Paso listo ───────────────────────────────────────────────── */
+.modal__listo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  text-align: center;
+}
+
+.modal__listo-icono {
+  font-size: 48px;
+}
+
+.modal__listo h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.modal__listo p {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.modal__wsp-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: 16px 28px;
+  background: #25D366;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  margin-top: var(--spacing-sm);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+  width: 100%;
+}
+
+.modal__wsp-btn:hover {
+  background: #1ebe5d;
+  transform: translateY(-1px);
+}

@@ -75,10 +75,11 @@ function armarMensaje(
 
 export default function ModalCarrito() {
   const { items, abierto, cerrarCarrito, quitar, cambiarCantidad, vaciar } = useCarrito()
-  const [paso, setPaso] = useState<'carrito' | 'checkout'>('carrito')
+  const [paso, setPaso] = useState<'carrito' | 'checkout' | 'listo'>('carrito')
   const [datos, setDatos] = useState<DatosEnvio>(datosIniciales)
   const [errores, setErrores] = useState<Partial<Record<keyof DatosEnvio, string>>>({})
   const [enviando, setEnviando] = useState(false)
+  const [urlWhatsapp, setUrlWhatsapp] = useState('')
 
   const total = items.reduce((acc, i) => acc + i.producto.precio * i.cantidad, 0)
   const minimoAlcanzado = total >= MINIMO_COMPRA
@@ -95,6 +96,7 @@ export default function ModalCarrito() {
       setDatos(datosIniciales)
       setErrores({})
       setEnviando(false)
+      setUrlWhatsapp('')
     }
   }, [abierto])
 
@@ -116,7 +118,7 @@ export default function ModalCarrito() {
     return Object.keys(nuevosErrores).length === 0
   }
 
-  const realizarPedido = async () => {
+  const procesarPedido = async () => {
     if (!validar()) return
     setEnviando(true)
 
@@ -145,16 +147,15 @@ export default function ModalCarrito() {
 
       const data = await response.json()
       const pedidoId = data.ok ? data.pedidoId : 'sin-id'
-
       const mensaje = armarMensaje(items, datos, pedidoId)
-      const urlWsp = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensaje)}`
-      window.open(urlWsp, '_blank', 'noopener,noreferrer')
+      setUrlWhatsapp(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensaje)}`)
+      setPaso('listo')
 
     } catch (err) {
       console.error('Error guardando pedido:', err)
       const mensaje = armarMensaje(items, datos, 'sin-id')
-      const urlWsp = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensaje)}`
-      window.open(urlWsp, '_blank', 'noopener,noreferrer')
+      setUrlWhatsapp(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensaje)}`)
+      setPaso('listo')
     } finally {
       setEnviando(false)
     }
@@ -178,7 +179,9 @@ export default function ModalCarrito() {
               <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
               <path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6" />
             </svg>
-            <h2>{paso === 'carrito' ? 'Tu pedido' : 'Datos de envío'}</h2>
+            <h2>
+              {paso === 'carrito' ? 'Tu pedido' : paso === 'checkout' ? 'Datos de envío' : '¡Pedido listo!'}
+            </h2>
             {paso === 'carrito' && items.length > 0 && (
               <span className="modal__count">{items.reduce((a, i) => a + i.cantidad, 0)}</span>
             )}
@@ -209,9 +212,7 @@ export default function ModalCarrito() {
               <>
                 <div className="modal__items">
                   {items.map((item) => {
-                    const talle = item.producto.talle && item.producto.talle !== 'unico'
-                      ? ` · ${item.producto.talle}`
-                      : ''
+                    const talle = item.producto.talle && item.producto.talle !== 'unico' ? ` · ${item.producto.talle}` : ''
                     return (
                       <div key={item.producto._id} className="modal__item">
                         <div className="modal__item-info">
@@ -244,8 +245,6 @@ export default function ModalCarrito() {
                     <span>Total estimado</span>
                     <span className="modal__total-valor">${total.toLocaleString('es-AR')}</span>
                   </div>
-
-                  {/* Aviso mínimo de compra */}
                   {!minimoAlcanzado && (
                     <div className="modal__minimo">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -254,12 +253,7 @@ export default function ModalCarrito() {
                       <span>Te faltan <strong>${faltaParaMinimo.toLocaleString('es-AR')}</strong> para alcanzar el mínimo de compra de <strong>$150.000</strong></span>
                     </div>
                   )}
-
-                  <button
-                    className="modal__pedido-btn"
-                    onClick={() => setPaso('checkout')}
-                    disabled={!minimoAlcanzado}
-                  >
+                  <button className="modal__pedido-btn" onClick={() => setPaso('checkout')} disabled={!minimoAlcanzado}>
                     Continuar con el pedido
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M5 12h14M12 5l7 7-7 7" />
@@ -324,19 +318,33 @@ export default function ModalCarrito() {
                 <span>Total estimado</span>
                 <span className="modal__total-valor">${total.toLocaleString('es-AR')}</span>
               </div>
-              <button className="modal__pedido-btn" onClick={realizarPedido} disabled={enviando}>
-                {enviando ? 'Procesando...' : (
-                  <>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-                      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.556 4.118 1.528 5.845L.057 23.535a.75.75 0 00.916.919l5.764-1.463A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.9 0-3.68-.513-5.208-1.408l-.372-.22-3.862.981.999-3.778-.242-.389A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
-                    </svg>
-                    Realizar pedido por WhatsApp
-                  </>
-                )}
+              <button className="modal__pedido-btn" onClick={procesarPedido} disabled={enviando}>
+                {enviando ? 'Procesando...' : 'Confirmar pedido'}
               </button>
             </div>
           </>
+        )}
+
+        {/* ── PASO 3: Listo ── */}
+        {paso === 'listo' && (
+          <div className="modal__listo">
+            <div className="modal__listo-icono">✅</div>
+            <h3>¡Tu pedido está listo!</h3>
+            <p>Apretá el botón para enviarlo por WhatsApp.</p>
+            <a
+              href={urlWhatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="modal__wsp-btn"
+              onClick={() => { vaciar(); cerrarCarrito() }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                <path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.556 4.118 1.528 5.845L.057 23.535a.75.75 0 00.916.919l5.764-1.463A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.9 0-3.68-.513-5.208-1.408l-.372-.22-3.862.981.999-3.778-.242-.389A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+              </svg>
+              Enviar pedido por WhatsApp
+            </a>
+          </div>
         )}
 
       </div>

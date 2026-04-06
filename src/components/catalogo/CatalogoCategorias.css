@@ -349,10 +349,16 @@
 }
 /* ── Marcas (segundo nivel) ───────────────────────────────────── */
 .cat-mobile__marcas {
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: var(--spacing-sm) var(--spacing-md);
   gap: var(--spacing-xs);
+  padding: 0;
+  transition: padding var(--transition-base);
+}
+
+.cat-mobile__seccion--open .cat-mobile__marcas {
+  padding: var(--spacing-sm) var(--spacing-md);
 }
 
 .cat-mobile__marca {

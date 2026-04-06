@@ -61,9 +61,7 @@ export default function CatalogoCategorias() {
   }, [busqueda, productos])
 
   // Si hay búsqueda y queda una sola categoría, abrirla automáticamente
-  const catAbiertaEfectiva = busqueda.trim() && categoriasFiltradas.length === 1
-    ? categoriasFiltradas[0].value
-    : categoriaAbierta
+  const catAbiertaEfectiva = categoriaAbierta
 
   if (cargando) {
     return (

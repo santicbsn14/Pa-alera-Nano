@@ -21,7 +21,7 @@ export function urlFor(source: SanityImageSource) {
 
 export async function getProductos(): Promise<Producto[]> {
   return client.fetch(`
-    *[_type == "producto" && enStock == true] | order(categoria asc, nombre asc) {
+    *[_type == "producto" && enStock == true] | order(precio asc) {
       _id,
       idSistema,
       nombre,

@@ -12,6 +12,7 @@ interface DatosEnvio {
   nombre: string
   ciudad: string
   direccion: string
+  fecha: string
   turno: 'mañana' | 'tarde' | ''
   envio: 'viacargo' | 'elsalvador' | 'davidromano' | 'personal' | ''
   aclaracion: string
@@ -21,6 +22,7 @@ const datosIniciales: DatosEnvio = {
   nombre: '',
   ciudad: '',
   direccion: '',
+  fecha: '',
   turno: '',
   envio: '',
   aclaracion: '',
@@ -63,6 +65,7 @@ function armarMensaje(
     `Nombre: ${datos.nombre}`,
     `Ciudad: ${datos.ciudad}`,
     `Dirección: ${datos.direccion}`,
+    `Fecha de retiro: ${datos.fecha}`,
     `Turno: ${datos.turno === 'mañana' ? 'Mañana' : 'Tarde'}`,
     `Envío: ${envioLabel}`,
     ...(datos.aclaracion ? [`Aclaración: ${datos.aclaracion}`] : []),
@@ -112,6 +115,7 @@ export default function ModalCarrito() {
     if (!datos.nombre.trim()) nuevosErrores.nombre = 'Ingresá tu nombre'
     if (!datos.ciudad.trim()) nuevosErrores.ciudad = 'Ingresá tu ciudad'
     if (!datos.direccion.trim()) nuevosErrores.direccion = 'Ingresá tu dirección'
+    if (!datos.fecha) nuevosErrores.fecha = 'Seleccioná una fecha'
     if (!datos.turno) nuevosErrores.turno = 'Seleccioná un turno'
     if (!datos.envio) nuevosErrores.envio = 'Seleccioná cómo llega tu pedido'
     setErrores(nuevosErrores)
@@ -284,6 +288,17 @@ export default function ModalCarrito() {
                 <label className="modal__label">Dirección *</label>
                 <input type="text" className={`modal__input ${errores.direccion ? 'modal__input--error' : ''}`} placeholder="Ej: Mitre 1234" value={datos.direccion} onChange={(e) => actualizar('direccion', e.target.value)} />
                 {errores.direccion && <span className="modal__error">{errores.direccion}</span>}
+              </div>
+              <div className="modal__field">
+                <label className="modal__label">Fecha de retiro *</label>
+                <input
+                  type="date"
+                  className={`modal__input ${errores.fecha ? 'modal__input--error' : ''}`}
+                  value={datos.fecha}
+                  onChange={(e) => actualizar('fecha', e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                />
+                {errores.fecha && <span className="modal__error">{errores.fecha}</span>}
               </div>
               <div className="modal__field">
                 <label className="modal__label">Turno de retiro *</label>

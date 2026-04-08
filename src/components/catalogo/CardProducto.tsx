@@ -48,9 +48,6 @@ export default function CardProducto({ producto }: Props) {
         <h3 className="card__nombre">{producto.nombre}</h3>
 
         {/* Presentación en lugar de descripción */}
-        {producto.presentacion && (
-          <p className="card__presentacion">{producto.presentacion}</p>
-        )}
 
         <div className="card__footer">
           <div className="card__meta">

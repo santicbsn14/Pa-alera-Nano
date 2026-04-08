@@ -18,6 +18,7 @@ interface DatosPedido {
   nombre: string
   ciudad: string
   direccion: string
+  fecha_retiro:string
   turno: string
   envio: string
   aclaracion: string
@@ -122,6 +123,12 @@ export default function Comprobante() {
             <span className="comprobante__label">Dirección</span>
             <span>{pedido.direccion}</span>
           </div>
+          {pedido.fecha_retiro && (
+  <div className="comprobante__fila">
+    <span className="comprobante__label">Fecha de retiro</span>
+    <span>{pedido.fecha_retiro}</span>
+  </div>
+)}
           <div className="comprobante__fila">
             <span className="comprobante__label">Turno de retiro</span>
             <span>{pedido.turno === 'mañana' ? 'Mañana' : 'Tarde'}</span>

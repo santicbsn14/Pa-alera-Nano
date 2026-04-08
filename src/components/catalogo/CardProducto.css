@@ -71,17 +71,7 @@
 
 /* ── Badges ───────────────────────────────────────────────────── */
 .card__cat {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  padding: 3px 10px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(4px);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--color-text-secondary);
+  display: none;
 }
 
 .card__sin-stock {
@@ -96,6 +86,23 @@
   color: var(--color-text-muted);
   letter-spacing: 1px;
   text-transform: uppercase;
+}
+
+/* ── Badge cantidad ───────────────────────────────────────────── */
+.card__cantidad-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--color-celeste);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ── Info ─────────────────────────────────────────────────────── */
@@ -114,16 +121,6 @@
   line-height: 1.3;
 }
 
-.card__desc {
-  font-size: 12px;
-  color: var(--color-text-muted);
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
 /* ── Footer ───────────────────────────────────────────────────── */
 .card__footer {
   display: flex;
@@ -139,13 +136,14 @@
 }
 
 .card__talle {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--color-text-muted);
-  background: var(--color-bg-hover);
-  border: 1px solid var(--color-border);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--color-celeste-dark);
+  background: var(--color-celeste-subtle);
+  border: 1.5px solid var(--color-celeste-border);
   border-radius: var(--radius-full);
-  padding: 2px 8px;
+  padding: 3px 10px;
+  letter-spacing: 0.3px;
 }
 
 .card__precio {
@@ -170,38 +168,14 @@
   margin-top: var(--spacing-sm);
 }
 
-.card__btn--agregado {
+.card__btn:hover {
   background: var(--color-celeste);
-  border-color: var(--color-celeste);
-  color: #0A0A0A;
+  color: #fff;
 }
 
 .card__btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-}
-/* ── Badge cantidad ───────────────────────────────────────────── */
-.card__cantidad-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: var(--color-celeste);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ── Presentación ─────────────────────────────────────────────── */
-.card__presentacion {
-  font-size: 12px;
-  color: var(--color-text-secondary);
-  line-height: 1.4;
 }
 
 /* ── Contador en card ─────────────────────────────────────────── */
@@ -229,7 +203,8 @@
 }
 
 .card__contador-btn:hover {
-  background: var(--color-celeste-subtle);
+  background: var(--color-celeste);
+  color: #fff;
 }
 
 .card__contador-num {
@@ -237,6 +212,10 @@
   font-weight: 700;
   color: var(--color-celeste);
 }
-.card__cat {
-  display: none;
+@media (max-width: 768px) {
+  .card__footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
 }

@@ -1,0 +1,115 @@
+/* src/components/carrito/CarritoFlotante.css */
+
+.carrito-flotante {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  padding: 0 var(--padding-x) var(--spacing-md);
+  pointer-events: none;
+}
+
+.carrito-flotante__inner {
+  max-width: 600px;
+  margin: 0 auto;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  pointer-events: auto;
+  animation: slide-up 300ms ease;
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Info ─────────────────────────────────────────────────────── */
+.carrito-flotante__info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-lg);
+  gap: var(--spacing-md);
+}
+
+.carrito-flotante__textos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.carrito-flotante__total {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-celeste);
+  line-height: 1;
+}
+
+.carrito-flotante__estado {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.carrito-flotante__estado--ok {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+/* ── Botón ────────────────────────────────────────────────────── */
+.carrito-flotante__btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 10px 20px;
+  background: var(--color-celeste);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.carrito-flotante__btn:hover {
+  background: var(--color-celeste-hover);
+  transform: translateY(-1px);
+}
+
+/* ── Barra de progreso ────────────────────────────────────────── */
+.carrito-flotante__barra-wrap {
+  height: 4px;
+  background: var(--color-border);
+  width: 100%;
+}
+
+.carrito-flotante__barra {
+  height: 100%;
+  background: var(--color-celeste);
+  border-radius: 0 2px 2px 0;
+  transition: width 400ms ease, background 300ms ease;
+}
+
+.carrito-flotante__barra--ok {
+  background: var(--color-success);
+}
+
+/* ── Mobile ───────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .carrito-flotante {
+    padding: 0 0 0 0;
+  }
+
+  .carrito-flotante__inner {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-bottom: none;
+  }
+
+  .carrito-flotante__total {
+    font-size: 18px;
+  }
+}

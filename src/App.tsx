@@ -7,6 +7,7 @@ import Toast from './components/carrito/Toast'
 import Home from './pages/Home'
 import Catalogo from './pages/Catalogo'
 import Comprobante from './pages/Comprobante'
+import CarritoFlotante from './components/carrito/Carritoflotante'
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
       <CarritoProvider>
         <Toast />
         <ModalCarrito />
+        <CarritoFlotante />
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />

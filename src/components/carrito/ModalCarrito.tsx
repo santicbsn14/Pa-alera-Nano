@@ -134,6 +134,7 @@ export default function ModalCarrito() {
           nombre: datos.nombre,
           ciudad: datos.ciudad,
           direccion: datos.direccion,
+          fecha_retiro:datos.fecha,
           turno: datos.turno,
           envio: datos.envio,
           aclaracion: datos.aclaracion,

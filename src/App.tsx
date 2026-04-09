@@ -7,7 +7,7 @@ import Toast from './components/carrito/Toast'
 import Home from './pages/Home'
 import Catalogo from './pages/Catalogo'
 import Comprobante from './pages/Comprobante'
-import CarritoFlotante from './components/carrito/Carritoflotante'
+import CarritoFlotante from './components/carrito/CarritoFlotante'
 
 export default function App() {
   return (

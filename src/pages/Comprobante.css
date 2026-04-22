@@ -155,12 +155,20 @@ hr {
 
 /* ── Print styles ─────────────────────────────────────────────── */
 @media print {
-  .comprobante {
-    background: #fff;
-    padding: 0;
+  body * {
+    visibility: hidden;
+  }
+
+  .comprobante__doc,
+  .comprobante__doc * {
+    visibility: visible;
   }
 
   .comprobante__doc {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     box-shadow: none;
     padding: 20px;
     max-width: 100%;

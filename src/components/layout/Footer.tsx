@@ -97,7 +97,7 @@ export default function Footer() {
         <div className="container footer__bottom-inner">
           <p className="footer__copy">© {año} Pañalera Nano Mayorista. Todos los derechos reservados.</p>
           <p className="footer__dev">
-            Desarrollado por <a href="https://wa.me/NUMERO_SANTIAGO" target="_blank" rel="noopener noreferrer">Santiago Viale</a>
+            Desarrollado por <a href="https://santiago-viale-web.vercel.app/" target="_blank" rel="noopener noreferrer">Santiago Viale</a>
           </p>
         </div>
       </div>

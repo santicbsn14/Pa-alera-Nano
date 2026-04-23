@@ -42,10 +42,13 @@ function armarMensaje(
 ): string {
   const lineas = items.map((i) => {
     const talle = i.producto.talle && i.producto.talle !== 'unico' ? ` ${i.producto.talle}` : ''
+    const tallesCombo = i.tallesCombo
+  ? ` [${i.tallesCombo.map((t) => `${t.producto}: ${t.talle}`).join(' / ')}]`
+  : ''
     const presentacion = i.producto.presentacion ? ` (${i.producto.presentacion})` : ''
     const codBarra = i.producto.descripcion ? ` | CB: ${i.producto.descripcion}` : ''
     const subtotal = (i.producto.precio * i.cantidad).toLocaleString('es-AR')
-    return `• ${i.producto.nombre}${talle}${presentacion} x${i.cantidad} — $${subtotal}${codBarra}`
+    return `• ${i.producto.nombre}${talle}${tallesCombo}${presentacion} x${i.cantidad} — $${subtotal}${codBarra}`
   })
 
   const total = items
@@ -224,6 +227,11 @@ export default function ModalCarrito() {
                           <p className="modal__item-nombre">{item.producto.nombre}{talle}</p>
                           {item.producto.presentacion && (
                             <p className="modal__item-presentacion">{item.producto.presentacion}</p>
+                          )}
+                          {item.tallesCombo && (
+                            <p className="modal__item-presentacion">
+                              {item.tallesCombo.map((t) => `${t.producto}: ${t.talle}`).join(' / ')}
+                            </p>
                           )}
                           <p className="modal__item-precio">${item.producto.precio.toLocaleString('es-AR')} c/u</p>
                         </div>

@@ -5,6 +5,7 @@ import type { Producto } from '../types'
 export interface ItemCarrito {
   producto: Producto
   cantidad: number
+  tallesCombo?: { producto: string; talle: string }[]
 }
 
 interface ToastInfo {
@@ -17,7 +18,7 @@ interface CarritoContextType {
   abierto: boolean
   totalItems: number
   toast: ToastInfo | null
-  agregar: (producto: Producto) => void
+  agregar: (producto: Producto, tallesCombo?: { producto: string; talle: string }[]) => void
   quitar: (id: string) => void
   cambiarCantidad: (id: string, cantidad: number) => void
   vaciar: () => void
@@ -34,7 +35,7 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
 
   const totalItems = items.reduce((acc, i) => acc + i.cantidad, 0)
 
-  const agregar = useCallback((producto: Producto) => {
+  const agregar = useCallback((producto: Producto, tallesCombo?: { producto: string; talle: string }[]) => {
     setItems((prev) => {
       const existe = prev.find((i) => i.producto._id === producto._id)
       if (existe) {
@@ -44,10 +45,9 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
             : i
         )
       }
-      return [...prev, { producto, cantidad: 1 }]
+      return [...prev, { producto, cantidad: 1, tallesCombo }]
     })
 
-    // Mostrar toast global
     const id = Date.now()
     setToast({ mensaje: producto.nombre, id })
     setTimeout(() => setToast((prev) => prev?.id === id ? null : prev), 2500)

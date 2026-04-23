@@ -161,7 +161,7 @@ export default function CatalogoCategorias() {
                       {/* Productos de la marca */}
                       <div className="cat-mobile__marca-productos-wrap">
                         <div className="cat-mobile__productos">
-                          {marca.productos.map((producto) => (
+                          {isMarcaOpen && marca.productos.map((producto) => (
                             <CardProducto key={producto._id} producto={producto} />
                           ))}
                         </div>

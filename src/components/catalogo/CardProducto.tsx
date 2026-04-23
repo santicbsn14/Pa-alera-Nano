@@ -15,22 +15,27 @@ interface Props {
 export default function CardProducto({ producto }: Props) {
   const { agregar, quitar, cambiarCantidad, items } = useCarrito()
   const categoriaLabel = CATEGORIAS.find((c) => c.value === producto.categoria)?.label ?? producto.categoria
-  const itemEnCarrito = items.find((i) => i.producto._id === producto._id)
-  const cantidad = itemEnCarrito?.cantidad ?? 0
+
+  const esCombo = producto.categoria === 'combos'
+
+  // Para combos: todos los items de este combo
+  const itemsCombo = items.filter((i) => i.producto._id === producto._id)
+  const cantidadCombo = itemsCombo.length
+
+  // Para productos normales: el item único
+  const itemNormal = items.find((i) => i.itemId === producto._id)
+  const cantidadNormal = itemNormal?.cantidad ?? 0
+
+  const cantidad = esCombo ? cantidadCombo : cantidadNormal
 
   const [modalCombo, setModalCombo] = useState(false)
   const [tallesSeleccionados, setTallesSeleccionados] = useState<Record<string, string>>({})
 
-  const esCombo = producto.categoria === 'combos'
-
-  // Detectar productos del combo por el "+" en el nombre
   const productosCombo = esCombo
     ? producto.nombre.split('+').map((p) => p.trim())
     : []
 
-  const todosSeleccionados = esCombo
-    ? productosCombo.every((p) => tallesSeleccionados[p])
-    : true
+  const todosSeleccionados = productosCombo.every((p) => tallesSeleccionados[p])
 
   const handleAgregar = () => {
     if (esCombo) {
@@ -94,7 +99,16 @@ export default function CardProducto({ producto }: Props) {
             </span>
           </div>
 
-          {cantidad === 0 ? (
+          {esCombo ? (
+            // Combos: siempre mostrar botón que abre el modal
+            <button
+              className="card__btn"
+              onClick={handleAgregar}
+              disabled={!producto.enStock}
+            >
+              {cantidad > 0 ? `+ Agregar otro (${cantidad} en pedido)` : 'Agregar al pedido'}
+            </button>
+          ) : cantidad === 0 ? (
             <button
               className="card__btn"
               onClick={handleAgregar}
@@ -106,15 +120,15 @@ export default function CardProducto({ producto }: Props) {
             <div className="card__contador">
               <button
                 className="card__contador-btn"
-                onClick={() => cantidad === 1 ? quitar(producto._id) : cambiarCantidad(producto._id, cantidad - 1)}
+                onClick={() => cantidadNormal === 1 ? quitar(producto._id) : cambiarCantidad(producto._id, cantidadNormal - 1)}
                 aria-label="Restar"
               >
                 −
               </button>
-              <span className="card__contador-num">{cantidad}</span>
+              <span className="card__contador-num">{cantidadNormal}</span>
               <button
                 className="card__contador-btn"
-                onClick={() => cambiarCantidad(producto._id, cantidad + 1)}
+                onClick={() => cambiarCantidad(producto._id, cantidadNormal + 1)}
                 aria-label="Sumar"
               >
                 +

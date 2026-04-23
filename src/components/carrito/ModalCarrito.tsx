@@ -222,7 +222,7 @@ export default function ModalCarrito() {
                   {items.map((item) => {
                     const talle = item.producto.talle && item.producto.talle !== 'unico' ? ` · ${item.producto.talle}` : ''
                     return (
-                      <div key={item.producto._id} className="modal__item">
+                      <div key={item.itemId} className="modal__item">
                         <div className="modal__item-info">
                           <p className="modal__item-nombre">{item.producto.nombre}{talle}</p>
                           {item.producto.presentacion && (
@@ -237,12 +237,12 @@ export default function ModalCarrito() {
                         </div>
                         <div className="modal__item-controles">
                           <div className="modal__cantidad">
-                            <button onClick={() => cambiarCantidad(item.producto._id, item.cantidad - 1)} disabled={item.cantidad === 1} aria-label="Restar">−</button>
+                            <button onClick={() => cambiarCantidad(item.itemId, item.cantidad - 1)} disabled={item.cantidad === 1} aria-label="Restar">−</button>
                             <span>{item.cantidad}</span>
-                            <button onClick={() => cambiarCantidad(item.producto._id, item.cantidad + 1)} aria-label="Sumar">+</button>
+                            <button onClick={() => cambiarCantidad(item.itemId, item.cantidad + 1)} aria-label="Sumar">+</button>
                           </div>
                           <p className="modal__item-subtotal">${(item.producto.precio * item.cantidad).toLocaleString('es-AR')}</p>
-                          <button className="modal__item-quitar" onClick={() => quitar(item.producto._id)} aria-label="Quitar producto">
+                          <button className="modal__item-quitar" onClick={() => quitar(item.itemId)} aria-label="Quitar producto">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                               <path d="M18 6 6 18M6 6l12 12" />
                             </svg>

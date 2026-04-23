@@ -3,6 +3,7 @@ import { createContext, useContext, useState, useCallback } from 'react'
 import type { Producto } from '../types'
 
 export interface ItemCarrito {
+  itemId: string // único por item — para combos es _id+timestamp, para el resto es _id
   producto: Producto
   cantidad: number
   tallesCombo?: { producto: string; talle: string }[]
@@ -19,8 +20,8 @@ interface CarritoContextType {
   totalItems: number
   toast: ToastInfo | null
   agregar: (producto: Producto, tallesCombo?: { producto: string; talle: string }[]) => void
-  quitar: (id: string) => void
-  cambiarCantidad: (id: string, cantidad: number) => void
+  quitar: (itemId: string) => void
+  cambiarCantidad: (itemId: string, cantidad: number) => void
   vaciar: () => void
   abrirCarrito: () => void
   cerrarCarrito: () => void
@@ -36,16 +37,23 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
   const totalItems = items.reduce((acc, i) => acc + i.cantidad, 0)
 
   const agregar = useCallback((producto: Producto, tallesCombo?: { producto: string; talle: string }[]) => {
+    const esCombo = producto.categoria === 'combos'
+
     setItems((prev) => {
-      const existe = prev.find((i) => i.producto._id === producto._id)
-      if (existe) {
-        return prev.map((i) =>
-          i.producto._id === producto._id
-            ? { ...i, cantidad: i.cantidad + 1 }
-            : i
-        )
+      if (esCombo) {
+        // Cada combo es un item separado con id único
+        const itemId = `${producto._id}-${Date.now()}`
+        return [...prev, { itemId, producto, cantidad: 1, tallesCombo }]
+      } else {
+        // Productos normales se agrupan por _id
+        const existe = prev.find((i) => i.itemId === producto._id)
+        if (existe) {
+          return prev.map((i) =>
+            i.itemId === producto._id ? { ...i, cantidad: i.cantidad + 1 } : i
+          )
+        }
+        return [...prev, { itemId: producto._id, producto, cantidad: 1 }]
       }
-      return [...prev, { producto, cantidad: 1, tallesCombo }]
     })
 
     const id = Date.now()
@@ -53,14 +61,14 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
     setTimeout(() => setToast((prev) => prev?.id === id ? null : prev), 2500)
   }, [])
 
-  const quitar = useCallback((id: string) => {
-    setItems((prev) => prev.filter((i) => i.producto._id !== id))
+  const quitar = useCallback((itemId: string) => {
+    setItems((prev) => prev.filter((i) => i.itemId !== itemId))
   }, [])
 
-  const cambiarCantidad = useCallback((id: string, cantidad: number) => {
+  const cambiarCantidad = useCallback((itemId: string, cantidad: number) => {
     if (cantidad < 1) return
     setItems((prev) =>
-      prev.map((i) => (i.producto._id === id ? { ...i, cantidad } : i))
+      prev.map((i) => (i.itemId === itemId ? { ...i, cantidad } : i))
     )
   }, [])
 

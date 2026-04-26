@@ -40,7 +40,7 @@ export default function GridProductos() {
       if (filtros.talle !== 'todos' && p.talle !== filtros.talle) return false
       if (filtros.busqueda) {
         const q = filtros.busqueda.toLowerCase()
-        if (!p.nombre.toLowerCase().includes(q)) return false
+        if (!p.nombre.toLowerCase().includes(q) && !p.descripcion?.toLowerCase().includes(q)) return false
       }
       return true
     })

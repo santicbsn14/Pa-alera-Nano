@@ -34,7 +34,7 @@ export default function CatalogoCategorias() {
     return CATEGORIAS.filter((cat) => cat.value !== 'todas').map((cat) => {
       const productosCat = productos.filter((p) => {
         const matchCat = p.categoria === cat.value
-        const matchBusqueda = q === '' || p.nombre.toLowerCase().includes(q)
+        const matchBusqueda = q === '' || p.nombre.toLowerCase().includes(q) || p.descripcion?.toLowerCase().includes(q)
         return matchCat && matchBusqueda
       })
 

@@ -1,7 +1,7 @@
 // src/components/home/ListaPrecios.tsx
 import './Listaprecios.css'
 
-const LINK_PRECIOS = 'https://drive.google.com/uc?export=download&id=1m2a2ziUqNsiMKjYGIbiziqVyq7RhAX4x'
+const LINK_PRECIOS = 'https://docs.google.com/spreadsheets/d/1m2a2ziUqNsiMKjYGIbiziqVyq7RhAX4x/edit?usp=sharing&ouid=110122539560693976423&rtpof=true&s'
 
 export default function ListaPrecios() {
   return (
@@ -12,7 +12,7 @@ export default function ListaPrecios() {
           <div className="badge">Lista de precios</div>
           <h2 className="section-title">Precios <span>mayoristas</span></h2>
           <p className="precios-simple__desc">
-            Actualizamos los precios todos los días. Descargá el Excel con todos los productos y sus precios al día de hoy.
+            También podés consultar nuestra lista de precios en Excel (XLS). Siempre actualizada para ver o descargar.
           </p>
         </div>
 
@@ -27,7 +27,7 @@ export default function ListaPrecios() {
             <polyline points="7 10 12 15 17 10" />
             <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
-          Ver lista de precios
+          Ver lista en excel
         </a>
 
       </div>

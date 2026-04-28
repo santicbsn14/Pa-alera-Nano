@@ -50,6 +50,8 @@ export default function Header() {
             Pedidos Nano
           </NavLink>
           <a href="/#precios" className="header__link">Precios</a>
+          <a href="/#logistica" className="header__link">Envios</a>
+          <a href="/#faq" className="header__link">Preguntas Frecuentes</a>
           <a href="/#contacto" className="header__link">Contacto</a>
         </nav>
 
@@ -91,10 +93,12 @@ export default function Header() {
             Pedidos Nano
           </NavLink>
           <a href="/#precios" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Precios</a>
+          <a href="/#logistica" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Envios</a>
+          <a href="/#faq" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Preguntas Frecuentes</a>
           <a href="/#contacto" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Contacto</a>
 
           <Link to="/catalogo" className="btn-primary header__mobile-cta" onClick={() => setMenuOpen(false)}>
-            Pedidos Nano
+            Armá tu pedido ahora
           </Link>
         </nav>
       </div>

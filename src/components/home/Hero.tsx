@@ -105,12 +105,12 @@ export default function Hero() {
       {/* Barra CTA */}
       <div className="hero__bar">
         <p className="hero__bar-text">
-          <span>¿Te interesa alguna promo?</span>
-          Entrá a Pedidos Nano y armá tu pedido.
+          <span>Abastece tu negocio al mejor precio!</span>
+          Arma tu pedido en Pedidos Nano.
         </p>
         <div className="hero__bar-actions">
           <Link to="/catalogo" className="btn-primary">
-            Pedidos Nano
+            Ir a Pedidos Nano
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>

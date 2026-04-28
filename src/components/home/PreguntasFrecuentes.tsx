@@ -1,10 +1,18 @@
 // src/components/home/PreguntasFrecuentes.tsx
-import { useState } from 'react'
-import { mockPreguntas } from '../../data/mocks'
+import { useState, useEffect } from 'react'
+import { getPreguntas } from '../../lib/sanity'
+import type { PreguntaFrecuente } from '../../types'
 import './PreguntasFrecuentes.css'
 
 export default function PreguntasFrecuentes() {
+  const [preguntas, setPreguntas] = useState<PreguntaFrecuente[]>([])
   const [abierta, setAbierta] = useState<string | null>(null)
+
+  useEffect(() => {
+    getPreguntas()
+      .then((data) => setPreguntas(data))
+      .catch(() => setPreguntas([]))
+  }, [])
 
   const toggle = (id: string) => {
     setAbierta((prev) => (prev === id ? null : id))
@@ -19,7 +27,7 @@ export default function PreguntasFrecuentes() {
         <p className="section-subtitle">Todo lo que necesitás saber antes de hacer tu primer pedido.</p>
 
         <div className="faq__lista">
-          {mockPreguntas.map((p) => (
+          {preguntas.map((p) => (
             <div
               key={p._id}
               className={`faq__item ${abierta === p._id ? 'faq__item--open' : ''}`}

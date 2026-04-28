@@ -19,7 +19,8 @@ export default function Footer() {
             </div>
           </NavLink>
           <p className="footer__desc">
-            Distribución mayorista de artículos de pañalería y cuidado infantil. Enviamos a todo el país.
+            Distribuimos pañales, artículos de bebé, limpieza y perfumería al mejor precio mayorista.
+Trabajamos directo de fábrica con las principales marcas y llegamos a negocios de todo el país.
           </p>
           <div className="footer__socials">
             <a
@@ -56,7 +57,7 @@ export default function Footer() {
           <ul className="footer__links-list">
             <li><NavLink to="/">Inicio</NavLink></li>
             <li><NavLink to="/catalogo">Pedidos Nano</NavLink></li>
-            <li><a href="/#precios">Lista de precios</a></li>
+            <li><a href="/#precios">Precios</a></li>
             <li><a href="/#logistica">Envíos</a></li>
             <li><a href="/#faq">Preguntas frecuentes</a></li>
             <li><a href="/#contacto">Contacto</a></li>
@@ -85,7 +86,7 @@ export default function Footer() {
                 <circle cx="12" cy="12" r="10" />
                 <polyline points="12 6 12 12 16 14" />
               </svg>
-              Lun a Vie · 8:00 — 18:00
+              Lun a Sab · 9:00 — 12:30 y 17:00 — 20:30
             </li>
           </ul>
         </div>
@@ -95,7 +96,7 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="footer__bottom">
         <div className="container footer__bottom-inner">
-          <p className="footer__copy">© {año} Pañalera Nano Mayorista. Todos los derechos reservados.</p>
+          <p className="footer__copy">© {año} TEL SIL SRL. Somos una empresa familiar con 24 años en el rubro.</p>
           <p className="footer__dev">
             Desarrollado por <a href="https://santiago-viale-web.vercel.app/" target="_blank" rel="noopener noreferrer">Santiago Viale</a>
           </p>

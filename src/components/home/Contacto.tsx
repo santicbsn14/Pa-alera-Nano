@@ -44,7 +44,7 @@ const infoItems = [
       </svg>
     ),
     titulo: 'Horarios',
-    valor: 'Lun a Vie · 8:00 — 18:00',
+    valor: 'Lun a Sab · 9:00 — 12:30 y 17:00 — 20:30',
     link: null,
   },
 ]

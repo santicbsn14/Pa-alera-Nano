@@ -8,6 +8,7 @@ import Home from './pages/Home'
 import Catalogo from './pages/Catalogo'
 import Comprobante from './pages/Comprobante'
 import CarritoFlotante from './components/carrito/CarritoFlotante'
+import Admin from './pages/Admin'
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <ModalCarrito />
         <CarritoFlotante />
         <Routes>
+          <Route path="/admin" element={<Admin />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="catalogo" element={<Catalogo />} />

@@ -6,7 +6,7 @@ import type { Producto } from '../../types'
 import { CATEGORIAS } from '../../data/mocks'
 import './CardProducto.css'
 
-const TALLES = ['RN', 'P', 'M', 'G', 'XG', 'XXG', 'XXXG']
+const TALLES_DEFAULT = ['RN', 'P', 'M', 'G', 'XG', 'XXG', 'XXXG']
 
 interface Props {
   producto: Producto
@@ -18,11 +18,9 @@ export default function CardProducto({ producto }: Props) {
 
   const esCombo = producto.categoria === 'combos'
 
-  // Para combos: todos los items de este combo
   const itemsCombo = items.filter((i) => i.producto._id === producto._id)
   const cantidadCombo = itemsCombo.length
 
-  // Para productos normales: el item único
   const itemNormal = items.find((i) => i.itemId === producto._id)
   const cantidadNormal = itemNormal?.cantidad ?? 0
 
@@ -100,7 +98,6 @@ export default function CardProducto({ producto }: Props) {
           </div>
 
           {esCombo ? (
-            // Combos: siempre mostrar botón que abre el modal
             <button
               className="card__btn"
               onClick={handleAgregar}
@@ -155,22 +152,32 @@ export default function CardProducto({ producto }: Props) {
             <p className="combo-modal__nombre">{producto.nombre}</p>
 
             <div className="combo-modal__productos">
-              {productosCombo.map((nombreProducto) => (
-                <div key={nombreProducto} className="combo-modal__producto">
-                  <span className="combo-modal__producto-nombre">{nombreProducto}</span>
-                  <div className="combo-modal__talles">
-                    {TALLES.map((talle) => (
-                      <button
-                        key={talle}
-                        className={`combo-modal__talle ${tallesSeleccionados[nombreProducto] === talle ? 'combo-modal__talle--active' : ''}`}
-                        onClick={() => setTallesSeleccionados((prev) => ({ ...prev, [nombreProducto]: talle }))}
-                      >
-                        {talle}
-                      </button>
-                    ))}
+              {productosCombo.map((nombreProducto) => {
+                // Buscar talles específicos para este producto del combo
+                const tallesEntry = producto.tallesCombo?.find(
+                  (t) => t.nombreProducto.toLowerCase().trim() === nombreProducto.toLowerCase().trim()
+                )
+                const tallesDisponibles = tallesEntry
+                  ? tallesEntry.talles.split(',').map((t) => t.trim()).filter(Boolean)
+                  : TALLES_DEFAULT
+
+                return (
+                  <div key={nombreProducto} className="combo-modal__producto">
+                    <span className="combo-modal__producto-nombre">{nombreProducto}</span>
+                    <div className="combo-modal__talles">
+                      {tallesDisponibles.map((talle) => (
+                        <button
+                          key={talle}
+                          className={`combo-modal__talle ${tallesSeleccionados[nombreProducto] === talle ? 'combo-modal__talle--active' : ''}`}
+                          onClick={() => setTallesSeleccionados((prev) => ({ ...prev, [nombreProducto]: talle }))}
+                        >
+                          {talle}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
 
             <button

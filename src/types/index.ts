@@ -33,6 +33,10 @@ export interface Producto {
     | 'perfumeria_adultos'
     | 'tinturas_nantyr'
   talle?: string
+  tallesCombo?: {
+  nombreProducto: string
+  talles: string
+}[]
   presentacion?: string
   enStock: boolean
 }

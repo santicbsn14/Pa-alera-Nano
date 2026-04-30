@@ -487,3 +487,108 @@
     overflow-x: auto;
   }
 }
+/* Agregar al final de Admin.css */
+
+/* ── Pestañas ─────────────────────────────────────────────────── */
+.admin__header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.admin__tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.admin__tab {
+  padding: 8px 18px;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0A0A0A;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: auto;
+}
+
+.admin__tab:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.admin__tab--active {
+  background: #fff;
+  color: #0A0A0A;
+}
+
+/* ── Stock ────────────────────────────────────────────────────── */
+.admin__input--wide {
+  flex: 1;
+  min-width: 280px;
+}
+
+.admin__stock-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.admin__stock-badge--ok {
+  background: rgba(39, 174, 96, 0.1);
+  color: #27ae60;
+}
+
+.admin__stock-badge--off {
+  background: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+}
+
+.admin__toggle-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid;
+  transition: all 0.15s;
+  width: auto;
+}
+
+.admin__toggle-btn--deshabilitar {
+  background: rgba(231, 76, 60, 0.08);
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+.admin__toggle-btn--deshabilitar:hover {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.admin__toggle-btn--habilitar {
+  background: rgba(39, 174, 96, 0.08);
+  border-color: #27ae60;
+  color: #27ae60;
+}
+
+.admin__toggle-btn--habilitar:hover {
+  background: #27ae60;
+  color: #fff;
+}
+
+.admin__toggle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin__codbar-tabla {
+  font-size: 11px;
+  color: #999;
+  margin-top: 2px;
+}

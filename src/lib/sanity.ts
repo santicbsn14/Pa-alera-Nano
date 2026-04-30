@@ -31,6 +31,7 @@ export async function getProductos(): Promise<Producto[]> {
       precio,
       categoria,
       talle,
+      tallesCombo,
       presentacion,
       enStock
     }

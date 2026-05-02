@@ -96,7 +96,7 @@ Trabajamos directo de fábrica con las principales marcas y llegamos a negocios 
       {/* Bottom bar */}
       <div className="footer__bottom">
         <div className="container footer__bottom-inner">
-          <p className="footer__copy">© {año} TEL SIL SRL. Somos una empresa familiar con 24 años en el rubro.</p>
+          <p className="footer__copy">© {año} TEL SIL SRL. Empresa familiar con 24 años en el rubro.</p>
           <p className="footer__dev">
             Desarrollado por <a href="https://santiago-viale-web.vercel.app/" target="_blank" rel="noopener noreferrer">Santiago Viale</a>
           </p>

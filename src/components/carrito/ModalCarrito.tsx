@@ -299,7 +299,7 @@ export default function ModalCarrito() {
                 {errores.direccion && <span className="modal__error">{errores.direccion}</span>}
               </div>
               <div className="modal__field">
-                <label className="modal__label">Fecha de retiro *</label>
+                <label className="modal__label">Fecha de pedido *</label>
                 <input
                   type="date"
                   className={`modal__input ${errores.fecha ? 'modal__input--error' : ''}`}
@@ -308,17 +308,6 @@ export default function ModalCarrito() {
                   min={new Date().toISOString().split('T')[0]}
                 />
                 {errores.fecha && <span className="modal__error">{errores.fecha}</span>}
-              </div>
-              <div className="modal__field">
-                <label className="modal__label">Turno de retiro *</label>
-                <div className="modal__opciones">
-                  {(['mañana', 'tarde'] as const).map((t) => (
-                    <button key={t} className={`modal__opcion ${datos.turno === t ? 'modal__opcion--active' : ''}`} onClick={() => actualizar('turno', t)}>
-                      {t === 'mañana' ? '🌅 Mañana' : '🌆 Tarde'}
-                    </button>
-                  ))}
-                </div>
-                {errores.turno && <span className="modal__error">{errores.turno}</span>}
               </div>
               <div className="modal__field">
                 <label className="modal__label">¿Cómo llega el pedido? *</label>
@@ -333,7 +322,7 @@ export default function ModalCarrito() {
               </div>
               <div className="modal__field">
                 <label className="modal__label">Aclaración <span className="modal__opcional">(opcional)</span></label>
-                <textarea className="modal__textarea" placeholder="Ej: Dejar en portería, llamar antes de entregar..." value={datos.aclaracion} onChange={(e) => actualizar('aclaracion', e.target.value)} rows={3} />
+                <textarea className="modal__textarea" placeholder="Ej: Embalarlo, lo retirá tal..." value={datos.aclaracion} onChange={(e) => actualizar('aclaracion', e.target.value)} rows={3} />
               </div>
             </div>
 

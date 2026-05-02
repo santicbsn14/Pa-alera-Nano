@@ -1,7 +1,7 @@
 // src/components/home/ListaPrecios.tsx
 import './Listaprecios.css'
 
-const LINK_PRECIOS = 'https://docs.google.com/spreadsheets/d/1m2a2ziUqNsiMKjYGIbiziqVyq7RhAX4x/edit?usp=sharing&ouid=110122539560693976423&rtpof=true&s'
+const LINK_PRECIOS = 'https://drive.google.com/uc?export=download&id=1m2a2ziUqNsiMKjYGIbiziqVyq7RhAX4x'
 
 export default function ListaPrecios() {
   return (
@@ -12,13 +12,12 @@ export default function ListaPrecios() {
           <div className="badge">Lista de precios</div>
           <h2 className="section-title">Precios <span>mayoristas</span></h2>
           <p className="precios-simple__desc">
-            También podés consultar nuestra lista de precios en Excel (XLS). Siempre actualizada para ver o descargar.
+            También podés consultar nuestra lista de precios en Excel formato (XLS). Siempre actualizada para ver o descargar.
           </p>
         </div>
 
         <a
           href={LINK_PRECIOS}
-          target="_blank"
           rel="noopener noreferrer"
           className="precios-simple__btn"
         >

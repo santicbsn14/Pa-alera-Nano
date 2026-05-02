@@ -1,5 +1,5 @@
 // src/pages/Admin.tsx
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import './Admin.css'
 
 const SERVER_URL = 'https://nano-server-h25x.onrender.com'
@@ -108,12 +108,15 @@ export default function Admin() {
     }
   }
 
-  const buscarProductos = useCallback(async () => {
-    if (!busquedaStock.trim()) return
+  const buscarProductos = useCallback(async (q?: string) => {
+    const query = q !== undefined ? q : busquedaStock
     setCargandoStock(true)
     setBuscadoStock(false)
     try {
-      const res = await fetch(`${SERVER_URL}/productos/buscar?q=${encodeURIComponent(busquedaStock)}`)
+      const url = query.trim()
+        ? `${SERVER_URL}/productos/buscar?q=${encodeURIComponent(query)}`
+        : `${SERVER_URL}/productos/buscar`
+      const res = await fetch(url)
       const data = await res.json()
       setProductosStock(data.productos ?? [])
     } catch {
@@ -123,6 +126,13 @@ export default function Admin() {
       setBuscadoStock(true)
     }
   }, [busquedaStock])
+
+  // Cargar productos automáticamente al entrar a la pestaña stock
+  useEffect(() => {
+    if (pestana === 'stock' && autenticado && !buscadoStock) {
+      buscarProductos('')
+    }
+  }, [pestana, autenticado])
 
   const toggleStock = async (producto: ProductoStock) => {
     setActualizando(producto._id)
@@ -199,7 +209,6 @@ export default function Admin() {
               <span>Pañalera Nano Mayorista</span>
             </div>
           </div>
-          {/* Pestañas */}
           <div className="admin__tabs">
             <button
               className={`admin__tab ${pestana === 'pedidos' ? 'admin__tab--active' : ''}`}
@@ -307,13 +316,17 @@ export default function Admin() {
                   onChange={(e) => setBusquedaStock(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && buscarProductos()}
                 />
-                <button className="admin__btn-consultar" onClick={buscarProductos} disabled={cargandoStock}>
+                <button className="admin__btn-consultar" onClick={() => buscarProductos()} disabled={cargandoStock}>
                   {cargandoStock ? 'Buscando...' : 'Buscar'}
                 </button>
               </div>
             </div>
 
-            {buscadoStock && (
+            {cargandoStock && (
+              <div className="admin__empty"><p>Cargando productos...</p></div>
+            )}
+
+            {buscadoStock && !cargandoStock && (
               <>
                 {productosStock.length === 0 ? (
                   <div className="admin__empty"><p>No se encontraron productos.</p></div>
@@ -411,9 +424,9 @@ export default function Admin() {
             <div className="admin__detalle-footer">
               <strong>Total del pedido</strong>
               <span className="admin__detalle-total">${pedidoDetalle.total.toLocaleString('es-AR')}</span>
-                <button className="admin__print-btn" onClick={() => window.print()}>
-    🖨️ Imprimir
-  </button>
+              <button className="admin__print-btn" onClick={() => window.print()}>
+                🖨️ Imprimir
+              </button>
             </div>
           </div>
         </div>

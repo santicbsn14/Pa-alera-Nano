@@ -105,8 +105,8 @@ export default function Hero() {
       {/* Barra CTA */}
       <div className="hero__bar">
         <p className="hero__bar-text">
-          <span>Abastece tu negocio al mejor precio!</span>
-          Arma tu pedido en Pedidos Nano.
+          <span>Abastecé tu negocio al mejor precio!</span>
+          Armá tu pedido en Pedidos Nano.
         </p>
         <div className="hero__bar-actions">
           <Link to="/catalogo" className="btn-primary">

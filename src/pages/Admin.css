@@ -592,3 +592,48 @@
   color: #999;
   margin-top: 2px;
 }
+/* ── Print ────────────────────────────────────────────────────── */
+.admin__print-btn {
+  padding: 8px 16px;
+  background: #f0fbfe;
+  border: 1px solid #4DC8E8;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4DC8E8;
+  cursor: pointer;
+  transition: all 0.15s;
+  width: auto;
+}
+
+.admin__print-btn:hover {
+  background: #4DC8E8;
+  color: #fff;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .admin__detalle,
+  .admin__detalle * {
+    visibility: visible;
+  }
+
+  .admin__detalle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .admin__detalle-close,
+  .admin__print-btn {
+    display: none;
+  }
+}

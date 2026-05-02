@@ -411,6 +411,9 @@ export default function Admin() {
             <div className="admin__detalle-footer">
               <strong>Total del pedido</strong>
               <span className="admin__detalle-total">${pedidoDetalle.total.toLocaleString('es-AR')}</span>
+                <button className="admin__print-btn" onClick={() => window.print()}>
+    🖨️ Imprimir
+  </button>
             </div>
           </div>
         </div>

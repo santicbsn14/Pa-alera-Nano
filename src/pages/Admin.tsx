@@ -127,6 +127,85 @@ export default function Admin() {
     }
   }, [busquedaStock])
 
+const imprimirPedido = () => {
+  if (!pedidoDetalle) return
+  const ventana = window.open('', '_blank', 'width=800,height=600')
+  if (!ventana) return
+
+  const fecha = new Date(pedidoDetalle.fecha).toLocaleDateString('es-AR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  })
+
+  const itemsHtml = pedidoDetalle.items.map((item) => `
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eee;gap:16px;">
+      <div>
+        <strong>${item.cantidad} x ${item.nombre}</strong>
+        ${item.talle && item.talle !== 'unico' ? `<div style="font-size:12px;color:#666">${item.talle}</div>` : ''}
+        ${item.presentacion ? `<div style="font-size:12px;color:#666">${item.presentacion}</div>` : ''}
+        ${item.descripcion ? `<div style="font-size:11px;color:#999">CB: ${item.descripcion}</div>` : ''}
+      </div>
+      <span style="font-weight:700;white-space:nowrap;">$${(item.precio * item.cantidad).toLocaleString('es-AR')}</span>
+    </div>
+  `).join('')
+
+  ventana.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>Pedido #${pedidoDetalle.numeroPedido}</title>
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; font-size: 13px; color: #222; padding: 40px; }
+        .header { display: flex; justify-content: space-between; margin-bottom: 16px; }
+        .marca strong { font-size: 15px; } .marca span { font-size: 12px; color: #666; display: block; }
+        .meta { text-align: right; font-size: 12px; color: #666; }
+        hr { border: none; border-top: 1px solid #ddd; margin: 16px 0; }
+        h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; color: #444; margin-bottom: 12px; }
+        .fila { display: flex; flex-direction: column; margin-bottom: 8px; }
+        .fila strong { font-weight: 700; font-size: 12px; }
+        .total { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
+        .total strong { font-size: 16px; }
+        .celeste { color: #4DC8E8; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="marca">
+          <strong>Pañalera Nano Mayorista</strong>
+          <span>panaleranano.com</span>
+        </div>
+        <div class="meta">
+          <div>${fecha}</div>
+          <div>Pedido #${pedidoDetalle.numeroPedido}</div>
+        </div>
+      </div>
+      <hr>
+      <h3>Datos del cliente</h3>
+      <div class="fila"><strong>Nombre</strong><span>${pedidoDetalle.nombre}</span></div>
+      <div class="fila"><strong>Ciudad</strong><span>${pedidoDetalle.ciudad}</span></div>
+      <div class="fila"><strong>Dirección</strong><span>${pedidoDetalle.direccion}</span></div>
+      <div class="fila"><strong>Turno</strong><span>${pedidoDetalle.turno === 'mañana' ? 'Mañana' : 'Tarde'}</span></div>
+      ${pedidoDetalle.fecha_retiro ? `<div class="fila"><strong>Fecha retiro</strong><span>${pedidoDetalle.fecha_retiro}</span></div>` : ''}
+      <div class="fila"><strong>Envío</strong><span>${ENVIOS[pedidoDetalle.envio] ?? pedidoDetalle.envio}</span></div>
+      ${pedidoDetalle.aclaracion ? `<div class="fila"><strong>Aclaración</strong><span>${pedidoDetalle.aclaracion}</span></div>` : ''}
+      <hr>
+      <h3>Productos</h3>
+      ${itemsHtml}
+      <hr>
+      <div class="total">
+        <span>Total del pedido</span>
+        <strong class="celeste">$${pedidoDetalle.total.toLocaleString('es-AR')}</strong>
+      </div>
+      <script>window.onload = () => { window.print(); }</script>
+    </body>
+    </html>
+  `)
+  ventana.document.close()
+}
+
+
   // Cargar productos automáticamente al entrar a la pestaña stock
   useEffect(() => {
     if (pestana === 'stock' && autenticado && !buscadoStock) {
@@ -424,7 +503,7 @@ export default function Admin() {
             <div className="admin__detalle-footer">
               <strong>Total del pedido</strong>
               <span className="admin__detalle-total">${pedidoDetalle.total.toLocaleString('es-AR')}</span>
-              <button className="admin__print-btn" onClick={() => window.print()}>
+              <button className="admin__print-btn" onClick={imprimirPedido}>
                 🖨️ Imprimir
               </button>
             </div>

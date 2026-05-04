@@ -611,29 +611,3 @@
   color: #fff;
 }
 
-@media print {
-  body * {
-    visibility: hidden;
-  }
-
-  .admin__detalle,
-  .admin__detalle * {
-    visibility: visible;
-  }
-
-  .admin__detalle {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    max-width: 100%;
-    max-height: none;
-    box-shadow: none;
-    border-radius: 0;
-  }
-
-  .admin__detalle-close,
-  .admin__print-btn {
-    display: none;
-  }
-}

@@ -119,14 +119,16 @@ export default function ModalCarrito() {
     if (!datos.ciudad.trim()) nuevosErrores.ciudad = 'Ingresá tu ciudad'
     if (!datos.direccion.trim()) nuevosErrores.direccion = 'Ingresá tu dirección'
     if (!datos.fecha) nuevosErrores.fecha = 'Seleccioná una fecha'
-    if (!datos.turno) nuevosErrores.turno = 'Seleccioná un turno'
     if (!datos.envio) nuevosErrores.envio = 'Seleccioná cómo llega tu pedido'
     setErrores(nuevosErrores)
     return Object.keys(nuevosErrores).length === 0
   }
 
   const procesarPedido = async () => {
-    if (!validar()) return
+      if (!validar()) {
+    console.log("falló validación", datos);
+    return;
+  }
     setEnviando(true)
 
     try {
@@ -138,7 +140,6 @@ export default function ModalCarrito() {
           ciudad: datos.ciudad,
           direccion: datos.direccion,
           fecha_retiro:datos.fecha,
-          turno: datos.turno,
           envio: datos.envio,
           aclaracion: datos.aclaracion,
           items: items.map((i) => ({
@@ -152,7 +153,6 @@ export default function ModalCarrito() {
           total,
         }),
       })
-
       const data = await response.json()
       const pedidoId = data.ok ? data.pedidoId : 'sin-id'
       const mensaje = armarMensaje(items, datos, pedidoId)

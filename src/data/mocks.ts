@@ -190,7 +190,7 @@ export const mockPreguntas: PreguntaFrecuente[] = [
   },
   {
     _id: 'p3',
-    pregunta: '¿Hacen envios a todo el pais?',
+    pregunta: '¿Hacen envios a todo el paiss?',
     respuesta: 'Para envíos mayoristas a todo el país contamos con fletes de confianza que retiran todos los días pedidos de nuestro salón y los despachan a transportes ubicados en la localidad de Rosario; conocen bien la mercadería y ofrecen una muy buena relación precio-servicio para que sea rentable en tu negocio.',
     orden: 3,
   },

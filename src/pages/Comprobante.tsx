@@ -5,6 +5,7 @@ import './Comprobante.css'
 interface ItemPedido {
   nombre: string
   talle?: string
+  tallesCombo?: { producto: string; talle: string }[]
   presentacion?: string
   descripcion?: string
   precio: number
@@ -160,6 +161,11 @@ export default function Comprobante() {
                     {[item.talle !== 'unico' ? item.talle : null, item.presentacion].filter(Boolean).join(' · ')}
                   </span>
                 )}
+                {item.tallesCombo && item.tallesCombo.length > 0 && (
+  <span className="comprobante__detalle">
+    {item.tallesCombo.map((t) => `${t.producto}: ${t.talle}`).join(' / ')}
+  </span>
+)}
               </div>
               <div className="comprobante__item-precio">
                 <span>Subtotal: ${(item.precio * item.cantidad).toLocaleString('es-AR')}</span>

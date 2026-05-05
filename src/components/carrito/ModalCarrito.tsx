@@ -145,6 +145,7 @@ export default function ModalCarrito() {
           items: items.map((i) => ({
             nombre: i.producto.nombre,
             talle: i.producto.talle,
+             tallesCombo: i.tallesCombo ?? [],
             presentacion: i.producto.presentacion,
             descripcion: i.producto.descripcion,
             precio: i.producto.precio,

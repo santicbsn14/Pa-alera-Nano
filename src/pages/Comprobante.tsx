@@ -198,7 +198,7 @@ export default function Comprobante() {
       )}
     </div>
     <div className="comprobante__item-precio">
-      <span>Precio unitario: ${item.precio.toLocaleString('es-AR')}</span>
+      <span>P/U: ${item.precio.toLocaleString('es-AR')}</span>
       <span>Subtotal: ${(item.precio * item.cantidad).toLocaleString('es-AR')}</span>
     </div>
   </div>

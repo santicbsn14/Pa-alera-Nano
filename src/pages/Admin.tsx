@@ -161,7 +161,7 @@ const tallesKey = item.tallesCombo && item.tallesCombo.length > 0
     <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eee;gap:16px;">
       <div>
         <strong>${item.cantidad} x ${item.nombre}</strong>
-        <div style="font-size:12px;color:#666">Precio unitario: $${item.precio.toLocaleString('es-AR')}</div>
+        <div style="font-size:12px;color:#666">P/U: $${item.precio.toLocaleString('es-AR')}</div>
         ${item.talle && item.talle !== 'unico' ? `<div style="font-size:12px;color:#666">${item.talle}</div>` : ''}
         ${item.tallesCombo && item.tallesCombo.length > 0
   ? `<div style="font-size:12px;color:#666">${item.tallesCombo.map((t) => `${t.producto}: ${t.talle}`).join(' / ')}</div>`

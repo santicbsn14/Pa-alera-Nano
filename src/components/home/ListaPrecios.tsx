@@ -1,8 +1,7 @@
 // src/components/home/ListaPrecios.tsx
 import './Listaprecios.css'
 
-const LINK_PRECIOS = 'https://drive.google.com/uc?export=download&id=1m2a2ziUqNsiMKjYGIbiziqVyq7RhAX4x'
-
+const LINK_PRECIOS = 'https://docs.google.com/spreadsheets/d/1m2a2ziUqNsiMKjYGIbiziqVyq7RhAX4x/edit?usp=sharing'
 export default function ListaPrecios() {
   return (
     <section className="precios-simple section" id="precios">
@@ -17,9 +16,10 @@ export default function ListaPrecios() {
         </div>
 
         <a
-          href={LINK_PRECIOS}
-          rel="noopener noreferrer"
-          className="precios-simple__btn"
+  href={LINK_PRECIOS}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="precios-simple__btn"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />

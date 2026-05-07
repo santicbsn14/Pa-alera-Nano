@@ -26,6 +26,7 @@ interface Pedido {
   numeroPedido: string
   fecha: string
   nombre: string
+  telefono?: string
   ciudad: string
   direccion: string
   fecha_retiro?: string
@@ -137,11 +138,30 @@ const imprimirPedido = () => {
     day: '2-digit', month: '2-digit', year: 'numeric',
     hour: '2-digit', minute: '2-digit',
   })
+    const agruparItems = (items: ItemPedido[]): ItemPedido[] => {
+    const mapa = new Map()
+    for (const item of items) {
+const tallesKey = item.tallesCombo && item.tallesCombo.length > 0
+  ? item.tallesCombo.map((t: { producto: string; talle: string }) => `${t.producto}:${t.talle}`).join('|')
+  : ''
+      const key = `${item.nombre}__${item.talle ?? ''}__${tallesKey}`
+      if (mapa.has(key)) {
+        const existing = mapa.get(key)
+        mapa.set(key, { ...existing, cantidad: existing.cantidad + item.cantidad })
+      } else {
+        mapa.set(key, { ...item })
+      }
+    }
+    return Array.from(mapa.values())
+  }
 
-  const itemsHtml = pedidoDetalle.items.map((item) => `
+  const itemsAgrupados = agruparItems(pedidoDetalle.items)
+
+   const itemsHtml = itemsAgrupados.map((item) => `
     <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eee;gap:16px;">
       <div>
         <strong>${item.cantidad} x ${item.nombre}</strong>
+        <div style="font-size:12px;color:#666">Precio unitario: $${item.precio.toLocaleString('es-AR')}</div>
         ${item.talle && item.talle !== 'unico' ? `<div style="font-size:12px;color:#666">${item.talle}</div>` : ''}
         ${item.tallesCombo && item.tallesCombo.length > 0
   ? `<div style="font-size:12px;color:#666">${item.tallesCombo.map((t) => `${t.producto}: ${t.talle}`).join(' / ')}</div>`
@@ -188,6 +208,7 @@ const imprimirPedido = () => {
       <hr>
       <h3>Datos del cliente</h3>
       <div class="fila"><strong>Nombre</strong><span>${pedidoDetalle.nombre}</span></div>
+      ${pedidoDetalle.telefono ? `<div class="fila"><strong>Teléfono</strong><span>${pedidoDetalle.telefono}</span></div>` : ''}
       <div class="fila"><strong>Ciudad</strong><span>${pedidoDetalle.ciudad}</span></div>
       <div class="fila"><strong>Dirección</strong><span>${pedidoDetalle.direccion}</span></div>
       <div class="fila"><strong>Turno</strong><span>${pedidoDetalle.turno === 'mañana' ? 'Mañana' : 'Tarde'}</span></div>
@@ -477,6 +498,9 @@ const imprimirPedido = () => {
                 <h4>Datos del cliente</h4>
                 <div className="admin__detalle-grid">
                   <div><strong>Nombre</strong><span>{pedidoDetalle.nombre}</span></div>
+                  {pedidoDetalle.telefono && (
+  <div><strong>Teléfono</strong><span>{pedidoDetalle.telefono}</span></div>
+)}
                   <div><strong>Ciudad</strong><span>{pedidoDetalle.ciudad}</span></div>
                   <div><strong>Dirección</strong><span>{pedidoDetalle.direccion}</span></div>
                   <div><strong>Turno</strong><span>{pedidoDetalle.turno === 'mañana' ? 'Mañana' : 'Tarde'}</span></div>

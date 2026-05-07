@@ -4,12 +4,13 @@ import { useCarrito } from '../../context/CarritoContext'
 import './ModalCarrito.css'
 
 const WHATSAPP = '5493412479055'
-const WEB_URL = 'https://pa-alera-nano.vercel.app/'
+const WEB_URL = 'https://panaleranano.com'
 const SERVER_URL = 'https://nano-server-h25x.onrender.com'
 const MINIMO_COMPRA = 150000
 
 interface DatosEnvio {
   nombre: string
+  telefono: string
   ciudad: string
   direccion: string
   fecha: string
@@ -20,6 +21,7 @@ interface DatosEnvio {
 
 const datosIniciales: DatosEnvio = {
   nombre: '',
+  telefono: '',
   ciudad: '',
   direccion: '',
   fecha: '',
@@ -43,8 +45,8 @@ function armarMensaje(
   const lineas = items.map((i) => {
     const talle = i.producto.talle && i.producto.talle !== 'unico' ? ` ${i.producto.talle}` : ''
     const tallesCombo = i.tallesCombo
-  ? ` [${i.tallesCombo.map((t) => `${t.producto}: ${t.talle}`).join(' / ')}]`
-  : ''
+      ? ` [${i.tallesCombo.map((t) => `${t.producto}: ${t.talle}`).join(' / ')}]`
+      : ''
     const presentacion = i.producto.presentacion ? ` (${i.producto.presentacion})` : ''
     const codBarra = i.producto.descripcion ? ` | CB: ${i.producto.descripcion}` : ''
     const subtotal = (i.producto.precio * i.cantidad).toLocaleString('es-AR')
@@ -66,6 +68,7 @@ function armarMensaje(
     '',
     '——————————————',
     `Nombre: ${datos.nombre}`,
+    `Teléfono: ${datos.telefono}`,
     `Ciudad: ${datos.ciudad}`,
     `Dirección: ${datos.direccion}`,
     `Fecha de retiro: ${datos.fecha}`,
@@ -116,6 +119,7 @@ export default function ModalCarrito() {
   const validar = (): boolean => {
     const nuevosErrores: Partial<Record<keyof DatosEnvio, string>> = {}
     if (!datos.nombre.trim()) nuevosErrores.nombre = 'Ingresá tu nombre'
+    if (!datos.telefono.trim()) nuevosErrores.telefono = 'Ingresá tu teléfono'
     if (!datos.ciudad.trim()) nuevosErrores.ciudad = 'Ingresá tu ciudad'
     if (!datos.direccion.trim()) nuevosErrores.direccion = 'Ingresá tu dirección'
     if (!datos.fecha) nuevosErrores.fecha = 'Seleccioná una fecha'
@@ -125,10 +129,7 @@ export default function ModalCarrito() {
   }
 
   const procesarPedido = async () => {
-      if (!validar()) {
-    console.log("falló validación", datos);
-    return;
-  }
+    if (!validar()) return
     setEnviando(true)
 
     try {
@@ -137,15 +138,21 @@ export default function ModalCarrito() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           nombre: datos.nombre,
+          telefono: datos.telefono,
           ciudad: datos.ciudad,
           direccion: datos.direccion,
-          fecha_retiro:datos.fecha,
+          fecha_retiro: datos.fecha,
+          turno: datos.turno,
           envio: datos.envio,
           aclaracion: datos.aclaracion,
           items: items.map((i) => ({
             nombre: i.producto.nombre,
             talle: i.producto.talle,
-             tallesCombo: i.tallesCombo ?? [],
+            tallesCombo: (i.tallesCombo ?? []).map((t) => ({
+              _key: Math.random().toString(36).substring(2, 9),
+              producto: t.producto,
+              talle: t.talle,
+            })),
             presentacion: i.producto.presentacion,
             descripcion: i.producto.descripcion,
             precio: i.producto.precio,
@@ -288,6 +295,11 @@ export default function ModalCarrito() {
                 <label className="modal__label">Nombre y apellido *</label>
                 <input type="text" className={`modal__input ${errores.nombre ? 'modal__input--error' : ''}`} placeholder="Ej: Juan Pérez" value={datos.nombre} onChange={(e) => actualizar('nombre', e.target.value)} />
                 {errores.nombre && <span className="modal__error">{errores.nombre}</span>}
+              </div>
+              <div className="modal__field">
+                <label className="modal__label">Teléfono *</label>
+                <input type="tel" className={`modal__input ${errores.telefono ? 'modal__input--error' : ''}`} placeholder="Ej: 3412479055" value={datos.telefono} onChange={(e) => actualizar('telefono', e.target.value)} />
+                {errores.telefono && <span className="modal__error">{errores.telefono}</span>}
               </div>
               <div className="modal__field">
                 <label className="modal__label">Ciudad *</label>

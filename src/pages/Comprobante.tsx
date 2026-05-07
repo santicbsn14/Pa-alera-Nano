@@ -17,9 +17,10 @@ interface DatosPedido {
   numeroPedido: string
   fecha: string
   nombre: string
+  telefono?: string
   ciudad: string
   direccion: string
-  fecha_retiro:string
+  fecha_retiro: string
   turno: string
   envio: string
   aclaracion: string
@@ -35,6 +36,27 @@ const ENVIOS: Record<string, string> = {
 }
 
 const SERVER_URL = 'https://nano-server-h25x.onrender.com'
+
+// Agrupa items con mismo nombre + mismos talles combo
+function agruparItems(items: ItemPedido[]): ItemPedido[] {
+  const mapa = new Map<string, ItemPedido>()
+
+  for (const item of items) {
+    const tallesKey = item.tallesCombo && item.tallesCombo.length > 0
+      ? item.tallesCombo.map((t) => `${t.producto}:${t.talle}`).join('|')
+      : ''
+    const key = `${item.nombre}__${item.talle ?? ''}__${tallesKey}`
+
+    if (mapa.has(key)) {
+      const existing = mapa.get(key)!
+      mapa.set(key, { ...existing, cantidad: existing.cantidad + item.cantidad })
+    } else {
+      mapa.set(key, { ...item })
+    }
+  }
+
+  return Array.from(mapa.values())
+}
 
 export default function Comprobante() {
   const [pedido, setPedido] = useState<DatosPedido | null>(null)
@@ -91,6 +113,8 @@ export default function Comprobante() {
     minute: '2-digit',
   })
 
+  const itemsAgrupados = agruparItems(pedido.items)
+
   return (
     <div className="comprobante">
       <div className="comprobante__doc">
@@ -116,6 +140,12 @@ export default function Comprobante() {
             <span className="comprobante__label">Nombre y apellido</span>
             <span>{pedido.nombre}</span>
           </div>
+          {pedido.telefono && (
+  <div className="comprobante__fila">
+    <span className="comprobante__label">Teléfono</span>
+    <span>{pedido.telefono}</span>
+  </div>
+)}
           <div className="comprobante__fila">
             <span className="comprobante__label">Ciudad</span>
             <span>{pedido.ciudad}</span>
@@ -125,11 +155,11 @@ export default function Comprobante() {
             <span>{pedido.direccion}</span>
           </div>
           {pedido.fecha_retiro && (
-  <div className="comprobante__fila">
-    <span className="comprobante__label">Fecha de retiro</span>
-    <span>{pedido.fecha_retiro}</span>
-  </div>
-)}
+            <div className="comprobante__fila">
+              <span className="comprobante__label">Fecha de retiro</span>
+              <span>{pedido.fecha_retiro}</span>
+            </div>
+          )}
           <div className="comprobante__fila">
             <span className="comprobante__label">Turno de retiro</span>
             <span>{pedido.turno === 'mañana' ? 'Mañana' : 'Tarde'}</span>
@@ -151,34 +181,35 @@ export default function Comprobante() {
         {/* Productos */}
         <div className="comprobante__seccion">
           <h3>Productos</h3>
-          {pedido.items.map((item, i) => (
-            <div key={i} className="comprobante__item">
-              <div className="comprobante__item-info">
-                <strong>{item.cantidad} x {item.nombre}</strong>
-                {item.descripcion && <span className="comprobante__codbar">{item.descripcion}</span>}
-                {(item.talle || item.presentacion) && (
-                  <span className="comprobante__detalle">
-                    {[item.talle !== 'unico' ? item.talle : null, item.presentacion].filter(Boolean).join(' · ')}
-                  </span>
-                )}
-                {item.tallesCombo && item.tallesCombo.length > 0 && (
-  <span className="comprobante__detalle">
-    {item.tallesCombo.map((t) => `${t.producto}: ${t.talle}`).join(' / ')}
-  </span>
-)}
-              </div>
-              <div className="comprobante__item-precio">
-                <span>Subtotal: ${(item.precio * item.cantidad).toLocaleString('es-AR')}</span>
-              </div>
-            </div>
-          ))}
+{itemsAgrupados.map((item, i) => (
+  <div key={i} className="comprobante__item">
+    <div className="comprobante__item-info">
+      <strong>{item.cantidad} x {item.nombre}</strong>
+      {item.descripcion && <span className="comprobante__codbar">{item.descripcion}</span>}
+      {(item.talle || item.presentacion) && (
+        <span className="comprobante__detalle">
+          {[item.talle !== 'unico' ? item.talle : null, item.presentacion].filter(Boolean).join(' · ')}
+        </span>
+      )}
+      {item.tallesCombo && item.tallesCombo.length > 0 && (
+        <span className="comprobante__detalle">
+          {item.tallesCombo.map((t) => `${t.producto}: ${t.talle}`).join(' / ')}
+        </span>
+      )}
+    </div>
+    <div className="comprobante__item-precio">
+      <span>Precio unitario: ${item.precio.toLocaleString('es-AR')}</span>
+      <span>Subtotal: ${(item.precio * item.cantidad).toLocaleString('es-AR')}</span>
+    </div>
+  </div>
+))}
         </div>
 
         <hr />
 
         {/* Total */}
         <div className="comprobante__total">
-          <span>Cant. artículos: {pedido.items.reduce((a, i) => a + i.cantidad, 0)}</span>
+          <span>Cant. artículos: {itemsAgrupados.reduce((a, i) => a + i.cantidad, 0)}</span>
           <strong>Total pedido: ${pedido.total.toLocaleString('es-AR')}</strong>
         </div>
 

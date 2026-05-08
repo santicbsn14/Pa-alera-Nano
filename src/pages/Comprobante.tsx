@@ -161,10 +161,6 @@ export default function Comprobante() {
             </div>
           )}
           <div className="comprobante__fila">
-            <span className="comprobante__label">Turno de retiro</span>
-            <span>{pedido.turno === 'mañana' ? 'Mañana' : 'Tarde'}</span>
-          </div>
-          <div className="comprobante__fila">
             <span className="comprobante__label">Envío</span>
             <span>{ENVIOS[pedido.envio] ?? pedido.envio}</span>
           </div>

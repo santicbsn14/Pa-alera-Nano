@@ -101,6 +101,7 @@ export default function Admin() {
     try {
       const res = await fetch(`${SERVER_URL}/pedidos?desde=${desde}&hasta=${hasta}`)
       const data = await res.json()
+      console.log(data)
       setPedidos(data.pedidos ?? [])
     } catch {
       setPedidos([])
@@ -211,7 +212,6 @@ const tallesKey = item.tallesCombo && item.tallesCombo.length > 0
       ${pedidoDetalle.telefono ? `<div class="fila"><strong>Teléfono</strong><span>${pedidoDetalle.telefono}</span></div>` : ''}
       <div class="fila"><strong>Ciudad</strong><span>${pedidoDetalle.ciudad}</span></div>
       <div class="fila"><strong>Dirección</strong><span>${pedidoDetalle.direccion}</span></div>
-      <div class="fila"><strong>Turno</strong><span>${pedidoDetalle.turno === 'mañana' ? 'Mañana' : 'Tarde'}</span></div>
       ${pedidoDetalle.fecha_retiro ? `<div class="fila"><strong>Fecha retiro</strong><span>${pedidoDetalle.fecha_retiro}</span></div>` : ''}
       <div class="fila"><strong>Envío</strong><span>${ENVIOS[pedidoDetalle.envio] ?? pedidoDetalle.envio}</span></div>
       ${pedidoDetalle.aclaracion ? `<div class="fila"><strong>Aclaración</strong><span>${pedidoDetalle.aclaracion}</span></div>` : ''}
@@ -503,7 +503,6 @@ const tallesKey = item.tallesCombo && item.tallesCombo.length > 0
 )}
                   <div><strong>Ciudad</strong><span>{pedidoDetalle.ciudad}</span></div>
                   <div><strong>Dirección</strong><span>{pedidoDetalle.direccion}</span></div>
-                  <div><strong>Turno</strong><span>{pedidoDetalle.turno === 'mañana' ? 'Mañana' : 'Tarde'}</span></div>
                   {pedidoDetalle.fecha_retiro && (
                     <div><strong>Fecha retiro</strong><span>{pedidoDetalle.fecha_retiro}</span></div>
                   )}

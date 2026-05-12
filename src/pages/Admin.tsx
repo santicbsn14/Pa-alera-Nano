@@ -70,6 +70,9 @@ export default function Admin() {
   const [cargandoStock, setCargandoStock] = useState(false)
   const [buscadoStock, setBuscadoStock] = useState(false)
   const [actualizando, setActualizando] = useState<string | null>(null)
+  const [offsetStock, setOffsetStock] = useState(0)
+  const [hayMas, setHayMas] = useState(false)
+  const [cargandoMas, setCargandoMas] = useState(false)
 
   const login = async () => {
     setLoadingLogin(true)
@@ -101,7 +104,6 @@ export default function Admin() {
     try {
       const res = await fetch(`${SERVER_URL}/pedidos?desde=${desde}&hasta=${hasta}`)
       const data = await res.json()
-      console.log(data)
       setPedidos(data.pedidos ?? [])
     } catch {
       setPedidos([])
@@ -115,121 +117,145 @@ export default function Admin() {
     const query = q !== undefined ? q : busquedaStock
     setCargandoStock(true)
     setBuscadoStock(false)
+    setOffsetStock(0)
     try {
       const url = query.trim()
-        ? `${SERVER_URL}/productos/buscar?q=${encodeURIComponent(query)}`
-        : `${SERVER_URL}/productos/buscar`
+        ? `${SERVER_URL}/productos/buscar?q=${encodeURIComponent(query)}&offset=0`
+        : `${SERVER_URL}/productos/buscar?offset=0`
       const res = await fetch(url)
       const data = await res.json()
-      setProductosStock(data.productos ?? [])
+      const productos = data.productos ?? []
+      setProductosStock(productos)
+      setHayMas(productos.length === 100)
     } catch {
       setProductosStock([])
+      setHayMas(false)
     } finally {
       setCargandoStock(false)
       setBuscadoStock(true)
     }
   }, [busquedaStock])
 
-const imprimirPedido = () => {
-  if (!pedidoDetalle) return
-  const ventana = window.open('', '_blank', 'width=800,height=600')
-  if (!ventana) return
-
-  const fecha = new Date(pedidoDetalle.fecha).toLocaleDateString('es-AR', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
-  })
-    const agruparItems = (items: ItemPedido[]): ItemPedido[] => {
-    const mapa = new Map()
-    for (const item of items) {
-const tallesKey = item.tallesCombo && item.tallesCombo.length > 0
-  ? item.tallesCombo.map((t: { producto: string; talle: string }) => `${t.producto}:${t.talle}`).join('|')
-  : ''
-      const key = `${item.nombre}__${item.talle ?? ''}__${tallesKey}`
-      if (mapa.has(key)) {
-        const existing = mapa.get(key)
-        mapa.set(key, { ...existing, cantidad: existing.cantidad + item.cantidad })
-      } else {
-        mapa.set(key, { ...item })
-      }
+  const cargarMasProductos = async () => {
+    const nuevoOffset = offsetStock + 100
+    setCargandoMas(true)
+    try {
+      const url = busquedaStock.trim()
+        ? `${SERVER_URL}/productos/buscar?q=${encodeURIComponent(busquedaStock)}&offset=${nuevoOffset}`
+        : `${SERVER_URL}/productos/buscar?offset=${nuevoOffset}`
+      const res = await fetch(url)
+      const data = await res.json()
+      const nuevos = data.productos ?? []
+      setProductosStock((prev) => [...prev, ...nuevos])
+      setOffsetStock(nuevoOffset)
+      setHayMas(nuevos.length === 100)
+    } catch {
+      // silencioso
+    } finally {
+      setCargandoMas(false)
     }
-    return Array.from(mapa.values())
   }
 
-  const itemsAgrupados = agruparItems(pedidoDetalle.items)
+  const imprimirPedido = () => {
+    if (!pedidoDetalle) return
+    const ventana = window.open('', '_blank', 'width=800,height=600')
+    if (!ventana) return
 
-   const itemsHtml = itemsAgrupados.map((item) => `
-    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eee;gap:16px;">
-      <div>
-        <strong>${item.cantidad} x ${item.nombre}</strong>
-        <div style="font-size:12px;color:#666">P/U: $${item.precio.toLocaleString('es-AR')}</div>
-        ${item.talle && item.talle !== 'unico' ? `<div style="font-size:12px;color:#666">${item.talle}</div>` : ''}
-        ${item.tallesCombo && item.tallesCombo.length > 0
-  ? `<div style="font-size:12px;color:#666">${item.tallesCombo.map((t) => `${t.producto}: ${t.talle}`).join(' / ')}</div>`
-  : ''}
-        ${item.presentacion ? `<div style="font-size:12px;color:#666">${item.presentacion}</div>` : ''}
-        ${item.descripcion ? `<div style="font-size:11px;color:#999">CB: ${item.descripcion}</div>` : ''}
-      </div>
-      <span style="font-weight:700;white-space:nowrap;">$${(item.precio * item.cantidad).toLocaleString('es-AR')}</span>
-    </div>
-  `).join('')
+    const fecha = new Date(pedidoDetalle.fecha).toLocaleDateString('es-AR', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    })
 
-  ventana.document.write(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>Pedido #${pedidoDetalle.numeroPedido}</title>
-      <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; font-size: 13px; color: #222; padding: 40px; }
-        .header { display: flex; justify-content: space-between; margin-bottom: 16px; }
-        .marca strong { font-size: 15px; } .marca span { font-size: 12px; color: #666; display: block; }
-        .meta { text-align: right; font-size: 12px; color: #666; }
-        hr { border: none; border-top: 1px solid #ddd; margin: 16px 0; }
-        h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; color: #444; margin-bottom: 12px; }
-        .fila { display: flex; flex-direction: column; margin-bottom: 8px; }
-        .fila strong { font-weight: 700; font-size: 12px; }
-        .total { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
-        .total strong { font-size: 16px; }
-        .celeste { color: #4DC8E8; }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <div class="marca">
-          <strong>Pañalera Nano Mayorista</strong>
-          <span>panaleranano.com</span>
+    const agruparItems = (items: ItemPedido[]): ItemPedido[] => {
+      const mapa = new Map()
+      for (const item of items) {
+        const tallesKey = item.tallesCombo && item.tallesCombo.length > 0
+          ? item.tallesCombo.map((t: { producto: string; talle: string }) => `${t.producto}:${t.talle}`).join('|')
+          : ''
+        const key = `${item.nombre}__${item.talle ?? ''}__${tallesKey}`
+        if (mapa.has(key)) {
+          const existing = mapa.get(key)
+          mapa.set(key, { ...existing, cantidad: existing.cantidad + item.cantidad })
+        } else {
+          mapa.set(key, { ...item })
+        }
+      }
+      return Array.from(mapa.values())
+    }
+
+    const itemsAgrupados = agruparItems(pedidoDetalle.items)
+
+    const itemsHtml = itemsAgrupados.map((item) => `
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eee;gap:16px;">
+        <div>
+          <strong>${item.cantidad} x ${item.nombre}</strong>
+          <div style="font-size:12px;color:#666">P/U: $${item.precio.toLocaleString('es-AR')}</div>
+          ${item.talle && item.talle !== 'unico' ? `<div style="font-size:12px;color:#666">${item.talle}</div>` : ''}
+          ${item.tallesCombo && item.tallesCombo.length > 0
+            ? `<div style="font-size:12px;color:#666">${item.tallesCombo.map((t: { producto: string; talle: string }) => `${t.producto}: ${t.talle}`).join(' / ')}</div>`
+            : ''}
+          ${item.presentacion ? `<div style="font-size:12px;color:#666">${item.presentacion}</div>` : ''}
+          ${item.descripcion ? `<div style="font-size:11px;color:#999">CB: ${item.descripcion}</div>` : ''}
         </div>
-        <div class="meta">
-          <div>${fecha}</div>
-          <div>Pedido #${pedidoDetalle.numeroPedido}</div>
-        </div>
+        <span style="font-weight:700;white-space:nowrap;">$${(item.precio * item.cantidad).toLocaleString('es-AR')}</span>
       </div>
-      <hr>
-      <h3>Datos del cliente</h3>
-      <div class="fila"><strong>Nombre</strong><span>${pedidoDetalle.nombre}</span></div>
-      ${pedidoDetalle.telefono ? `<div class="fila"><strong>Teléfono</strong><span>${pedidoDetalle.telefono}</span></div>` : ''}
-      <div class="fila"><strong>Ciudad</strong><span>${pedidoDetalle.ciudad}</span></div>
-      <div class="fila"><strong>Dirección</strong><span>${pedidoDetalle.direccion}</span></div>
-      ${pedidoDetalle.fecha_retiro ? `<div class="fila"><strong>Fecha retiro</strong><span>${pedidoDetalle.fecha_retiro}</span></div>` : ''}
-      <div class="fila"><strong>Envío</strong><span>${ENVIOS[pedidoDetalle.envio] ?? pedidoDetalle.envio}</span></div>
-      ${pedidoDetalle.aclaracion ? `<div class="fila"><strong>Aclaración</strong><span>${pedidoDetalle.aclaracion}</span></div>` : ''}
-      <hr>
-      <h3>Productos</h3>
-      ${itemsHtml}
-      <hr>
-      <div class="total">
-        <span>Total del pedido</span>
-        <strong class="celeste">$${pedidoDetalle.total.toLocaleString('es-AR')}</strong>
-      </div>
-      <script>window.onload = () => { window.print(); }</script>
-    </body>
-    </html>
-  `)
-  ventana.document.close()
-}
+    `).join('')
 
+    ventana.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>Pedido #${pedidoDetalle.numeroPedido}</title>
+        <style>
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body { font-family: Arial, sans-serif; font-size: 13px; color: #222; padding: 40px; }
+          .header { display: flex; justify-content: space-between; margin-bottom: 16px; }
+          .marca strong { font-size: 15px; } .marca span { font-size: 12px; color: #666; display: block; }
+          .meta { text-align: right; font-size: 12px; color: #666; }
+          hr { border: none; border-top: 1px solid #ddd; margin: 16px 0; }
+          h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; color: #444; margin-bottom: 12px; }
+          .fila { display: flex; flex-direction: column; margin-bottom: 8px; }
+          .fila strong { font-weight: 700; font-size: 12px; }
+          .total { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
+          .total strong { font-size: 16px; }
+          .celeste { color: #4DC8E8; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="marca">
+            <strong>Pañalera Nano Mayorista</strong>
+            <span>panaleranano.com</span>
+          </div>
+          <div class="meta">
+            <div>${fecha}</div>
+            <div>Pedido #${pedidoDetalle.numeroPedido}</div>
+          </div>
+        </div>
+        <hr>
+        <h3>Datos del cliente</h3>
+        <div class="fila"><strong>Nombre</strong><span>${pedidoDetalle.nombre}</span></div>
+        ${pedidoDetalle.telefono ? `<div class="fila"><strong>Teléfono</strong><span>${pedidoDetalle.telefono}</span></div>` : ''}
+        <div class="fila"><strong>Ciudad</strong><span>${pedidoDetalle.ciudad}</span></div>
+        <div class="fila"><strong>Dirección</strong><span>${pedidoDetalle.direccion}</span></div>
+        ${pedidoDetalle.fecha_retiro ? `<div class="fila"><strong>Fecha retiro</strong><span>${pedidoDetalle.fecha_retiro}</span></div>` : ''}
+        <div class="fila"><strong>Envío</strong><span>${ENVIOS[pedidoDetalle.envio] ?? pedidoDetalle.envio}</span></div>
+        ${pedidoDetalle.aclaracion ? `<div class="fila"><strong>Aclaración</strong><span>${pedidoDetalle.aclaracion}</span></div>` : ''}
+        <hr>
+        <h3>Productos</h3>
+        ${itemsHtml}
+        <hr>
+        <div class="total">
+          <span>Total del pedido</span>
+          <strong class="celeste">$${pedidoDetalle.total.toLocaleString('es-AR')}</strong>
+        </div>
+        <script>window.onload = () => { window.print(); }</script>
+      </body>
+      </html>
+    `)
+    ventana.document.close()
+  }
 
   // Cargar productos automáticamente al entrar a la pestaña stock
   useEffect(() => {
@@ -435,45 +461,59 @@ const tallesKey = item.tallesCombo && item.tallesCombo.length > 0
                 {productosStock.length === 0 ? (
                   <div className="admin__empty"><p>No se encontraron productos.</p></div>
                 ) : (
-                  <div className="admin__tabla-wrap">
-                    <table className="admin__tabla">
-                      <thead>
-                        <tr>
-                          <th>Producto</th>
-                          <th>Talle</th>
-                          <th>Precio</th>
-                          <th>Estado</th>
-                          <th></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {productosStock.map((p) => (
-                          <tr key={p._id} className="admin__tabla-row">
-                            <td>
-                              <div className="admin__cliente">{p.nombre}</div>
-                              {p.descripcion && <div className="admin__codbar-tabla">CB: {p.descripcion}</div>}
-                            </td>
-                            <td>{p.talle && p.talle !== 'unico' ? p.talle : '—'}</td>
-                            <td>${p.precio.toLocaleString('es-AR')}</td>
-                            <td>
-                              <span className={`admin__stock-badge ${p.enStock ? 'admin__stock-badge--ok' : 'admin__stock-badge--off'}`}>
-                                {p.enStock ? '✓ En stock' : '✗ Sin stock'}
-                              </span>
-                            </td>
-                            <td>
-                              <button
-                                className={`admin__toggle-btn ${p.enStock ? 'admin__toggle-btn--deshabilitar' : 'admin__toggle-btn--habilitar'}`}
-                                onClick={() => toggleStock(p)}
-                                disabled={actualizando === p._id}
-                              >
-                                {actualizando === p._id ? '...' : p.enStock ? 'Deshabilitar' : 'Habilitar'}
-                              </button>
-                            </td>
+                  <>
+                    <div className="admin__tabla-wrap">
+                      <table className="admin__tabla">
+                        <thead>
+                          <tr>
+                            <th>Producto</th>
+                            <th>Talle</th>
+                            <th>Precio</th>
+                            <th>Estado</th>
+                            <th></th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        </thead>
+                        <tbody>
+                          {productosStock.map((p) => (
+                            <tr key={p._id} className="admin__tabla-row">
+                              <td>
+                                <div className="admin__cliente">{p.nombre}</div>
+                                {p.descripcion && <div className="admin__codbar-tabla">CB: {p.descripcion}</div>}
+                              </td>
+                              <td>{p.talle && p.talle !== 'unico' ? p.talle : '—'}</td>
+                              <td>${p.precio.toLocaleString('es-AR')}</td>
+                              <td>
+                                <span className={`admin__stock-badge ${p.enStock ? 'admin__stock-badge--ok' : 'admin__stock-badge--off'}`}>
+                                  {p.enStock ? '✓ En stock' : '✗ Sin stock'}
+                                </span>
+                              </td>
+                              <td>
+                                <button
+                                  className={`admin__toggle-btn ${p.enStock ? 'admin__toggle-btn--deshabilitar' : 'admin__toggle-btn--habilitar'}`}
+                                  onClick={() => toggleStock(p)}
+                                  disabled={actualizando === p._id}
+                                >
+                                  {actualizando === p._id ? '...' : p.enStock ? 'Deshabilitar' : 'Habilitar'}
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {hayMas && (
+                      <div style={{ textAlign: 'center', padding: '16px' }}>
+                        <button
+                          className="admin__btn-consultar"
+                          onClick={cargarMasProductos}
+                          disabled={cargandoMas}
+                        >
+                          {cargandoMas ? 'Cargando...' : 'Cargar más productos'}
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
               </>
             )}
@@ -499,8 +539,8 @@ const tallesKey = item.tallesCombo && item.tallesCombo.length > 0
                 <div className="admin__detalle-grid">
                   <div><strong>Nombre</strong><span>{pedidoDetalle.nombre}</span></div>
                   {pedidoDetalle.telefono && (
-  <div><strong>Teléfono</strong><span>{pedidoDetalle.telefono}</span></div>
-)}
+                    <div><strong>Teléfono</strong><span>{pedidoDetalle.telefono}</span></div>
+                  )}
                   <div><strong>Ciudad</strong><span>{pedidoDetalle.ciudad}</span></div>
                   <div><strong>Dirección</strong><span>{pedidoDetalle.direccion}</span></div>
                   {pedidoDetalle.fecha_retiro && (

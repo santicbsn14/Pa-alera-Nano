@@ -60,7 +60,13 @@ export default function CardProducto({ producto }: Props) {
         <div className="card__img-wrap">
           {producto.foto ? (
             <img
-              src={urlFor(producto.foto).width(400).height(400).fit('crop').url()}
+              src={urlFor(producto.foto)
+                .width(400)
+                .height(400)
+                .fit('crop')
+                .auto('format')
+                .quality(70)
+                .url()}
               alt={producto.nombre}
               className="card__img"
               loading="lazy"
@@ -153,7 +159,6 @@ export default function CardProducto({ producto }: Props) {
 
             <div className="combo-modal__productos">
               {productosCombo.map((nombreProducto) => {
-                // Buscar talles específicos para este producto del combo
                 const tallesEntry = producto.tallesCombo?.find(
                   (t) => t.nombreProducto.toLowerCase().trim() === nombreProducto.toLowerCase().trim()
                 )

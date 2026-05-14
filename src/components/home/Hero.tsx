@@ -65,9 +65,15 @@ export default function Hero() {
             <div className="hero__track">
               {slides.map((slide, i) => (
                 <div key={slide._id} className={`hero__slide ${i === current ? 'hero__slide--active' : ''}`}>
-                  {slide.imagen && (
+                  {/* Solo renderizar imagen si es el slide actual o el siguiente — ahorra bandwidth */}
+                  {slide.imagen && (i === current || i === (current + 1) % slides.length) && (
                     <img
-                      src={urlFor(slide.imagen).width(1200).fit('max').url()}
+                      src={urlFor(slide.imagen)
+                        .width(1200)
+                        .auto('format')
+                        .quality(75)
+                        .fit('max')
+                        .url()}
                       alt={slide.alt ?? 'Promo'}
                       className="hero__img"
                       loading={i === 0 ? 'eager' : 'lazy'}

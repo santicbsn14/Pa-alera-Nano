@@ -367,3 +367,8 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+.card__codbar {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  letter-spacing: 0.3px;
+}

@@ -91,7 +91,9 @@ export default function CardProducto({ producto }: Props) {
 
         <div className="card__info">
           <h3 className="card__nombre">{producto.nombre}</h3>
-
+          {producto.descripcion && (
+  <span className="card__codbar">CB: {producto.descripcion}</span>
+)}
           <div className="card__footer">
             <div className="card__meta">
               {producto.talle && producto.talle !== 'unico' && (

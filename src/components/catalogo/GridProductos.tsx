@@ -1,7 +1,7 @@
 // src/components/catalogo/GridProductos.tsx
 import { useState, useMemo, useCallback, useEffect } from 'react'
-import { getProductos } from '../../lib/sanity'
-import type { Producto, FiltrosCatalogo } from '../../types'
+import { getProductos, getCategorias } from '../../lib/sanity'
+import type { Producto, Categoria, FiltrosCatalogo } from '../../types'
 import FiltrosComp from './FiltrosCatalogo'
 import CardProducto from './CardProducto'
 import './GridProductos.css'
@@ -19,6 +19,7 @@ const filtrosIniciales: FiltrosCatalogo = {
 
 export default function GridProductos() {
   const [productos, setProductos] = useState<Producto[]>([])
+  const [categorias, setCategorias] = useState<Categoria[]>([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(false)
   const [filtros, setFiltros] = useState<FiltrosCatalogo>(filtrosIniciales)
@@ -27,8 +28,11 @@ export default function GridProductos() {
   useEffect(() => {
     setCargando(true)
     setError(false)
-    getProductos()
-      .then((data) => setProductos(data))
+    Promise.all([getProductos(), getCategorias()])
+      .then(([prods, cats]) => {
+        setProductos(prods)
+        setCategorias(cats)
+      })
       .catch(() => setError(true))
       .finally(() => setCargando(false))
   }, [])
@@ -36,7 +40,7 @@ export default function GridProductos() {
   const productosFiltrados = useMemo(() => {
     return productos.filter((p) => {
       if (filtros.soloStock && !p.enStock) return false
-      if (filtros.categoria !== 'todas' && p.categoria !== filtros.categoria) return false
+      if (filtros.categoria !== 'todas' && p.categoria?.slug !== filtros.categoria) return false
       if (filtros.talle !== 'todos' && p.talle !== filtros.talle) return false
       if (filtros.busqueda) {
         const q = filtros.busqueda.toLowerCase()
@@ -92,6 +96,7 @@ export default function GridProductos() {
         filtros={filtros}
         onChange={handleFiltros}
         total={productosFiltrados.length}
+        categorias={categorias}
       />
 
       <div className="catalogo__main">

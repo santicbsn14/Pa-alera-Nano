@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useCallback } from 'react'
 import type { Producto } from '../types'
 
 export interface ItemCarrito {
-  itemId: string // único por item — para combos es _id+timestamp, para el resto es _id
+  itemId: string
   producto: Producto
   cantidad: number
   tallesCombo?: { producto: string; talle: string }[]
@@ -19,7 +19,7 @@ interface CarritoContextType {
   abierto: boolean
   totalItems: number
   toast: ToastInfo | null
-  agregar: (producto: Producto, tallesCombo?: { producto: string; talle: string }[]) => void
+  agregar: (producto: Producto, tallesCombo?: { producto: string; talle: string }[], cantidadInicial?: number) => void
   quitar: (itemId: string) => void
   cambiarCantidad: (itemId: string, cantidad: number) => void
   vaciar: () => void
@@ -36,23 +36,25 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
 
   const totalItems = items.reduce((acc, i) => acc + i.cantidad, 0)
 
-  const agregar = useCallback((producto: Producto, tallesCombo?: { producto: string; talle: string }[]) => {
+  const agregar = useCallback((
+    producto: Producto,
+    tallesCombo?: { producto: string; talle: string }[],
+    cantidadInicial = 1
+  ) => {
     const esCombo = producto.categoria === 'combos'
 
     setItems((prev) => {
       if (esCombo) {
-        // Cada combo es un item separado con id único
         const itemId = `${producto._id}-${Date.now()}`
-        return [...prev, { itemId, producto, cantidad: 1, tallesCombo }]
+        return [...prev, { itemId, producto, cantidad: cantidadInicial, tallesCombo }]
       } else {
-        // Productos normales se agrupan por _id
         const existe = prev.find((i) => i.itemId === producto._id)
         if (existe) {
           return prev.map((i) =>
-            i.itemId === producto._id ? { ...i, cantidad: i.cantidad + 1 } : i
+            i.itemId === producto._id ? { ...i, cantidad: i.cantidad + cantidadInicial } : i
           )
         }
-        return [...prev, { itemId: producto._id, producto, cantidad: 1 }]
+        return [...prev, { itemId: producto._id, producto, cantidad: cantidadInicial }]
       }
     })
 

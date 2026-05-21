@@ -3,7 +3,6 @@ import { useState } from 'react'
 import { useCarrito } from '../../context/CarritoContext'
 import { urlFor } from '../../lib/sanity'
 import type { Producto } from '../../types'
-import { CATEGORIAS } from '../../data/mocks'
 import './CardProducto.css'
 
 const TALLES_DEFAULT = ['RN', 'P', 'M', 'G', 'XG', 'XXG', 'XXXG']
@@ -12,11 +11,19 @@ interface Props {
   producto: Producto
 }
 
+/** "6 Unidades x Bulto" → 6 */
+function parsearUnidadesBulto(presentacion?: string): number | null {
+  if (!presentacion) return null
+  const match = presentacion.match(/^(\d+)\s+unidades?\s+x\s+bulto/i)
+  return match ? parseInt(match[1], 10) : null
+}
+
 export default function CardProducto({ producto }: Props) {
   const { agregar, quitar, cambiarCantidad, items } = useCarrito()
-  const categoriaLabel = CATEGORIAS.find((c) => c.value === producto.categoria)?.label ?? producto.categoria
 
-  const esCombo = producto.categoria === 'combos'
+  // categoria ahora es un objeto — usamos slug para lógica y nombre para mostrar
+  const esCombo = producto.categoria?.slug === 'combos'
+  const categoriaLabel = producto.categoria?.nombre ?? ''
 
   const itemsCombo = items.filter((i) => i.producto._id === producto._id)
   const cantidadCombo = itemsCombo.length
@@ -28,6 +35,15 @@ export default function CardProducto({ producto }: Props) {
 
   const [modalCombo, setModalCombo] = useState(false)
   const [tallesSeleccionados, setTallesSeleccionados] = useState<Record<string, string>>({})
+
+  // ── Venta por caja ──────────────────────────────────────────────
+  const unidadesBulto = parsearUnidadesBulto(producto.presentacion)
+  const muestraBtnCaja = producto.vendePorCaja === true && unidadesBulto !== null
+
+  const handleAgregarCaja = () => {
+    agregar(producto, undefined, unidadesBulto!)
+  }
+  // ───────────────────────────────────────────────────────────────
 
   const productosCombo = esCombo
     ? producto.nombre.split('+').map((p) => p.trim())
@@ -92,8 +108,8 @@ export default function CardProducto({ producto }: Props) {
         <div className="card__info">
           <h3 className="card__nombre">{producto.nombre}</h3>
           {producto.descripcion && (
-  <span className="card__codbar">CB: {producto.descripcion}</span>
-)}
+            <span className="card__codbar">CB: {producto.descripcion}</span>
+          )}
           <div className="card__footer">
             <div className="card__meta">
               {producto.talle && producto.talle !== 'unico' && (
@@ -114,30 +130,54 @@ export default function CardProducto({ producto }: Props) {
               {cantidad > 0 ? `+ Agregar otro (${cantidad} en pedido)` : 'Agregar al pedido'}
             </button>
           ) : cantidad === 0 ? (
-            <button
-              className="card__btn"
-              onClick={handleAgregar}
-              disabled={!producto.enStock}
-            >
-              Agregar al pedido
-            </button>
+            <div className={muestraBtnCaja ? 'card__btns' : undefined}>
+              <button
+                className="card__btn"
+                onClick={handleAgregar}
+                disabled={!producto.enStock}
+              >
+                Agregar al pedido
+              </button>
+              {muestraBtnCaja && (
+                <button
+                  className="card__btn card__btn--caja"
+                  onClick={handleAgregarCaja}
+                  disabled={!producto.enStock}
+                  title={`Agrega ${unidadesBulto} unidades (1 bulto)`}
+                >
+                  📦 Agregar caja ({unidadesBulto} u.)
+                </button>
+              )}
+            </div>
           ) : (
-            <div className="card__contador">
-              <button
-                className="card__contador-btn"
-                onClick={() => cantidadNormal === 1 ? quitar(producto._id) : cambiarCantidad(producto._id, cantidadNormal - 1)}
-                aria-label="Restar"
-              >
-                −
-              </button>
-              <span className="card__contador-num">{cantidadNormal}</span>
-              <button
-                className="card__contador-btn"
-                onClick={() => cambiarCantidad(producto._id, cantidadNormal + 1)}
-                aria-label="Sumar"
-              >
-                +
-              </button>
+            <div className={muestraBtnCaja ? 'card__contador-wrap' : undefined}>
+              <div className="card__contador">
+                <button
+                  className="card__contador-btn"
+                  onClick={() => cantidadNormal === 1 ? quitar(producto._id) : cambiarCantidad(producto._id, cantidadNormal - 1)}
+                  aria-label="Restar"
+                >
+                  −
+                </button>
+                <span className="card__contador-num">{cantidadNormal}</span>
+                <button
+                  className="card__contador-btn"
+                  onClick={() => cambiarCantidad(producto._id, cantidadNormal + 1)}
+                  aria-label="Sumar"
+                >
+                  +
+                </button>
+              </div>
+              {muestraBtnCaja && (
+                <button
+                  className="card__btn card__btn--caja card__btn--caja-sm"
+                  onClick={handleAgregarCaja}
+                  disabled={!producto.enStock}
+                  title={`Agrega ${unidadesBulto} unidades más`}
+                >
+                  📦 +{unidadesBulto} u.
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -147,7 +187,6 @@ export default function CardProducto({ producto }: Props) {
       {modalCombo && (
         <div className="combo-overlay" onClick={() => setModalCombo(false)}>
           <div className="combo-modal" onClick={(e) => e.stopPropagation()}>
-
             <div className="combo-modal__header">
               <h3>Seleccioná los talles</h3>
               <button className="combo-modal__close" onClick={() => setModalCombo(false)}>
@@ -156,9 +195,7 @@ export default function CardProducto({ producto }: Props) {
                 </svg>
               </button>
             </div>
-
             <p className="combo-modal__nombre">{producto.nombre}</p>
-
             <div className="combo-modal__productos">
               {productosCombo.map((nombreProducto) => {
                 const tallesEntry = producto.tallesCombo?.find(
@@ -186,7 +223,6 @@ export default function CardProducto({ producto }: Props) {
                 )
               })}
             </div>
-
             <button
               className="combo-modal__confirmar"
               onClick={confirmarCombo}
@@ -194,7 +230,6 @@ export default function CardProducto({ producto }: Props) {
             >
               Agregar al pedido
             </button>
-
           </div>
         </div>
       )}

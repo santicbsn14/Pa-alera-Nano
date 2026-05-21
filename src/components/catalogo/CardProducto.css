@@ -212,6 +212,7 @@
   font-weight: 700;
   color: var(--color-celeste);
 }
+
 @media (max-width: 768px) {
   .card__footer {
     flex-direction: column;
@@ -219,6 +220,7 @@
     gap: var(--spacing-xs);
   }
 }
+
 /* ── Modal combo ──────────────────────────────────────────────── */
 .combo-overlay {
   position: fixed;
@@ -232,12 +234,12 @@
   padding: var(--spacing-md);
   animation: fade-in 200ms ease;
 }
- 
+
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
- 
+
 .combo-modal {
   background: var(--color-bg);
   border: 1px solid var(--color-border);
@@ -250,24 +252,24 @@
   gap: var(--spacing-md);
   animation: scale-in 200ms ease;
 }
- 
+
 @keyframes scale-in {
   from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
- 
+
 .combo-modal__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
- 
+
 .combo-modal__header h3 {
   font-size: 16px;
   font-weight: 700;
   color: var(--color-text);
 }
- 
+
 .combo-modal__close {
   width: 28px;
   height: 28px;
@@ -283,24 +285,24 @@
   padding: 0;
   flex-shrink: 0;
 }
- 
+
 .combo-modal__close:hover {
   background: var(--color-border);
   color: var(--color-text);
 }
- 
+
 .combo-modal__nombre {
   font-size: 13px;
   color: var(--color-text-muted);
   line-height: 1.4;
 }
- 
+
 .combo-modal__productos {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
 }
- 
+
 .combo-modal__producto {
   display: flex;
   flex-direction: column;
@@ -310,19 +312,19 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
 }
- 
+
 .combo-modal__producto-nombre {
   font-size: 13px;
   font-weight: 600;
   color: var(--color-text);
 }
- 
+
 .combo-modal__talles {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
- 
+
 .combo-modal__talle {
   padding: 5px 12px;
   background: var(--color-bg);
@@ -334,18 +336,18 @@
   cursor: pointer;
   transition: all var(--transition-fast);
 }
- 
+
 .combo-modal__talle:hover {
   border-color: var(--color-celeste-border);
   color: var(--color-celeste);
 }
- 
+
 .combo-modal__talle--active {
   background: var(--color-celeste-subtle);
   border-color: var(--color-celeste);
   color: var(--color-celeste-dark);
 }
- 
+
 .combo-modal__confirmar {
   width: 100%;
   padding: 12px;
@@ -358,17 +360,60 @@
   cursor: pointer;
   transition: background var(--transition-fast);
 }
- 
+
 .combo-modal__confirmar:hover:not(:disabled) {
   background: var(--color-celeste-hover);
 }
- 
+
 .combo-modal__confirmar:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
+
 .card__codbar {
   font-size: 10px;
   color: var(--color-text-muted);
   letter-spacing: 0.3px;
+}
+
+/* ── Venta por caja ───────────────────────────────────────────── */
+.card__btns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+}
+
+.card__btns .card__btn {
+  margin-top: 0;
+}
+
+.card__btn--caja {
+  background: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.card__btn--caja:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-celeste-border);
+  color: var(--color-celeste);
+}
+
+.card__contador-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+}
+
+.card__contador-wrap .card__contador {
+  margin-top: 0;
+}
+
+.card__btn--caja-sm {
+  padding: 6px 10px;
+  font-size: 11px;
+  margin-top: 0;
 }

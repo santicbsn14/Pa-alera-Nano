@@ -1,27 +1,33 @@
 // src/components/catalogo/CatalogoCategorias.tsx
 import { useState, useMemo, useEffect } from 'react'
-import { getProductos } from '../../lib/sanity'
-import { CATEGORIAS } from '../../data/mocks'
-import type { Producto } from '../../types'
+import { getProductos, getCategorias } from '../../lib/sanity'
+import type { Producto, Categoria } from '../../types'
 import CardProducto from './CardProducto'
 import './CatalogoCategorias.css'
 
 export default function CatalogoCategorias() {
   const [productos, setProductos] = useState<Producto[]>([])
+  const [categorias, setCategorias] = useState<Categoria[]>([])
   const [cargando, setCargando] = useState(true)
   const [categoriaAbierta, setCategoriaAbierta] = useState<string | null>(null)
   const [marcaAbierta, setMarcaAbierta] = useState<string | null>(null)
   const [busqueda, setBusqueda] = useState('')
 
   useEffect(() => {
-    getProductos()
-      .then((data) => setProductos(data))
-      .catch(() => setProductos([]))
+    Promise.all([getProductos(), getCategorias()])
+      .then(([prods, cats]) => {
+        setProductos(prods)
+        setCategorias(cats)
+      })
+      .catch(() => {
+        setProductos([])
+        setCategorias([])
+      })
       .finally(() => setCargando(false))
   }, [])
 
-  const toggleCategoria = (valor: string) => {
-    setCategoriaAbierta((prev) => (prev === valor ? null : valor))
+  const toggleCategoria = (slug: string) => {
+    setCategoriaAbierta((prev) => (prev === slug ? null : slug))
     setMarcaAbierta(null)
   }
 
@@ -31,9 +37,9 @@ export default function CatalogoCategorias() {
 
   const categoriasFiltradas = useMemo(() => {
     const q = busqueda.toLowerCase().trim()
-    return CATEGORIAS.filter((cat) => cat.value !== 'todas').map((cat) => {
+    return categorias.map((cat) => {
       const productosCat = productos.filter((p) => {
-        const matchCat = p.categoria === cat.value
+        const matchCat = p.categoria?.slug === cat.slug
         const matchBusqueda = q === '' || p.nombre.toLowerCase().includes(q) || p.descripcion?.toLowerCase().includes(q)
         return matchCat && matchBusqueda
       })
@@ -58,10 +64,7 @@ export default function CatalogoCategorias() {
         totalDisponibles: productosCat.filter((p) => p.enStock).length,
       }
     }).filter((cat) => cat.marcas.length > 0)
-  }, [busqueda, productos])
-
-  // Si hay búsqueda y queda una sola categoría, abrirla automáticamente
-  const catAbiertaEfectiva = categoriaAbierta
+  }, [busqueda, productos, categorias])
 
   if (cargando) {
     return (
@@ -111,17 +114,16 @@ export default function CatalogoCategorias() {
 
       {/* Categorías */}
       {categoriasFiltradas.map((cat) => {
-        const isCatOpen = catAbiertaEfectiva === cat.value
+        const isCatOpen = categoriaAbierta === cat.slug
 
         return (
-          <div key={cat.value} className={`cat-mobile__seccion ${isCatOpen ? 'cat-mobile__seccion--open' : ''}`}>
+          <div key={cat._id} className={`cat-mobile__seccion ${isCatOpen ? 'cat-mobile__seccion--open' : ''}`}>
 
             {/* Header categoría */}
-            <button className="cat-mobile__header" onClick={() => toggleCategoria(cat.value)} aria-expanded={isCatOpen}>
+            <button className="cat-mobile__header" onClick={() => toggleCategoria(cat.slug)} aria-expanded={isCatOpen}>
               <div className="cat-mobile__header-left">
-                <span className="cat-mobile__emoji">{cat.label.split(' ')[0]}</span>
                 <div className="cat-mobile__header-info">
-                  <span className="cat-mobile__nombre">{cat.label.split(' ').slice(1).join(' ')}</span>
+                  <span className="cat-mobile__nombre">{cat.nombre}</span>
                   <span className="cat-mobile__count">{cat.totalDisponibles} producto{cat.totalDisponibles !== 1 ? 's' : ''}</span>
                 </div>
               </div>
@@ -136,7 +138,7 @@ export default function CatalogoCategorias() {
             <div className="cat-mobile__productos-wrap">
               <div className="cat-mobile__marcas">
                 {cat.marcas.map((marca) => {
-                  const isMarcaOpen = marcaAbierta === `${cat.value}-${marca.nombre}`
+                  const isMarcaOpen = marcaAbierta === `${cat.slug}-${marca.nombre}`
 
                   return (
                     <div key={marca.nombre} className={`cat-mobile__marca ${isMarcaOpen ? 'cat-mobile__marca--open' : ''}`}>
@@ -144,7 +146,7 @@ export default function CatalogoCategorias() {
                       {/* Header marca */}
                       <button
                         className="cat-mobile__marca-header"
-                        onClick={() => toggleMarca(`${cat.value}-${marca.nombre}`)}
+                        onClick={() => toggleMarca(`${cat.slug}-${marca.nombre}`)}
                         aria-expanded={isMarcaOpen}
                       >
                         <span className="cat-mobile__marca-nombre">{marca.nombre}</span>

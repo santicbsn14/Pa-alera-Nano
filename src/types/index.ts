@@ -1,10 +1,18 @@
 // src/types/index.ts
 
+export interface Categoria {
+  _id: string
+  nombre: string
+  slug: string   // slug.current expandido en la query
+  orden?: number
+  activa: boolean
+}
+
 export interface Producto {
   _id: string
   idSistema: string
   nombre: string
-  marca:string
+  marca: string
   descripcion?: string
   foto?: {
     asset: {
@@ -12,33 +20,15 @@ export interface Producto {
     }
   }
   precio: number
-  categoria:
-    | 'combos'
-    | 'paniales'
-    | 'paniales_adulto'
-    | 'apositos_adultos'
-    | 'toallitas'
-    | 'algodones'
-    | 'oleo_calcareo'
-    | 'desodorantes_cannon'
-    | 'perfumes_cannon'
-    | 'perfumeria_bebes'
-    | 'mamaderas'
-    | 'maternidad'
-    | 'proteccion_femenina'
-    | 'papeles_higienicos'
-    | 'papeles_cocina'
-    | 'panuelos_servilletas'
-    | 'filos_gillette'
-    | 'perfumeria_adultos'
-    | 'tinturas_nantyr'
+  categoria: Categoria
   talle?: string
   tallesCombo?: {
-  nombreProducto: string
-  talles: string
-}[]
+    nombreProducto: string
+    talles: string
+  }[]
   presentacion?: string
   enStock: boolean
+  vendePorCaja?: boolean
 }
 
 export interface Flete {
@@ -74,7 +64,7 @@ export interface Promo {
 }
 
 // Tipos auxiliares para filtros del catálogo
-export type CategoriaFilter = Producto['categoria'] | 'todas'
+export type CategoriaFilter = string | 'todas'  // ahora es el slug dinámico
 export type TalleFilter = Producto['talle'] | 'todos'
 
 export interface FiltrosCatalogo {

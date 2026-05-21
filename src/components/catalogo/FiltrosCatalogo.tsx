@@ -1,20 +1,21 @@
 // src/components/catalogo/FiltrosCatalogo.tsx
 import { useState } from 'react'
-import { CATEGORIAS, TALLES } from '../../data/mocks'
-import type { FiltrosCatalogo as FiltrosType } from '../../types'
+import { TALLES } from '../../data/mocks'
+import type { FiltrosCatalogo as FiltrosType, Categoria } from '../../types'
 import './FiltrosCatalogo.css'
 
 interface Props {
   filtros: FiltrosType
   onChange: (filtros: FiltrosType) => void
   total: number
+  categorias: Categoria[]
 }
 
-export default function FiltrosCatalogo({ filtros, onChange, total }: Props) {
+export default function FiltrosCatalogo({ filtros, onChange, total, categorias }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const update = (key: keyof FiltrosType, value: string | boolean) => {
-    onChange({ ...filtros, [key]: value, ...(key !== 'busqueda' ? {} : {}) })
+    onChange({ ...filtros, [key]: value })
   }
 
   const limpiar = () => {
@@ -50,17 +51,23 @@ export default function FiltrosCatalogo({ filtros, onChange, total }: Props) {
         </div>
       </div>
 
-      {/* Categoría */}
+      {/* Categoría — dinámica desde Sanity */}
       <div className="filtros__grupo">
         <label className="filtros__label">Categoría</label>
         <div className="filtros__opciones">
-          {CATEGORIAS.map((cat) => (
+          <button
+            className={`filtros__opcion ${filtros.categoria === 'todas' ? 'filtros__opcion--active' : ''}`}
+            onClick={() => update('categoria', 'todas')}
+          >
+            Todas
+          </button>
+          {categorias.map((cat) => (
             <button
-              key={cat.value}
-              className={`filtros__opcion ${filtros.categoria === cat.value ? 'filtros__opcion--active' : ''}`}
-              onClick={() => update('categoria', cat.value)}
+              key={cat._id}
+              className={`filtros__opcion ${filtros.categoria === cat.slug ? 'filtros__opcion--active' : ''}`}
+              onClick={() => update('categoria', cat.slug)}
             >
-              {cat.label}
+              {cat.nombre}
             </button>
           ))}
         </div>
@@ -72,11 +79,11 @@ export default function FiltrosCatalogo({ filtros, onChange, total }: Props) {
         <div className="filtros__opciones filtros__opciones--talles">
           {TALLES.map((t) => (
             <button
-              key={t.value}
-              className={`filtros__opcion filtros__opcion--talle ${filtros.talle === t.value ? 'filtros__opcion--active' : ''}`}
-              onClick={() => update('talle', t.value)}
+              key={t}
+              className={`filtros__opcion filtros__opcion--talle ${filtros.talle === t ? 'filtros__opcion--active' : ''}`}
+              onClick={() => update('talle', t)}
             >
-              {t.label}
+              {t === 'todos' ? 'Todos' : t}
             </button>
           ))}
         </div>

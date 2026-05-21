@@ -1,12 +1,13 @@
 // src/lib/sanity.ts
 import { createClient } from '@sanity/client'
 import { createImageUrlBuilder } from '@sanity/image-url'
-import type { Producto, Flete, PreguntaFrecuente, Promo } from '../types'
+import type { Producto, Flete, PreguntaFrecuente, Promo, Categoria } from '../types'
 import type { SanityImageSource } from '@sanity/image-url'
+
 export const client = createClient({
   projectId: import.meta.env.VITE_SANITY_PROJECT_ID,
   dataset: import.meta.env.VITE_SANITY_DATASET ?? 'production',
-  useCdn: true, // CDN para queries de solo lectura — más rápido
+  useCdn: true,
   apiVersion: '2024-01-01',
 })
 
@@ -19,9 +20,21 @@ export function urlFor(source: SanityImageSource) {
 
 // ── Queries ────────────────────────────────────────────────────────
 
+export async function getCategorias(): Promise<Categoria[]> {
+  return client.fetch(`
+    *[_type == "categoria" && activa == true] | order(orden asc, nombre asc) {
+      _id,
+      nombre,
+      "slug": slug.current,
+      orden,
+      activa
+    }
+  `)
+}
+
 export async function getProductos(): Promise<Producto[]> {
   return client.fetch(`
-    *[_type == "producto" ] | order(precio asc) {
+    *[_type == "producto"] | order(precio asc) {
       _id,
       idSistema,
       nombre,
@@ -29,11 +42,18 @@ export async function getProductos(): Promise<Producto[]> {
       descripcion,
       foto,
       precio,
-      categoria,
+      categoria->{
+        _id,
+        nombre,
+        "slug": slug.current,
+        orden,
+        activa
+      },
       talle,
       tallesCombo,
       presentacion,
-      enStock
+      enStock,
+      vendePorCaja
     }
   `)
 }
@@ -70,43 +90,6 @@ export async function getPromos(): Promise<Promo[]> {
       imagen,
       orden,
       activa
-    }
-  `)
-}
-
-// ── Búsqueda y filtros (para el catálogo) ─────────────────────────
-export async function getProductosFiltrados(params: {
-  categoria?: string
-  talle?: string
-  busqueda?: string
-}): Promise<Producto[]> {
-  const { categoria, talle, busqueda } = params
-
-  let filtros = `_type == "producto" && enStock == true`
-
-  if (categoria && categoria !== 'todas') {
-    filtros += ` && categoria == "${categoria}"`
-  }
-
-  if (talle && talle !== 'todos') {
-    filtros += ` && talle == "${talle}"`
-  }
-
-  if (busqueda) {
-    filtros += ` && nombre match "*${busqueda}*"`
-  }
-
-  return client.fetch(`
-    *[${filtros}] | order(categoria asc, nombre asc) {
-      _id,
-      idSistema,
-      nombre,
-      descripcion,
-      foto,
-      precio,
-      categoria,
-      talle,
-      enStock
     }
   `)
 }

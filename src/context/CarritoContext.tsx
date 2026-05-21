@@ -41,7 +41,7 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
     tallesCombo?: { producto: string; talle: string }[],
     cantidadInicial = 1
   ) => {
-    const esCombo = producto.categoria === 'combos'
+    const esCombo = producto.categoria?.slug === 'combos'
 
     setItems((prev) => {
       if (esCombo) {

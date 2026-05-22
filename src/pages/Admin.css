@@ -212,12 +212,14 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
+  margin-bottom: 24px;
 }
 
 .admin__stat {
   background: #fff;
   border-radius: 12px;
-  padding: 20px 24px;
+  margin-top: 1rem;
+  padding: 24px 28px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
@@ -611,3 +613,40 @@
   color: #fff;
 }
 
+/* ── Más vendidos ── */
+.admin__masvendidos {}
+
+.admin__rangos-rapidos {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.admin__rango-btn {
+  padding: 6px 14px;
+  border: 1.5px solid #4DC8E8;
+  background: transparent;
+  color: #4DC8E8;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.15s, color 0.15s;
+}
+
+.admin__rango-btn:hover {
+  background: #4DC8E8;
+  color: #fff;
+}
+@media (max-width: 600px) {
+  .admin__tabs {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .admin__tab {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}

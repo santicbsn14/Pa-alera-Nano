@@ -145,7 +145,7 @@ export default function CardProducto({ producto }: Props) {
                   disabled={!producto.enStock}
                   title={`Agrega ${unidadesBulto} unidades (1 bulto)`}
                 >
-                  📦 Agregar caja ({unidadesBulto} u.)
+                  📦 Agregar bulto ({unidadesBulto} u.)
                 </button>
               )}
             </div>

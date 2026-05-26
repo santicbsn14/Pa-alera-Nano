@@ -20,6 +20,7 @@ export interface Producto {
     }
   }
   precio: number
+  descuento?: number
   categoria: Categoria
   talle?: string
   tallesCombo?: {
@@ -72,5 +73,6 @@ export interface FiltrosCatalogo {
   talle: TalleFilter
   marca: string
   soloStock: boolean
+  soloOfertas: boolean  // ← NUEVO
   busqueda: string
 }

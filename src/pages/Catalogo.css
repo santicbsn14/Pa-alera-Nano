@@ -1,0 +1,74 @@
+/* src/pages/Catalogo.css */
+
+.ofertas-banner {
+  background: linear-gradient(135deg, #ff4757 0%, #e63946 100%);
+  padding: 12px 0;
+  transition: background 0.3s ease;
+}
+
+.ofertas-banner--active {
+  background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+}
+
+.ofertas-banner__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ofertas-banner__texto {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ofertas-banner__fuego {
+  font-size: 20px;
+  animation: fuego-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes fuego-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.ofertas-banner__msg {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ofertas-banner__btn {
+  background: #fff;
+  color: #e63946;
+  border: none;
+  border-radius: 999px;
+  padding: 7px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.ofertas-banner__btn:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+.ofertas-banner__btn:active {
+  transform: scale(0.98);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .ofertas-banner__inner {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .ofertas-banner__msg {
+    font-size: 13px;
+  }
+}

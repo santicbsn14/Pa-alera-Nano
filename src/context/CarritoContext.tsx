@@ -1,6 +1,7 @@
 // src/context/CarritoContext.tsx
 import { createContext, useContext, useState, useCallback } from 'react'
 import type { Producto } from '../types'
+import { precioFinal, tieneDescuento } from '../lib/precio'
 
 export interface ItemCarrito {
   itemId: string
@@ -43,10 +44,15 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
   ) => {
     const esCombo = producto.categoria?.slug === 'combos'
 
+    // Aplicar descuento antes de guardar en carrito
+    const productoConPrecioFinal: Producto = tieneDescuento(producto)
+      ? { ...producto, precio: precioFinal(producto) }
+      : producto
+
     setItems((prev) => {
       if (esCombo) {
         const itemId = `${producto._id}-${Date.now()}`
-        return [...prev, { itemId, producto, cantidad: cantidadInicial, tallesCombo }]
+        return [...prev, { itemId, producto: productoConPrecioFinal, cantidad: cantidadInicial, tallesCombo }]
       } else {
         const existe = prev.find((i) => i.itemId === producto._id)
         if (existe) {
@@ -54,7 +60,7 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
             i.itemId === producto._id ? { ...i, cantidad: i.cantidad + cantidadInicial } : i
           )
         }
-        return [...prev, { itemId: producto._id, producto, cantidad: cantidadInicial }]
+        return [...prev, { itemId: producto._id, producto: productoConPrecioFinal, cantidad: cantidadInicial }]
       }
     })
 

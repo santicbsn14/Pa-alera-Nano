@@ -232,7 +232,12 @@ export default function ModalCarrito() {
                     return (
                       <div key={item.itemId} className="modal__item">
                         <div className="modal__item-info">
-                          <p className="modal__item-nombre">{item.producto.nombre}{talle}</p>
+                          <p className="modal__item-nombre">
+                            {item.producto.nombre}{talle}
+                            {item.producto.descuento && item.producto.descuento > 0 && (
+                              <span className="modal__item-descuento">-{item.producto.descuento}%</span>
+                            )}
+                          </p>
                           {item.producto.presentacion && (
                             <p className="modal__item-presentacion">{item.producto.presentacion}</p>
                           )}

@@ -102,3 +102,28 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+.catalogo__ofertas {
+  margin-bottom: 32px;
+  padding: 20px;
+  border: 2px solid #e63946;
+  border-radius: 12px;
+  background: #fff5f5;
+}
+
+.catalogo__ofertas-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.catalogo__ofertas-tag {
+  font-size: 18px;
+  font-weight: 700;
+  color: #e63946;
+}
+
+.catalogo__ofertas-sub {
+  font-size: 13px;
+  color: #999;
+}

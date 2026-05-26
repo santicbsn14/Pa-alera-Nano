@@ -502,3 +502,14 @@
   background: #1ebe5d;
   transform: translateY(-1px);
 }
+.modal__item-descuento {
+  display: inline-block;
+  margin-left: 6px;
+  background: #e63946;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  vertical-align: middle;
+}

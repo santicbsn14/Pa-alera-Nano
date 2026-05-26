@@ -4,6 +4,7 @@ import { useCarrito } from '../../context/CarritoContext'
 import { urlFor } from '../../lib/sanity'
 import type { Producto } from '../../types'
 import './CardProducto.css'
+import { precioFinal, tieneDescuento } from '../../lib/precio'
 
 const TALLES_DEFAULT = ['RN', 'P', 'M', 'G', 'XG', 'XXG', 'XXXG']
 
@@ -21,7 +22,6 @@ function parsearUnidadesBulto(presentacion?: string): number | null {
 export default function CardProducto({ producto }: Props) {
   const { agregar, quitar, cambiarCantidad, items } = useCarrito()
 
-  // categoria ahora es un objeto — usamos slug para lógica y nombre para mostrar
   const esCombo = producto.categoria?.slug === 'combos'
   const categoriaLabel = producto.categoria?.nombre ?? ''
 
@@ -43,6 +43,11 @@ export default function CardProducto({ producto }: Props) {
   const handleAgregarCaja = () => {
     agregar(producto, undefined, unidadesBulto!)
   }
+  // ───────────────────────────────────────────────────────────────
+
+  // ── Descuentos ──────────────────────────────────────────────────
+  const conDescuento = tieneDescuento(producto)
+  const precioMostrar = precioFinal(producto)
   // ───────────────────────────────────────────────────────────────
 
   const productosCombo = esCombo
@@ -74,6 +79,12 @@ export default function CardProducto({ producto }: Props) {
     <>
       <div className="card">
         <div className="card__img-wrap">
+
+          {/* Badge descuento */}
+          {conDescuento && (
+            <span className="card__badge-descuento">-{producto.descuento}%</span>
+          )}
+
           {producto.foto ? (
             <img
               src={urlFor(producto.foto)
@@ -116,9 +127,19 @@ export default function CardProducto({ producto }: Props) {
                 <span className="card__talle">{producto.talle}</span>
               )}
             </div>
-            <span className="card__precio">
-              ${producto.precio.toLocaleString('es-AR')}
-            </span>
+
+            {/* Precios con descuento */}
+            <div className="card__precios">
+              {conDescuento && (
+                <span className="card__precio-original">
+                  ${producto.precio.toLocaleString('es-AR')}
+                </span>
+              )}
+              <span className={`card__precio ${conDescuento ? 'card__precio--rebajado' : ''}`}>
+                ${precioMostrar.toLocaleString('es-AR')}
+              </span>
+            </div>
+
           </div>
 
           {esCombo ? (

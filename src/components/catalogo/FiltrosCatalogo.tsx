@@ -9,9 +9,11 @@ interface Props {
   onChange: (filtros: FiltrosType) => void
   total: number
   categorias: Categoria[]
+  soloOfertas: boolean        // ← NUEVO
+  onToggleOfertas: () => void // ← NUEVO
 }
 
-export default function FiltrosCatalogo({ filtros, onChange, total, categorias }: Props) {
+export default function FiltrosCatalogo({ filtros, onChange, total, categorias, soloOfertas, onToggleOfertas }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const update = (key: keyof FiltrosType, value: string | boolean) => {
@@ -19,10 +21,10 @@ export default function FiltrosCatalogo({ filtros, onChange, total, categorias }
   }
 
   const limpiar = () => {
-    onChange({ categoria: 'todas', talle: 'todos', marca: '', soloStock: false, busqueda: '' })
+    onChange({ categoria: 'todas', talle: 'todos', marca: '',soloOfertas: false, soloStock: false, busqueda: '' })
   }
 
-  const hayFiltros = filtros.categoria !== 'todas' || filtros.talle !== 'todos' || filtros.busqueda !== '' || filtros.soloStock
+  const hayFiltros = filtros.categoria !== 'todas' || filtros.talle !== 'todos' || filtros.busqueda !== '' || filtros.soloStock || soloOfertas
 
   const contenidoFiltros = (
     <div className="filtros__contenido">
@@ -51,7 +53,7 @@ export default function FiltrosCatalogo({ filtros, onChange, total, categorias }
         </div>
       </div>
 
-      {/* Categoría — dinámica desde Sanity */}
+      {/* Categoría */}
       <div className="filtros__grupo">
         <label className="filtros__label">Categoría</label>
         <div className="filtros__opciones">
@@ -89,7 +91,7 @@ export default function FiltrosCatalogo({ filtros, onChange, total, categorias }
         </div>
       </div>
 
-      {/* Solo en stock */}
+      {/* Disponibilidad */}
       <div className="filtros__grupo">
         <label className="filtros__label">Disponibilidad</label>
         <button
@@ -98,6 +100,18 @@ export default function FiltrosCatalogo({ filtros, onChange, total, categorias }
         >
           <div className="filtros__toggle-dot" />
           Solo productos en stock
+        </button>
+      </div>
+
+      {/* Ofertas ← NUEVO */}
+      <div className="filtros__grupo">
+        <label className="filtros__label">Ofertas</label>
+        <button
+          className={`filtros__toggle filtros__toggle--ofertas ${soloOfertas ? 'filtros__toggle--active' : ''}`}
+          onClick={onToggleOfertas}
+        >
+          <div className="filtros__toggle-dot" />
+          🔥 Solo productos en oferta
         </button>
       </div>
 

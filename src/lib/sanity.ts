@@ -42,6 +42,7 @@ export async function getProductos(): Promise<Producto[]> {
       descripcion,
       foto,
       precio,
+      descuento,
       categoria->{
         _id,
         nombre,

@@ -5,6 +5,7 @@ import type { Producto, Categoria, FiltrosCatalogo } from '../../types'
 import FiltrosComp from './FiltrosCatalogo'
 import CardProducto from './CardProducto'
 import './GridProductos.css'
+import { tieneDescuento } from '../../lib/precio'
 
 const ITEMS_INICIALES = 12
 const ITEMS_POR_CARGA = 12
@@ -14,10 +15,16 @@ const filtrosIniciales: FiltrosCatalogo = {
   talle: 'todos',
   marca: '',
   soloStock: false,
+  soloOfertas: false,
   busqueda: '',
 }
 
-export default function GridProductos() {
+interface Props {
+  soloOfertas: boolean
+  onVerOfertas: (val: boolean) => void
+}
+
+export default function GridProductos({ soloOfertas, onVerOfertas }: Props) {
   const [productos, setProductos] = useState<Producto[]>([])
   const [categorias, setCategorias] = useState<Categoria[]>([])
   const [cargando, setCargando] = useState(true)
@@ -39,6 +46,7 @@ export default function GridProductos() {
 
   const productosFiltrados = useMemo(() => {
     return productos.filter((p) => {
+      if (soloOfertas && !tieneDescuento(p)) return false
       if (filtros.soloStock && !p.enStock) return false
       if (filtros.categoria !== 'todas' && p.categoria?.slug !== filtros.categoria) return false
       if (filtros.talle !== 'todos' && p.talle !== filtros.talle) return false
@@ -48,7 +56,7 @@ export default function GridProductos() {
       }
       return true
     })
-  }, [filtros, productos])
+  }, [filtros, productos, soloOfertas])
 
   const productosVisibles = productosFiltrados.slice(0, cantidad)
   const hayMas = cantidad < productosFiltrados.length
@@ -58,9 +66,7 @@ export default function GridProductos() {
     setCantidad(ITEMS_INICIALES)
   }, [])
 
-  const cargarMas = () => {
-    setCantidad((prev) => prev + ITEMS_POR_CARGA)
-  }
+  const cargarMas = () => setCantidad((prev) => prev + ITEMS_POR_CARGA)
 
   if (cargando) {
     return (
@@ -97,6 +103,8 @@ export default function GridProductos() {
         onChange={handleFiltros}
         total={productosFiltrados.length}
         categorias={categorias}
+        soloOfertas={soloOfertas}
+        onToggleOfertas={() => onVerOfertas(!soloOfertas)}
       />
 
       <div className="catalogo__main">
@@ -107,7 +115,6 @@ export default function GridProductos() {
                 <CardProducto key={producto._id} producto={producto} />
               ))}
             </div>
-
             {hayMas && (
               <div className="catalogo__mas">
                 <p className="catalogo__mas-info">

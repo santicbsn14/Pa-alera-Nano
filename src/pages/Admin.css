@@ -650,3 +650,35 @@
     padding: 6px 10px;
   }
 }
+.admin__ranking-controles {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.admin__toggle-grupo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #666;
+}
+
+.admin__toggle-opt {
+  padding: 5px 12px;
+  border: 1.5px solid #ddd;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #444;
+  transition: all 0.15s;
+}
+
+.admin__toggle-opt--active {
+  border-color: #4DC8E8;
+  background: #4DC8E8;
+  color: #fff;
+  font-weight: 600;
+}

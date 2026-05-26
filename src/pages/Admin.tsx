@@ -1,5 +1,5 @@
 // src/pages/Admin.tsx
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import './Admin.css'
 
 const SERVER_URL = 'https://nano-server-h25x.onrender.com'
@@ -46,12 +46,15 @@ interface ProductoStock {
   enStock: boolean
   precio: number
 }
+
 interface ProductoRanking {
   nombre: string
+  talle: string
   unidades: number
   total: number
   apariciones: number
 }
+
 export default function Admin() {
   const [autenticado, setAutenticado] = useState(false)
   const [clave, setClave] = useState('')
@@ -59,7 +62,6 @@ export default function Admin() {
   const [loadingLogin, setLoadingLogin] = useState(false)
   const [mostrarClave, setMostrarClave] = useState(false)
   const [pestana, setPestana] = useState<'pedidos' | 'stock' | 'masVendidos'>('pedidos')
-  
 
   // ── Pedidos ──
   const hoy = new Date().toISOString().split('T')[0]
@@ -79,13 +81,45 @@ export default function Admin() {
   const [offsetStock, setOffsetStock] = useState(0)
   const [hayMas, setHayMas] = useState(false)
   const [cargandoMas, setCargandoMas] = useState(false)
-  // Estados para más vendidos
-const [desdeRanking, setDesdeRanking] = useState(hoy)
-const [hastaRanking, setHastaRanking] = useState(hoy)
-const [ranking, setRanking] = useState<ProductoRanking[]>([])
-const [totalPedidosRanking, setTotalPedidosRanking] = useState(0)
-const [cargandoRanking, setCargandoRanking] = useState(false)
-const [buscadoRanking, setBuscadoRanking] = useState(false)
+
+  // ── Más vendidos ──
+  const [desdeRanking, setDesdeRanking] = useState(hoy)
+  const [hastaRanking, setHastaRanking] = useState(hoy)
+  const [ranking, setRanking] = useState<ProductoRanking[]>([])
+  const [totalPedidosRanking, setTotalPedidosRanking] = useState(0)
+  const [cargandoRanking, setCargandoRanking] = useState(false)
+  const [buscadoRanking, setBuscadoRanking] = useState(false)
+  const [ordenRanking, setOrdenRanking] = useState<'unidades' | 'total'>('unidades')
+  const [desglosarTalle, setDesglosarTalle] = useState(false)
+
+  // ── Ranking procesado según toggles ──
+  const rankingProcesado = useMemo(() => {
+    let datos = ranking
+
+    // Si está en modo agrupado, colapsar por nombre sumando todo
+    if (!desglosarTalle) {
+      const mapa = new Map<string, ProductoRanking>()
+      for (const item of datos) {
+        if (mapa.has(item.nombre)) {
+          const ex = mapa.get(item.nombre)!
+          mapa.set(item.nombre, {
+            ...ex,
+            unidades: ex.unidades + item.unidades,
+            total: ex.total + item.total,
+            apariciones: ex.apariciones + item.apariciones,
+          })
+        } else {
+          mapa.set(item.nombre, { ...item, talle: '' })
+        }
+      }
+      datos = Array.from(mapa.values())
+    }
+
+    // Ordenar según el toggle
+    return [...datos].sort((a, b) =>
+      ordenRanking === 'unidades' ? b.unidades - a.unidades : b.total - a.total
+    )
+  }, [ranking, ordenRanking, desglosarTalle])
 
   const login = async () => {
     setLoadingLogin(true)
@@ -168,40 +202,40 @@ const [buscadoRanking, setBuscadoRanking] = useState(false)
       setCargandoMas(false)
     }
   }
-  const consultarRanking = async (desde?: string, hasta?: string) => {
-  const d = desde ?? desdeRanking
-  const h = hasta ?? hastaRanking
-  setCargandoRanking(true)
-  setBuscadoRanking(false)
-  try {
-    const res = await fetch(`${SERVER_URL}/productos/mas-vendidos?desde=${d}&hasta=${h}`)
-    const data = await res.json()
-    setRanking(data.ranking ?? [])
-    setTotalPedidosRanking(data.totalPedidos ?? 0)
-  } catch {
-    setRanking([])
-    setTotalPedidosRanking(0)
-  } finally {
-    setCargandoRanking(false)
-    setBuscadoRanking(true)
-  }
-}
 
-// Helper para los botones rápidos
-const setRangoRapido = (tipo: 'hoy' | 'semana' | 'mes') => {
-  const ahora = new Date()
-  let desde = new Date()
-  if (tipo === 'semana') {
-    desde.setDate(ahora.getDate() - ahora.getDay() + (ahora.getDay() === 0 ? -6 : 1))
-  } else if (tipo === 'mes') {
-    desde = new Date(ahora.getFullYear(), ahora.getMonth(), 1)
+  const consultarRanking = async (d?: string, h?: string) => {
+    const desde = d ?? desdeRanking
+    const hasta = h ?? hastaRanking
+    setCargandoRanking(true)
+    setBuscadoRanking(false)
+    try {
+      const res = await fetch(`${SERVER_URL}/productos/mas-vendidos?desde=${desde}&hasta=${hasta}`)
+      const data = await res.json()
+      setRanking(data.ranking ?? [])
+      setTotalPedidosRanking(data.totalPedidos ?? 0)
+    } catch {
+      setRanking([])
+      setTotalPedidosRanking(0)
+    } finally {
+      setCargandoRanking(false)
+      setBuscadoRanking(true)
+    }
   }
-  const d = desde.toISOString().split('T')[0]
-  const h = ahora.toISOString().split('T')[0]
-  setDesdeRanking(d)
-  setHastaRanking(h)
-  consultarRanking(d, h)
-}
+
+  const setRangoRapido = (tipo: 'hoy' | 'semana' | 'mes') => {
+    const ahora = new Date()
+    let desdeDate = new Date()
+    if (tipo === 'semana') {
+      desdeDate.setDate(ahora.getDate() - ahora.getDay() + (ahora.getDay() === 0 ? -6 : 1))
+    } else if (tipo === 'mes') {
+      desdeDate = new Date(ahora.getFullYear(), ahora.getMonth(), 1)
+    }
+    const d = desdeDate.toISOString().split('T')[0]
+    const h = ahora.toISOString().split('T')[0]
+    setDesdeRanking(d)
+    setHastaRanking(h)
+    consultarRanking(d, h)
+  }
 
   const imprimirPedido = () => {
     if (!pedidoDetalle) return
@@ -400,11 +434,11 @@ const setRangoRapido = (tipo: 'hoy' | 'semana' | 'mes') => {
               📦 Stock
             </button>
             <button
-  className={`admin__tab ${pestana === 'masVendidos' ? 'admin__tab--active' : ''}`}
-  onClick={() => setPestana('masVendidos')}
->
-  📊 Más vendidos
-</button>
+              className={`admin__tab ${pestana === 'masVendidos' ? 'admin__tab--active' : ''}`}
+              onClick={() => setPestana('masVendidos')}
+            >
+              📊 Más vendidos
+            </button>
           </div>
         </div>
       </div>
@@ -574,109 +608,151 @@ const setRangoRapido = (tipo: 'hoy' | 'semana' | 'mes') => {
         )}
 
         {/* ── PESTAÑA MÁS VENDIDOS ── */}
-{pestana === 'masVendidos' && (
-  <div className="admin__masvendidos">
-    <div className="admin__filtros">
-      <h2>Productos más vendidos</h2>
+        {pestana === 'masVendidos' && (
+          <div className="admin__masvendidos">
+            <div className="admin__filtros">
+              <h2>Productos más vendidos</h2>
 
-      {/* Botones rápidos */}
-      <div className="admin__rangos-rapidos">
-        <button className="admin__rango-btn" onClick={() => setRangoRapido('hoy')}>Hoy</button>
-        <button className="admin__rango-btn" onClick={() => setRangoRapido('semana')}>Esta semana</button>
-        <button className="admin__rango-btn" onClick={() => setRangoRapido('mes')}>Este mes</button>
-      </div>
+              {/* Botones rápidos */}
+              <div className="admin__rangos-rapidos">
+                <button className="admin__rango-btn" onClick={() => setRangoRapido('hoy')}>Hoy</button>
+                <button className="admin__rango-btn" onClick={() => setRangoRapido('semana')}>Esta semana</button>
+                <button className="admin__rango-btn" onClick={() => setRangoRapido('mes')}>Este mes</button>
+              </div>
 
-      <div className="admin__filtros-row">
-        <div className="admin__filtro-field">
-          <label>Desde</label>
-          <input
-            type="date"
-            value={desdeRanking}
-            onChange={(e) => setDesdeRanking(e.target.value)}
-            className="admin__input"
-          />
-        </div>
-        <div className="admin__filtro-field">
-          <label>Hasta</label>
-          <input
-            type="date"
-            value={hastaRanking}
-            onChange={(e) => setHastaRanking(e.target.value)}
-            className="admin__input"
-          />
-        </div>
-        <button
-          className="admin__btn-consultar"
-          onClick={() => consultarRanking()}
-          disabled={cargandoRanking}
-        >
-          {cargandoRanking ? 'Calculando...' : 'Consultar'}
-        </button>
-      </div>
-    </div>
+              <div className="admin__filtros-row">
+                <div className="admin__filtro-field">
+                  <label>Desde</label>
+                  <input
+                    type="date"
+                    value={desdeRanking}
+                    onChange={(e) => setDesdeRanking(e.target.value)}
+                    className="admin__input"
+                  />
+                </div>
+                <div className="admin__filtro-field">
+                  <label>Hasta</label>
+                  <input
+                    type="date"
+                    value={hastaRanking}
+                    onChange={(e) => setHastaRanking(e.target.value)}
+                    className="admin__input"
+                  />
+                </div>
+                <button
+                  className="admin__btn-consultar"
+                  onClick={() => consultarRanking()}
+                  disabled={cargandoRanking}
+                >
+                  {cargandoRanking ? 'Calculando...' : 'Consultar'}
+                </button>
+              </div>
+            </div>
 
-    {cargandoRanking && (
-      <div className="admin__empty"><p>Calculando ranking...</p></div>
-    )}
+            {cargandoRanking && (
+              <div className="admin__empty"><p>Calculando ranking...</p></div>
+            )}
 
-    {buscadoRanking && !cargandoRanking && (
-      <>
-        {/* Stat cards */}
-        <div className="admin__resumen">
-          <div className="admin__stat">
-            <span className="admin__stat-label">Pedidos analizados</span>
-            <span className="admin__stat-valor">{totalPedidosRanking}</span>
-          </div>
-          <div className="admin__stat">
-            <span className="admin__stat-label">Productos distintos</span>
-            <span className="admin__stat-valor">{ranking.length}</span>
-          </div>
-          <div className="admin__stat">
-            <span className="admin__stat-label">Unidades vendidas</span>
-            <span className="admin__stat-valor">
-              {ranking.reduce((a, r) => a + r.unidades, 0).toLocaleString('es-AR')}
-            </span>
-          </div>
-          <div className="admin__stat">
-            <span className="admin__stat-label">Total facturado</span>
-            <span className="admin__stat-valor admin__stat-valor--celeste">
-              ${ranking.reduce((a, r) => a + r.total, 0).toLocaleString('es-AR')}
-            </span>
-          </div>
-        </div>
+            {buscadoRanking && !cargandoRanking && (
+              <>
+                {/* Stat cards */}
+                <div className="admin__resumen">
+                  <div className="admin__stat">
+                    <span className="admin__stat-label">Pedidos analizados</span>
+                    <span className="admin__stat-valor">{totalPedidosRanking}</span>
+                  </div>
+                  <div className="admin__stat">
+                    <span className="admin__stat-label">Productos distintos</span>
+                    <span className="admin__stat-valor">{rankingProcesado.length}</span>
+                  </div>
+                  <div className="admin__stat">
+                    <span className="admin__stat-label">Unidades vendidas</span>
+                    <span className="admin__stat-valor">
+                      {rankingProcesado.reduce((a, r) => a + r.unidades, 0).toLocaleString('es-AR')}
+                    </span>
+                  </div>
+                  <div className="admin__stat">
+                    <span className="admin__stat-label">Total facturado</span>
+                    <span className="admin__stat-valor admin__stat-valor--celeste">
+                      ${rankingProcesado.reduce((a, r) => a + r.total, 0).toLocaleString('es-AR')}
+                    </span>
+                  </div>
+                </div>
 
-        {ranking.length === 0 ? (
-          <div className="admin__empty"><p>No hay pedidos en ese período.</p></div>
-        ) : (
-          <div className="admin__tabla-wrap">
-            <table className="admin__tabla">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Producto</th>
-                  <th>Unidades</th>
-                  <th>En pedidos</th>
-                  <th>Total generado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ranking.map((item, i) => (
-                  <tr key={item.nombre} className="admin__tabla-row">
-                    <td className="admin__num-pedido">{i + 1}</td>
-                    <td className="admin__cliente">{item.nombre}</td>
-                    <td><strong>{item.unidades.toLocaleString('es-AR')}</strong></td>
-                    <td>{item.apariciones}</td>
-                    <td className="admin__total">${item.total.toLocaleString('es-AR')}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                {rankingProcesado.length === 0 ? (
+                  <div className="admin__empty"><p>No hay pedidos en ese período.</p></div>
+                ) : (
+                  <>
+                    {/* Toggles */}
+                    <div className="admin__ranking-controles">
+                      <div className="admin__toggle-grupo">
+                        <span>Ordenar por</span>
+                        <button
+                          className={`admin__toggle-opt ${ordenRanking === 'unidades' ? 'admin__toggle-opt--active' : ''}`}
+                          onClick={() => setOrdenRanking('unidades')}
+                        >
+                          Unidades
+                        </button>
+                        <button
+                          className={`admin__toggle-opt ${ordenRanking === 'total' ? 'admin__toggle-opt--active' : ''}`}
+                          onClick={() => setOrdenRanking('total')}
+                        >
+                          Total generado
+                        </button>
+                      </div>
+
+                      <div className="admin__toggle-grupo">
+                        <span>Agrupar por</span>
+                        <button
+                          className={`admin__toggle-opt ${!desglosarTalle ? 'admin__toggle-opt--active' : ''}`}
+                          onClick={() => setDesglosarTalle(false)}
+                        >
+                          Nombre
+                        </button>
+                        <button
+                          className={`admin__toggle-opt ${desglosarTalle ? 'admin__toggle-opt--active' : ''}`}
+                          onClick={() => setDesglosarTalle(true)}
+                        >
+                          Nombre + talle
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Tabla */}
+                    <div className="admin__tabla-wrap">
+                      <table className="admin__tabla">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Producto</th>
+                            {desglosarTalle && <th>Talle</th>}
+                            <th>Unidades</th>
+                            <th>En pedidos</th>
+                            <th>Total generado</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {rankingProcesado.map((item, i) => (
+                            <tr key={`${item.nombre}__${item.talle}`} className="admin__tabla-row">
+                              <td className="admin__num-pedido">{i + 1}</td>
+                              <td className="admin__cliente">{item.nombre}</td>
+                              {desglosarTalle && (
+                                <td>{item.talle && item.talle !== 'unico' ? item.talle : '—'}</td>
+                              )}
+                              <td><strong>{item.unidades.toLocaleString('es-AR')}</strong></td>
+                              <td>{item.apariciones}</td>
+                              <td className="admin__total">${item.total.toLocaleString('es-AR')}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
           </div>
         )}
-      </>
-    )}
-  </div>
-)}
 
       </div>
 

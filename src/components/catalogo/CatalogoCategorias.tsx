@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { getProductos, getCategorias } from '../../lib/sanity'
 import type { Producto, Categoria } from '../../types'
 import CardProducto from './CardProducto'
+import { tieneDescuento } from '../../lib/precio'
 import './CatalogoCategorias.css'
 
 export default function CatalogoCategorias() {
@@ -35,6 +36,13 @@ export default function CatalogoCategorias() {
     setMarcaAbierta((prev) => (prev === marca ? null : marca))
   }
 
+  // ── Ofertas ────────────────────────────────────────────────────
+  const productosOferta = useMemo(() =>
+    productos.filter((p) => p.enStock && tieneDescuento(p)),
+    [productos]
+  )
+  // ──────────────────────────────────────────────────────────────
+
   const categoriasFiltradas = useMemo(() => {
     const q = busqueda.toLowerCase().trim()
     return categorias.map((cat) => {
@@ -44,7 +52,6 @@ export default function CatalogoCategorias() {
         return matchCat && matchBusqueda
       })
 
-      // Agrupar por marca
       const marcasMap: Record<string, Producto[]> = {}
       productosCat.forEach((p) => {
         const marca = p.marca ?? 'Sin marca'
@@ -76,6 +83,8 @@ export default function CatalogoCategorias() {
       </div>
     )
   }
+
+  const isOfertasOpen = categoriaAbierta === '__ofertas__'
 
   return (
     <div className="cat-mobile">
@@ -112,6 +121,37 @@ export default function CatalogoCategorias() {
         </div>
       )}
 
+      {/* ── Sección Ofertas — solo si hay productos con descuento ── */}
+      {productosOferta.length > 0 && !busqueda && (
+        <div className={`cat-mobile__seccion cat-mobile__seccion--ofertas ${isOfertasOpen ? 'cat-mobile__seccion--open' : ''}`}>
+          <button
+            className="cat-mobile__header cat-mobile__header--ofertas"
+            onClick={() => toggleCategoria('__ofertas__')}
+            aria-expanded={isOfertasOpen}
+          >
+            <div className="cat-mobile__header-left">
+              <div className="cat-mobile__header-info">
+                <span className="cat-mobile__nombre">🔥 Ofertas</span>
+                <span className="cat-mobile__count">{productosOferta.length} producto{productosOferta.length !== 1 ? 's' : ''} con descuento</span>
+              </div>
+            </div>
+            <div className="cat-mobile__icono">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
+          </button>
+
+          <div className="cat-mobile__productos-wrap">
+            <div className="cat-mobile__productos cat-mobile__productos--ofertas">
+              {isOfertasOpen && productosOferta.map((producto) => (
+                <CardProducto key={producto._id} producto={producto} />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Categorías */}
       {categoriasFiltradas.map((cat) => {
         const isCatOpen = categoriaAbierta === cat.slug
@@ -119,7 +159,6 @@ export default function CatalogoCategorias() {
         return (
           <div key={cat._id} className={`cat-mobile__seccion ${isCatOpen ? 'cat-mobile__seccion--open' : ''}`}>
 
-            {/* Header categoría */}
             <button className="cat-mobile__header" onClick={() => toggleCategoria(cat.slug)} aria-expanded={isCatOpen}>
               <div className="cat-mobile__header-left">
                 <div className="cat-mobile__header-info">
@@ -134,7 +173,6 @@ export default function CatalogoCategorias() {
               </div>
             </button>
 
-            {/* Marcas dentro de la categoría */}
             <div className="cat-mobile__productos-wrap">
               <div className="cat-mobile__marcas">
                 {cat.marcas.map((marca) => {
@@ -143,7 +181,6 @@ export default function CatalogoCategorias() {
                   return (
                     <div key={marca.nombre} className={`cat-mobile__marca ${isMarcaOpen ? 'cat-mobile__marca--open' : ''}`}>
 
-                      {/* Header marca */}
                       <button
                         className="cat-mobile__marca-header"
                         onClick={() => toggleMarca(`${cat.slug}-${marca.nombre}`)}
@@ -160,7 +197,6 @@ export default function CatalogoCategorias() {
                         </div>
                       </button>
 
-                      {/* Productos de la marca */}
                       <div className="cat-mobile__marca-productos-wrap">
                         <div className="cat-mobile__productos">
                           {isMarcaOpen && marca.productos.map((producto) => (

@@ -434,3 +434,18 @@
 .cat-mobile__marca--open .cat-mobile__marca-productos-wrap {
   grid-template-rows: 1fr;
 }
+.cat-mobile__seccion--ofertas {
+  border-left: 3px solid #e63946;
+}
+
+.cat-mobile__header--ofertas {
+  background: #fff5f5;
+}
+
+.cat-mobile__header--ofertas:hover {
+  background: #ffe8e8;
+}
+
+.cat-mobile__productos--ofertas {
+  padding: 8px;
+}

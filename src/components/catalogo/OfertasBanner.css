@@ -1,4 +1,4 @@
-/* src/pages/Catalogo.css */
+/* src/components/catalogo/OfertasBanner.css */
 
 .ofertas-banner {
   background: linear-gradient(135deg, #ff4757 0%, #e63946 100%);
@@ -61,14 +61,9 @@
   transform: scale(0.98);
 }
 
-/* Mobile */
+/* Solo visible en desktop — en mobile el acordeón maneja las ofertas */
 @media (max-width: 768px) {
-  .ofertas-banner__inner {
-    flex-direction: row;
-    gap: 10px;
-  }
-
-  .ofertas-banner__msg {
-    font-size: 13px;
+  .ofertas-banner {
+    display: none;
   }
 }

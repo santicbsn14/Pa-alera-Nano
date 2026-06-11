@@ -6,7 +6,6 @@ import OfertasBanner from '../components/catalogo/OfertasBanner'
 export default function Catalogo() {
   const [soloOfertas, setSoloOfertas] = useState(false)
 
-
   return (
     <>
       <OfertasBanner soloOfertas={soloOfertas} onToggle={setSoloOfertas} />

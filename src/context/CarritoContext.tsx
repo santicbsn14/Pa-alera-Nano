@@ -1,5 +1,5 @@
 // src/context/CarritoContext.tsx
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import type { Producto } from '../types'
 import { precioFinal, tieneDescuento } from '../lib/precio'
 
@@ -28,12 +28,35 @@ interface CarritoContextType {
   cerrarCarrito: () => void
 }
 
+const STORAGE_KEY = 'nano_carrito'
+
+function cargarDesdeStorage(): ItemCarrito[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    return parsed
+  } catch {
+    return []
+  }
+}
+
 const CarritoContext = createContext<CarritoContextType | null>(null)
 
 export function CarritoProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<ItemCarrito[]>([])
+  const [items, setItems] = useState<ItemCarrito[]>(cargarDesdeStorage)
   const [abierto, setAbierto] = useState(false)
   const [toast, setToast] = useState<ToastInfo | null>(null)
+
+  // Persistir en localStorage cada vez que cambia el carrito
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+    } catch {
+      // Si localStorage no está disponible, seguimos sin persistencia
+    }
+  }, [items])
 
   const totalItems = items.reduce((acc, i) => acc + i.cantidad, 0)
 
@@ -44,7 +67,6 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
   ) => {
     const esCombo = producto.categoria?.slug === 'combos'
 
-    // Aplicar descuento antes de guardar en carrito
     const productoConPrecioFinal: Producto = tieneDescuento(producto)
       ? { ...producto, precio: precioFinal(producto) }
       : producto

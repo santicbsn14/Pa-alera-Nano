@@ -1,5 +1,6 @@
 // src/components/catalogo/CardProducto.tsx
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useCarrito } from '../../context/CarritoContext'
 import { urlFor } from '../../lib/sanity'
 import type { Producto } from '../../types'
@@ -20,8 +21,10 @@ function parsearUnidadesBulto(presentacion?: string): number | null {
 }
 
 export default function CardProducto({ producto }: Props) {
+  const navigate = useNavigate()
   const { agregar, quitar, cambiarCantidad, items } = useCarrito()
 
+  const esBolson = producto.categoria?.slug === 'bolsones'
   const esCombo = producto.categoria?.slug === 'combos'
   const categoriaLabel = producto.categoria?.nombre ?? ''
 
@@ -74,6 +77,75 @@ export default function CardProducto({ producto }: Props) {
     setModalCombo(false)
     setTallesSeleccionados({})
   }
+
+  // ── Card de Bolsón: layout propio, sin combos/cajas/contador ────
+  if (esBolson) {
+    const irAlDetalle = () => {
+      if (producto.slug) navigate(`/bolson/${producto.slug}`)
+    }
+
+    return (
+      <div className="card card--bolson" onClick={irAlDetalle}>
+        <div className="card__img-wrap">
+          <span className="card__badge-bolson">Bolsón</span>
+
+          {producto.foto ? (
+            <img
+              src={urlFor(producto.foto)
+                .width(400)
+                .height(400)
+                .fit('crop')
+                .auto('format')
+                .quality(70)
+                .url()}
+              alt={producto.nombre}
+              className="card__img"
+              loading="lazy"
+            />
+          ) : (
+            <div className="card__img-placeholder">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <path d="M21 15l-5-5L5 21" />
+              </svg>
+            </div>
+          )}
+          {!producto.enStock && (
+            <span className="card__sin-stock">Sin stock</span>
+          )}
+        </div>
+
+        <div className="card__info">
+          <h3 className="card__nombre">{producto.nombre}</h3>
+          {producto.descripcion && (
+            <span className="card__codbar">{producto.descripcion}</span>
+          )}
+          <div className="card__footer">
+            <div className="card__precios">
+              {conDescuento && (
+                <span className="card__precio-original">
+                  ${producto.precio.toLocaleString('es-AR')}
+                </span>
+              )}
+              <span className={`card__precio ${conDescuento ? 'card__precio--rebajado' : ''}`}>
+                ${precioMostrar.toLocaleString('es-AR')}
+              </span>
+            </div>
+          </div>
+
+          <button
+            className="card__btn card__btn--bolson"
+            onClick={irAlDetalle}
+            disabled={!producto.enStock}
+          >
+            Ver bolsón
+          </button>
+        </div>
+      </div>
+    )
+  }
+  // ───────────────────────────────────────────────────────────────
 
   return (
     <>

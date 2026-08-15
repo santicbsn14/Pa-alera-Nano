@@ -8,6 +8,17 @@ export interface Categoria {
   activa: boolean
 }
 
+export interface ProductoInterno {
+  _key?: string
+  imagen?: {
+    asset: {
+      _ref: string
+    }
+  }
+  nombre: string
+  descripcionCorta?: string
+}
+
 export interface Producto {
   _id: string
   idSistema: string
@@ -30,6 +41,8 @@ export interface Producto {
   presentacion?: string
   enStock: boolean
   vendePorCaja?: boolean
+  slug?: string                        // ← NUEVO (solo bolsones)
+  productosInternos?: ProductoInterno[] // ← NUEVO (solo bolsones)
 }
 
 export interface Flete {
@@ -73,6 +86,6 @@ export interface FiltrosCatalogo {
   talle: TalleFilter
   marca: string
   soloStock: boolean
-  soloOfertas: boolean  // ← NUEVO
+  soloOfertas: boolean
   busqueda: string
 }

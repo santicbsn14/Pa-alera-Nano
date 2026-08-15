@@ -6,7 +6,7 @@ import type { SanityImageSource } from '@sanity/image-url'
 
 export const client = createClient({
   projectId: import.meta.env.VITE_SANITY_PROJECT_ID,
-  dataset: import.meta.env.VITE_SANITY_DATASET ?? 'production',
+  dataset: 'staging',
   useCdn: true,
   apiVersion: '2024-01-01',
 })
@@ -54,9 +54,50 @@ export async function getProductos(): Promise<Producto[]> {
       tallesCombo,
       presentacion,
       enStock,
-      vendePorCaja
+      vendePorCaja,
+      "slug": slug.current
     }
   `)
+}
+
+// Trae un bolsón puntual por su slug — para la página de detalle.
+// Incluye productosInternos (que NO se traen en el catálogo general por performance).
+export async function getBolsonPorSlug(slug: string): Promise<Producto | null> {
+  const bolson = await client.fetch(
+    `
+    *[_type == "producto" && slug.current == $slug][0]{
+      _id,
+      idSistema,
+      nombre,
+      marca,
+      descripcion,
+      foto,
+      precio,
+      descuento,
+      categoria->{
+        _id,
+        nombre,
+        "slug": slug.current,
+        orden,
+        activa
+      },
+      talle,
+      tallesCombo,
+      presentacion,
+      enStock,
+      vendePorCaja,
+      "slug": slug.current,
+      productosInternos[]{
+        _key,
+        nombre,
+        descripcionCorta,
+        imagen
+      }
+    }
+  `,
+    { slug }
+  )
+  return bolson ?? null
 }
 
 export async function getFletes(): Promise<Flete[]> {

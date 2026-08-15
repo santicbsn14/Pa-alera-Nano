@@ -8,6 +8,7 @@ import Toast from './components/carrito/Toast'
 import Home from './pages/Home'
 import Catalogo from './pages/Catalogo'
 import Comprobante from './pages/Comprobante'
+import BolsonDetalle from './pages/BolsonDetalle'
 import CarritoFlotante from './components/carrito/CarritoFlotante'
 import Admin from './pages/Admin'
 
@@ -25,6 +26,7 @@ export default function App() {
               <Route index element={<Home />} />
               <Route path="catalogo" element={<Catalogo />} />
               <Route path="comprobante" element={<Comprobante />} />
+              <Route path="bolson/:slug" element={<BolsonDetalle />} />
             </Route>
           </Routes>
         </CarritoProvider>

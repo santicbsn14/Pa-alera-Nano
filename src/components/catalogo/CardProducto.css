@@ -445,3 +445,30 @@
 .card__precio--rebajado {
   color: #e63946;
 }
+/* ── Card de Bolsón ── */
+.card--bolson {
+  cursor: pointer;
+}
+
+.card__badge-bolson {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #4DC8E8;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 5px 10px;
+  border-radius: 999px;
+  z-index: 2;
+}
+
+.card__btn--bolson {
+  background: #0A0A0A;
+}
+
+.card__btn--bolson:hover {
+  opacity: 0.85;
+}

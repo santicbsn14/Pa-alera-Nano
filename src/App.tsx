@@ -13,6 +13,7 @@ import CarritoFlotante from './components/carrito/CarritoFlotante'
 import Admin from './pages/Admin'
 
 export default function App() {
+
   return (
     <ErrorBoundary>
       <BrowserRouter>

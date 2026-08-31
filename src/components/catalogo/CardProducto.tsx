@@ -87,7 +87,7 @@ export default function CardProducto({ producto }: Props) {
     return (
       <div className="card card--bolson" onClick={irAlDetalle}>
         <div className="card__img-wrap">
-          <span className="card__badge-bolson">Bolsón</span>
+          <span className="card__badge-bolson">Pack</span>
 
           {producto.foto ? (
             <img
@@ -139,7 +139,7 @@ export default function CardProducto({ producto }: Props) {
             onClick={irAlDetalle}
             disabled={!producto.enStock}
           >
-            Ver bolsón
+            Ver pack
           </button>
         </div>
       </div>

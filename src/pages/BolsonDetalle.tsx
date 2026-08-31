@@ -89,7 +89,7 @@ useEffect(() => {
         {/* ── Galería ── */}
         <div className="bolson-detalle__galeria">
           <div className="bolson-detalle__img-principal">
-            <span className="bolson-detalle__badge">Bolsón</span>
+            <span className="bolson-detalle__badge">Pack</span>
             {imagenes.length > 0 ? (
               <img
                 src={urlFor(imagenes[imagenActiva].img).width(600).height(600).fit('crop').auto('format').quality(80).url()}
@@ -178,7 +178,7 @@ useEffect(() => {
           {/* ── Qué incluye ── */}
           {bolson.productosInternos && bolson.productosInternos.length > 0 && (
             <div className="bolson-detalle__incluye">
-              <h2>Este bolsón incluye</h2>
+              <h2>Este pack incluye</h2>
               <div className="bolson-detalle__incluye-lista">
                 {bolson.productosInternos.map((p, i) => (
                   <div key={p._key ?? i} className="bolson-detalle__incluye-item">

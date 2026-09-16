@@ -154,6 +154,11 @@ export default function ModalCarrito() {
               producto: t.producto,
               talle: t.talle,
             })),
+            productosInternos: (i.producto.productosInternos ?? []).map((p) => ({
+              _key: Math.random().toString(36).substring(2, 9),
+              nombre: p.nombre,
+              descripcionCorta: p.descripcionCorta ?? '',
+            })),
             presentacion: i.producto.presentacion,
             descripcion: i.producto.descripcion,
             precio: i.producto.precio,

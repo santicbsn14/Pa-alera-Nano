@@ -6,6 +6,7 @@ interface ItemPedido {
   nombre: string
   talle?: string
   tallesCombo?: { producto: string; talle: string }[]
+  productosInternos?: { nombre: string; descripcionCorta?: string }[]
   presentacion?: string
   descripcion?: string
   precio: number
@@ -96,6 +97,9 @@ export default function Comprobante() {
           ${item.talle && item.talle !== 'unico' ? `<div style="font-size:12px;color:#666">${item.talle}</div>` : ''}
           ${item.tallesCombo && item.tallesCombo.length > 0
             ? `<div style="font-size:12px;color:#666">${item.tallesCombo.map((t) => `${t.producto}: ${t.talle}`).join(' / ')}</div>`
+            : ''}
+          ${item.productosInternos && item.productosInternos.length > 0
+            ? `<div style="font-size:12px;color:#666">${item.productosInternos.map((p) => `${p.nombre}${p.descripcionCorta ? ` - ${p.descripcionCorta}` : ''}`).join('<br>')}</div>`
             : ''}
           ${item.presentacion ? `<div style="font-size:12px;color:#666">${item.presentacion}</div>` : ''}
           ${item.descripcion ? `<div style="font-size:11px;color:#999">CB: ${item.descripcion}</div>` : ''}

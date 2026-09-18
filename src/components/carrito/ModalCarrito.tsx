@@ -5,7 +5,7 @@ import './ModalCarrito.css'
 
 const WHATSAPP = '5493412479055'
 const WEB_URL = 'https://panaleranano.com'
-const SERVER_URL = 'https://nano-server-h25x.onrender.com'
+const SERVER_URL = 'https://nano-server-6lw4.onrender.com'
 const MINIMO_COMPRA = 150000
 
 interface DatosEnvio {

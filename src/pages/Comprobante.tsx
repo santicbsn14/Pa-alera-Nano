@@ -36,7 +36,7 @@ const ENVIOS: Record<string, string> = {
   personal: 'Lo retiro personalmente',
 }
 
-const SERVER_URL = 'https://nano-server-h25x.onrender.com'
+const SERVER_URL = 'https://nano-server-6lw4.onrender.com'
 
 function agruparItems(items: ItemPedido[]): ItemPedido[] {
   const mapa = new Map<string, ItemPedido>()

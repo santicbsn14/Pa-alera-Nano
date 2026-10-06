@@ -37,10 +37,15 @@ esto siempre, en cualquier tarea:
 
 - `ItemCarrito.producto` guarda el objeto `Producto` COMPLETO tal
   como llegó de Sanity al momento de `agregar()` — es la forma en
-  que hoy se "congela" el precio con descuento
-  (`precioFinal()`/`tieneDescuento()` en `lib/precio.ts`), y por
-  extensión, cualquier campo que el producto tenga en ese momento
-  queda snapshoteado automáticamente dentro del carrito.
+  que hoy se "congela" el precio, y por extensión, cualquier campo
+  que el producto tenga en ese momento queda snapshoteado
+  automáticamente dentro del carrito.
+- Descuentos (Feature 03) son SOLO VISUALES: `producto.precio` es
+  siempre el precio real que se cobra. `precioFinal()` NO descuenta
+  (devuelve `precio`). El tachado es `precioTachado()` =
+  `Math.round(precio * (1 + descuento/100))`. Que la diferencia real
+  no coincida exacto con el badge `-X%` es intencional — no
+  "corregir" la fórmula. Todo en `lib/precio.ts`.
 - ⚠️ IMPORTANTE — invariante frágil: `getProductos()` (catálogo
   general) NO trae `productosInternos` por performance. Solo
   `getBolsonPorSlug()` (detalle de Pack) lo trae. El único lugar del
@@ -56,7 +61,9 @@ esto siempre, en cualquier tarea:
   `Math.random().toString(36).substring(2, 9)` — mismo patrón que va
   a usar `productosInternos` cuando se arme en el POST `/pedido`
   (capa 3).
-- El carrito persiste en `localStorage` bajo la key `nano_carrito`.
+- El carrito persiste en `localStorage` bajo la key `nano_carrito_v2`
+  (se subió de `nano_carrito` al cambiar a descuento visual, para
+  descartar carritos viejos con precios rebajados guardados).
 
 ## Qué NO hacer
 

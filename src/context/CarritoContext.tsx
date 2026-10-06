@@ -28,7 +28,7 @@ interface CarritoContextType {
   cerrarCarrito: () => void
 }
 
-const STORAGE_KEY = 'nano_carrito'
+const STORAGE_KEY = 'nano_carrito_v2'
 
 function cargarDesdeStorage(): ItemCarrito[] {
   try {

@@ -5,7 +5,7 @@ import { useCarrito } from '../../context/CarritoContext'
 import { urlFor } from '../../lib/sanity'
 import type { Producto } from '../../types'
 import './CardProducto.css'
-import { precioFinal, tieneDescuento } from '../../lib/precio'
+import { precioTachado, tieneDescuento } from '../../lib/precio'
 
 const TALLES_DEFAULT = ['RN', 'P', 'M', 'G', 'XG', 'XXG', 'XXXG']
 
@@ -50,7 +50,8 @@ export default function CardProducto({ producto }: Props) {
 
   // ── Descuentos ──────────────────────────────────────────────────
   const conDescuento = tieneDescuento(producto)
-  const precioMostrar = precioFinal(producto)
+  const precioOriginal = precioTachado(producto)
+  const precioMostrar = producto.precio
   // ───────────────────────────────────────────────────────────────
 
   const productosCombo = esCombo
@@ -125,7 +126,7 @@ export default function CardProducto({ producto }: Props) {
             <div className="card__precios">
               {conDescuento && (
                 <span className="card__precio-original">
-                  ${producto.precio.toLocaleString('es-AR')}
+                  ${precioOriginal.toLocaleString('es-AR')}
                 </span>
               )}
               <span className={`card__precio ${conDescuento ? 'card__precio--rebajado' : ''}`}>
@@ -204,7 +205,7 @@ export default function CardProducto({ producto }: Props) {
             <div className="card__precios">
               {conDescuento && (
                 <span className="card__precio-original">
-                  ${producto.precio.toLocaleString('es-AR')}
+                  ${precioOriginal.toLocaleString('es-AR')}
                 </span>
               )}
               <span className={`card__precio ${conDescuento ? 'card__precio--rebajado' : ''}`}>

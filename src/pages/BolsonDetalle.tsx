@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { getBolsonPorSlug, urlFor} from '../lib/sanity'
 import { useCarrito } from '../context/CarritoContext'
-import { precioFinal, tieneDescuento } from '../lib/precio'
+import { precioTachado, tieneDescuento } from '../lib/precio'
 import type { Producto } from '../types'
 import './BolsonDetalle.css'
 
@@ -70,7 +70,8 @@ useEffect(() => {
   ]
 
   const conDescuento = tieneDescuento(bolson)
-  const precioMostrar = precioFinal(bolson)
+  const precioOriginal = precioTachado(bolson)
+  const precioMostrar = bolson.precio
 
   const itemEnCarrito = items.find((i) => i.itemId === bolson._id)
   const cantidad = itemEnCarrito?.cantidad ?? 0
@@ -133,7 +134,7 @@ useEffect(() => {
           <div className="bolson-detalle__precios">
             {conDescuento && (
               <span className="bolson-detalle__precio-original">
-                ${bolson.precio.toLocaleString('es-AR')}
+                ${precioOriginal.toLocaleString('es-AR')}
               </span>
             )}
             <span className={`bolson-detalle__precio ${conDescuento ? 'bolson-detalle__precio--rebajado' : ''}`}>

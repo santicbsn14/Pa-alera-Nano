@@ -2,7 +2,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import './Admin.css'
 
-const SERVER_URL = 'https://nano-server-6lw4.onrender.com'
+const SERVER_URL = import.meta.env.VITE_SERVER_URL ?? 'https://nano-server-avac.onrender.com'
 
 const ENVIOS: Record<string, string> = {
   viacargo: 'Via Cargo',

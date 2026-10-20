@@ -276,8 +276,17 @@
   transform: translateY(-1px);
 }
 
+/* Mismo alto que .modal__vaciar-confirm: el footer no cambia de tamaño al confirmar,
+   así un segundo toque en el mismo lugar cae sobre el texto y no sobre "Sí, vaciar". */
 .modal__vaciar {
+  align-self: center;
+  margin-top: 16px;
+  margin-bottom: 36px;
+  padding: 0 8px 8px;
+  background: none;
+  border: none;
   font-size: 13px;
+  line-height: 1.5;
   color: var(--color-text-muted);
   text-align: center;
   text-decoration: underline;
@@ -286,6 +295,45 @@
 
 .modal__vaciar:hover {
   color: var(--color-error);
+}
+
+.modal__vaciar-confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.modal__vaciar-acciones {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.modal__vaciar-si,
+.modal__vaciar-no {
+  min-height: 36px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.modal__vaciar-si {
+  background: var(--color-error);
+  border: 1px solid var(--color-error);
+  color: #fff;
+}
+
+.modal__vaciar-no {
+  background: transparent;
+  border: 1px solid var(--color-border-light);
+  color: var(--color-text-muted);
 }
 
 /* ── Responsive ───────────────────────────────────────────────── */

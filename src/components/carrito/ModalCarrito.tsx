@@ -90,6 +90,7 @@ export default function ModalCarrito() {
   const [errores, setErrores] = useState<Partial<Record<keyof DatosEnvio, string>>>({})
   const [enviando, setEnviando] = useState(false)
   const [urlWhatsapp, setUrlWhatsapp] = useState('')
+  const [confirmandoVaciar, setConfirmandoVaciar] = useState(false)
 
   const total = items.reduce((acc, i) => acc + i.producto.precio * i.cantidad, 0)
   const minimoAlcanzado = total >= MINIMO_COMPRA
@@ -107,8 +108,15 @@ export default function ModalCarrito() {
       setErrores({})
       setEnviando(false)
       setUrlWhatsapp('')
+      setConfirmandoVaciar(false)
     }
   }, [abierto])
+
+  useEffect(() => {
+    if (!confirmandoVaciar) return
+    const timer = setTimeout(() => setConfirmandoVaciar(false), 4000)
+    return () => clearTimeout(timer)
+  }, [confirmandoVaciar])
 
   if (!abierto) return null
 
@@ -291,7 +299,17 @@ export default function ModalCarrito() {
                       <path d="M5 12h14M12 5l7 7-7 7" />
                     </svg>
                   </button>
-                  <button className="modal__vaciar" onClick={vaciar}>Vaciar pedido</button>
+                  {confirmandoVaciar ? (
+                    <div className="modal__vaciar-confirm">
+                      <span>¿Vaciar todo el pedido?</span>
+                      <div className="modal__vaciar-acciones">
+                        <button className="modal__vaciar-no" onClick={() => setConfirmandoVaciar(false)}>Cancelar</button>
+                        <button className="modal__vaciar-si" onClick={() => { vaciar(); setConfirmandoVaciar(false) }}>Sí, vaciar</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button className="modal__vaciar" onClick={() => setConfirmandoVaciar(true)}>Vaciar pedido</button>
+                  )}
                 </div>
               </>
             )}

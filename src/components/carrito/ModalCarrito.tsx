@@ -1,5 +1,5 @@
 // src/components/carrito/ModalCarrito.tsx
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useCarrito } from '../../context/CarritoContext'
 import './ModalCarrito.css'
 
@@ -7,6 +7,51 @@ const WHATSAPP = '5493412479055'
 const WEB_URL = 'https://panaleranano.com'
 const SERVER_URL = import.meta.env.VITE_SERVER_URL ?? 'https://nano-server-avac.onrender.com'
 const MINIMO_COMPRA = 150000
+const INTENTOS_MAX = 3
+const ESPERAS_REINTENTO = [1000, 3000]
+const TIMEOUT_INTENTO = 15000
+
+// El server valida idPedido con /^[a-zA-Z0-9-]{8,64}$/
+function generarIdPedido(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  // randomUUID no existe en contextos no seguros (ej. dev por IP de la red)
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
+}
+
+const esperar = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+type ResultadoIntento =
+  | { ok: true; pedidoId: string }
+  | { ok: false; reintentable: boolean }
+
+async function intentarEnvio(payload: Record<string, unknown>): Promise<ResultadoIntento> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_INTENTO)
+  try {
+    const response = await fetch(`${SERVER_URL}/pedido`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    })
+    // 4xx: el server rechazó el pedido, reintentar no lo va a cambiar
+    if (response.status >= 400 && response.status < 500) {
+      console.error('Pedido rechazado por el server:', response.status)
+      return { ok: false, reintentable: false }
+    }
+    const data = await response.json()
+    if (response.ok && data.ok && data.pedidoId) return { ok: true, pedidoId: data.pedidoId }
+    return { ok: false, reintentable: true }
+  } catch (err) {
+    // timeout/abort, error de red o respuesta que no es JSON
+    console.error('Error guardando pedido:', err)
+    return { ok: false, reintentable: true }
+  } finally {
+    clearTimeout(timer)
+  }
+}
 
 interface DatosEnvio {
   nombre: string
@@ -40,7 +85,7 @@ const ENVIOS: { value: DatosEnvio['envio']; label: string }[] = [
 function armarMensaje(
   items: ReturnType<typeof useCarrito>['items'],
   datos: DatosEnvio,
-  pedidoId: string
+  pedidoId: string | null
 ): string {
   const lineas = items.map((i) => {
     const talle = i.producto.talle && i.producto.talle !== 'unico' ? ` ${i.producto.talle}` : ''
@@ -71,7 +116,9 @@ function armarMensaje(
     `Envío: ${envioLabel}`,
     ...(datos.aclaracion ? [`Aclaración: ${datos.aclaracion}`] : []),
     '',
-    `🔗 Ver comprobante: ${WEB_URL}/comprobante?id=${pedidoId}`,
+    pedidoId
+      ? `🔗 Ver comprobante: ${WEB_URL}/comprobante?id=${pedidoId}`
+      : '⚠️ PEDIDO NO REGISTRADO EN EL SISTEMA — cargar manualmente',
     '',
     '——————————————',
     '',
@@ -85,12 +132,15 @@ function armarMensaje(
 
 export default function ModalCarrito() {
   const { items, abierto, cerrarCarrito, quitar, cambiarCantidad, vaciar } = useCarrito()
-  const [paso, setPaso] = useState<'carrito' | 'checkout' | 'listo'>('carrito')
+  const [paso, setPaso] = useState<'carrito' | 'checkout' | 'listo' | 'error'>('carrito')
   const [datos, setDatos] = useState<DatosEnvio>(datosIniciales)
   const [errores, setErrores] = useState<Partial<Record<keyof DatosEnvio, string>>>({})
   const [enviando, setEnviando] = useState(false)
+  const [intento, setIntento] = useState(1)
   const [urlWhatsapp, setUrlWhatsapp] = useState('')
   const [confirmandoVaciar, setConfirmandoVaciar] = useState(false)
+  // Mismo idPedido en todos los reintentos del intento actual: el server no duplica
+  const idPedidoRef = useRef<string | null>(null)
 
   const total = items.reduce((acc, i) => acc + i.producto.precio * i.cantidad, 0)
   const minimoAlcanzado = total >= MINIMO_COMPRA
@@ -107,8 +157,10 @@ export default function ModalCarrito() {
       setDatos(datosIniciales)
       setErrores({})
       setEnviando(false)
+      setIntento(1)
       setUrlWhatsapp('')
       setConfirmandoVaciar(false)
+      idPedidoRef.current = null
     }
   }, [abierto])
 
@@ -137,59 +189,75 @@ export default function ModalCarrito() {
     return Object.keys(nuevosErrores).length === 0
   }
 
+  // Devuelve el pedidoId si se registró, o null si falló tras los reintentos
+  const enviarPedido = async (payload: { idPedido: string } & Record<string, unknown>): Promise<string | null> => {
+    for (let n = 1; n <= INTENTOS_MAX; n++) {
+      // Se cerró el modal mientras se enviaba: no seguir reintentando
+      if (idPedidoRef.current !== payload.idPedido) return null
+      setIntento(n)
+      const resultado = await intentarEnvio(payload)
+      if (resultado.ok) return resultado.pedidoId
+      if (!resultado.reintentable || n === INTENTOS_MAX) return null
+      await esperar(ESPERAS_REINTENTO[n - 1])
+    }
+    return null
+  }
+
   const procesarPedido = async () => {
     if (!validar()) return
+    if (!idPedidoRef.current) idPedidoRef.current = generarIdPedido()
+    const idPedido = idPedidoRef.current
     setEnviando(true)
 
-    try {
-      const response = await fetch(`${SERVER_URL}/pedido`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nombre: datos.nombre,
-          telefono: datos.telefono,
-          ciudad: datos.ciudad,
-          direccion: datos.direccion,
-          fecha_retiro: datos.fecha,
-          turno: datos.turno,
-          envio: datos.envio,
-          aclaracion: datos.aclaracion,
-          items: items.map((i) => ({
-            nombre: i.producto.nombre,
-            talle: i.producto.talle,
-            tallesCombo: (i.tallesCombo ?? []).map((t) => ({
-              _key: Math.random().toString(36).substring(2, 9),
-              producto: t.producto,
-              talle: t.talle,
-            })),
-            productosInternos: (i.producto.productosInternos ?? []).map((p) => ({
-              _key: Math.random().toString(36).substring(2, 9),
-              nombre: p.nombre,
-              descripcionCorta: p.descripcionCorta ?? '',
-            })),
-            presentacion: i.producto.presentacion,
-            descripcion: i.producto.descripcion,
-            precio: i.producto.precio,
-            cantidad: i.cantidad,
-          })),
-          total,
-        }),
-      })
-      const data = await response.json()
-      const pedidoId = data.ok ? data.pedidoId : 'sin-id'
+    const pedidoId = await enviarPedido({
+      idPedido,
+      nombre: datos.nombre,
+      telefono: datos.telefono,
+      ciudad: datos.ciudad,
+      direccion: datos.direccion,
+      fecha_retiro: datos.fecha,
+      turno: datos.turno,
+      envio: datos.envio,
+      aclaracion: datos.aclaracion,
+      items: items.map((i) => ({
+        nombre: i.producto.nombre,
+        talle: i.producto.talle,
+        tallesCombo: (i.tallesCombo ?? []).map((t) => ({
+          _key: Math.random().toString(36).substring(2, 9),
+          producto: t.producto,
+          talle: t.talle,
+        })),
+        productosInternos: (i.producto.productosInternos ?? []).map((p) => ({
+          _key: Math.random().toString(36).substring(2, 9),
+          nombre: p.nombre,
+          descripcionCorta: p.descripcionCorta ?? '',
+        })),
+        presentacion: i.producto.presentacion,
+        descripcion: i.producto.descripcion,
+        precio: i.producto.precio,
+        cantidad: i.cantidad,
+      })),
+      total,
+    })
+
+    // Se cerró el modal mientras se enviaba: descartar la respuesta de este intento
+    if (idPedidoRef.current !== idPedido) return
+    setEnviando(false)
+
+    if (pedidoId) {
+      idPedidoRef.current = null
       const mensaje = armarMensaje(items, datos, pedidoId)
       setUrlWhatsapp(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensaje)}`)
       setPaso('listo')
-
-    } catch (err) {
-      console.error('Error guardando pedido:', err)
-      const mensaje = armarMensaje(items, datos, 'sin-id')
+    } else {
+      // Nunca pasar a 'listo' sin pedidoId. El carrito no se vacía acá.
+      const mensaje = armarMensaje(items, datos, null)
       setUrlWhatsapp(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensaje)}`)
-      setPaso('listo')
-    } finally {
-      setEnviando(false)
+      setPaso('error')
     }
   }
+
+  const textoEnviando = intento > 1 ? `Reintentando (${intento}/${INTENTOS_MAX})...` : 'Procesando...'
 
   return (
     <div className="modal-overlay" onClick={cerrarCarrito}>
@@ -210,7 +278,7 @@ export default function ModalCarrito() {
               <path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6" />
             </svg>
             <h2>
-              {paso === 'carrito' ? 'Tu pedido' : paso === 'checkout' ? 'Datos de envío' : '¡Pedido listo!'}
+              {paso === 'carrito' ? 'Tu pedido' : paso === 'checkout' ? 'Datos de envío' : paso === 'error' ? 'Algo salió mal' : '¡Pedido listo!'}
             </h2>
             {paso === 'carrito' && items.length > 0 && (
               <span className="modal__count">{items.reduce((a, i) => a + i.cantidad, 0)}</span>
@@ -374,7 +442,7 @@ export default function ModalCarrito() {
                 <span className="modal__total-valor">${total.toLocaleString('es-AR')}</span>
               </div>
               <button className="modal__pedido-btn" onClick={procesarPedido} disabled={enviando}>
-                {enviando ? 'Procesando...' : 'Confirmar pedido'}
+                {enviando ? textoEnviando : 'Confirmar pedido'}
               </button>
             </div>
           </>
@@ -398,6 +466,32 @@ export default function ModalCarrito() {
                 <path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.556 4.118 1.528 5.845L.057 23.535a.75.75 0 00.916.919l5.764-1.463A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.9 0-3.68-.513-5.208-1.408l-.372-.22-3.862.981.999-3.778-.242-.389A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
               </svg>
               Enviar pedido por WhatsApp
+            </a>
+          </div>
+        )}
+
+        {/* ── PASO 3b: Error al registrar ── */}
+        {paso === 'error' && (
+          <div className="modal__error-paso">
+            <div className="modal__error-icono">⚠️</div>
+            <h3>No pudimos registrar tu pedido</h3>
+            <p>Revisá tu conexión e intentá de nuevo. Tu pedido sigue guardado en el carrito.</p>
+            <button className="modal__reintentar-btn" onClick={procesarPedido} disabled={enviando}>
+              {enviando ? textoEnviando : 'Reintentar'}
+            </button>
+            {/* Deshabilitado mientras reintenta: si el reintento se registra, el mensaje "no registrado" duplicaría el pedido */}
+            <a
+              href={urlWhatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="modal__wsp-btn modal__wsp-btn--secundario"
+              aria-disabled={enviando}
+              onClick={(e) => {
+                if (enviando) { e.preventDefault(); return }
+                vaciar(); cerrarCarrito()
+              }}
+            >
+              Enviar igual por WhatsApp
             </a>
           </div>
         )}

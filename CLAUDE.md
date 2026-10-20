@@ -71,6 +71,23 @@ esto siempre, en cualquier tarea:
   mismo para que el footer no se mueva y un segundo toque accidental
   caiga sobre el texto, no sobre "Sí, vaciar".)
 
+- Envío del pedido (`ModalCarrito.tsx`): `POST /pedido` lleva un
+  `idPedido` generado en el cliente (`crypto.randomUUID()` con
+  fallback), guardado en `idPedidoRef` y REUSADO en todos los
+  reintentos del mismo intento — el server lo usa para no duplicar
+  (`createIfNotExists` sobre `pedido-<idPedido>`). Se limpia al cerrar
+  el modal y tras un envío exitoso. Hasta 3 intentos (15s de timeout
+  c/u, esperas de 1s y 3s); se reintenta ante timeout, error de red,
+  5xx o JSON inválido, NO ante 4xx.
+- NUNCA pasar a 'listo' sin `pedidoId` real. Si no se pudo registrar
+  → paso 'error' (Reintentar con el mismo id / "Enviar igual por
+  WhatsApp" con la línea `⚠️ PEDIDO NO REGISTRADO EN EL SISTEMA`). No
+  existe más `'sin-id'`.
+- `SERVER_URL` sale de `VITE_SERVER_URL`. Para probar el envío en
+  local: `VITE_SERVER_URL=http://localhost:3001 npx vite` con
+  nano-server corriendo con `SANITY_DATASET=staging`. Nunca contra el
+  server de producción.
+
 ## Qué NO hacer
 
 - No re-decidir el shape de un campo si ya viene definido en el brief.

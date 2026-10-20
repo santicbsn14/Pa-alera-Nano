@@ -550,6 +550,80 @@
   background: #1ebe5d;
   transform: translateY(-1px);
 }
+
+/* ── Paso error (pedido no registrado) ────────────────────────── */
+.modal__error-paso {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  text-align: center;
+}
+
+.modal__error-icono {
+  font-size: 48px;
+}
+
+.modal__error-paso h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.modal__error-paso p {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.modal__reintentar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 16px 28px;
+  margin-top: var(--spacing-sm);
+  background: var(--color-celeste);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.modal__reintentar-btn:hover:not(:disabled) {
+  background: var(--color-celeste-hover);
+  transform: translateY(-1px);
+}
+
+.modal__reintentar-btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.modal__wsp-btn--secundario {
+  min-height: 44px;
+  margin-top: 0;
+  padding: 12px 28px;
+  background: transparent;
+  border: 1px solid var(--color-border-light);
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.modal__wsp-btn--secundario:hover {
+  background: var(--color-bg-hover);
+  transform: none;
+}
+
+.modal__wsp-btn--secundario[aria-disabled='true'] {
+  opacity: 0.5;
+  pointer-events: none;
+}
 .modal__item-descuento {
   display: inline-block;
   margin-left: 6px;

@@ -64,6 +64,12 @@ esto siempre, en cualquier tarea:
 - El carrito persiste en `localStorage` bajo la key `nano_carrito_v2`
   (se subió de `nano_carrito` al cambiar a descuento visual, para
   descartar carritos viejos con precios rebajados guardados).
+- Acciones destructivas sobre el carrito (vaciar) requieren
+  confirmación en dos pasos; el vaciado post-WhatsApp no.
+  (`ModalCarrito.tsx`: estado `confirmandoVaciar`, auto-reset a los
+  4s. El link "Vaciar pedido" y el bloque de confirmación miden lo
+  mismo para que el footer no se mueva y un segundo toque accidental
+  caiga sobre el texto, no sobre "Sí, vaciar".)
 
 ## Qué NO hacer
 

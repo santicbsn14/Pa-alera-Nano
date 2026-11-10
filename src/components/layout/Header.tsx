@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { NavLink, useLocation, Link } from 'react-router-dom'
 import { useCarrito } from '../../context/CarritoContext'
 import bebe from '../../assets/bebe.png'
+import { config } from '../../config/canal'
 import './Header.css'
 
 export default function Header() {
@@ -36,8 +37,8 @@ export default function Header() {
             <img src={bebe} alt="Nano" className="header__logo-bebe" />
           </div>
           <div className="header__logo-text">
-            <span className="header__logo-name">Nano</span>
-            <span className="header__logo-sub">Mayorista</span>
+            <span className="header__logo-name">{config.marca.nombre}</span>
+            <span className="header__logo-sub">{config.marca.sub}</span>
           </div>
         </NavLink>
 

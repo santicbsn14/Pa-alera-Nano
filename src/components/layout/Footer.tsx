@@ -1,6 +1,7 @@
 // src/components/layout/Footer.tsx
 import { NavLink } from 'react-router-dom'
 import './Footer.css'
+import { config } from '../../config/canal'
 
 export default function Footer() {
   const año = new Date().getFullYear()
@@ -14,13 +15,12 @@ export default function Footer() {
           <NavLink to="/" className="footer__logo">
             <div className="footer__logo-icon">N</div>
             <div className="footer__logo-text">
-              <span className="footer__logo-name">Nano</span>
-              <span className="footer__logo-sub">Mayorista</span>
+              <span className="footer__logo-name">{config.marca.nombre}</span>
+              <span className="footer__logo-sub">{config.marca.sub}</span>
             </div>
           </NavLink>
           <p className="footer__desc">
-            Distribuimos pañales, artículos de bebé, limpieza y perfumería al mejor precio mayorista.
-Trabajamos directo de fábrica con las principales marcas y llegamos a negocios de todo el país.
+            {config.textoFooter}
           </p>
           <div className="footer__socials">
             <a

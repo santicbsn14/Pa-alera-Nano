@@ -6,6 +6,7 @@ import { urlFor } from '../../lib/sanity'
 import type { Producto } from '../../types'
 import './CardProducto.css'
 import { precioTachado, tieneDescuento } from '../../lib/precio'
+import { config } from '../../config/canal'
 
 const TALLES_DEFAULT = ['RN', 'P', 'M', 'G', 'XG', 'XXG', 'XXXG']
 
@@ -41,7 +42,7 @@ export default function CardProducto({ producto }: Props) {
 
   // ── Venta por caja ──────────────────────────────────────────────
   const unidadesBulto = parsearUnidadesBulto(producto.presentacion)
-  const muestraBtnCaja = producto.vendePorCaja === true && unidadesBulto !== null
+  const muestraBtnCaja = config.ventaPorCaja && producto.vendePorCaja === true && unidadesBulto !== null
 
   const handleAgregarCaja = () => {
     agregar(producto, undefined, unidadesBulto!)

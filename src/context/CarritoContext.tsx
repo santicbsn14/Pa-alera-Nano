@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import type { Producto } from '../types'
 import { precioFinal, tieneDescuento } from '../lib/precio'
+import { config } from '../config/canal'
 
 export interface ItemCarrito {
   itemId: string
@@ -28,7 +29,7 @@ interface CarritoContextType {
   cerrarCarrito: () => void
 }
 
-const STORAGE_KEY = 'nano_carrito_v2'
+const STORAGE_KEY = config.storageKeyCarrito
 
 function cargarDesdeStorage(): ItemCarrito[] {
   try {

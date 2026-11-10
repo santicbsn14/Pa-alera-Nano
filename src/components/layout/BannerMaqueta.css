@@ -1,0 +1,17 @@
+/* src/components/layout/BannerMaqueta.css */
+
+/* Sticky en vez de fixed: queda pegada arriba al scrollear sin tapar el header
+   (que es position: relative) ni obligar a compensar el alto en el resto del layout. */
+.banner-maqueta {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  padding: 6px 16px;
+  background: var(--color-warning);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+}

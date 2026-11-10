@@ -3,6 +3,7 @@ import { createClient } from '@sanity/client'
 import { createImageUrlBuilder } from '@sanity/image-url'
 import type { Producto, Flete, PreguntaFrecuente, Promo, Categoria } from '../types'
 import type { SanityImageSource } from '@sanity/image-url'
+import { ES_MINORISTA, config } from '../config/canal'
 
 export const client = createClient({
   projectId: import.meta.env.VITE_SANITY_PROJECT_ID,
@@ -21,6 +22,21 @@ export function urlFor(source: SanityImageSource) {
 // ── Queries ────────────────────────────────────────────────────────
 
 export async function getCategorias(): Promise<Categoria[]> {
+  if (ES_MINORISTA) {
+    return client.fetch(
+      `
+    *[_type == "categoria" && activa == true && !coalesce(slug.current in $excluidas, false)] | order(orden asc, nombre asc) {
+      _id,
+      nombre,
+      "slug": slug.current,
+      orden,
+      activa
+    }
+  `,
+      { excluidas: config.categoriasExcluidas }
+    )
+  }
+
   return client.fetch(`
     *[_type == "categoria" && activa == true] | order(orden asc, nombre asc) {
       _id,
@@ -33,6 +49,8 @@ export async function getCategorias(): Promise<Categoria[]> {
 }
 
 export async function getProductos(): Promise<Producto[]> {
+  if (ES_MINORISTA) return getProductosMinorista()
+
   return client.fetch(`
     *[_type == "producto"] | order(precio asc) {
       _id,
@@ -63,6 +81,8 @@ export async function getProductos(): Promise<Producto[]> {
 // Trae un bolsón puntual por su slug — para la página de detalle.
 // Incluye productosInternos (que NO se traen en el catálogo general por performance).
 export async function getBolsonPorSlug(slug: string): Promise<Producto | null> {
+  if (ES_MINORISTA) return getBolsonPorSlugMinorista(slug)
+
   const bolson = await client.fetch(
     `
     *[_type == "producto" && slug.current == $slug][0]{
@@ -96,6 +116,83 @@ export async function getBolsonPorSlug(slug: string): Promise<Producto | null> {
     }
   `,
     { slug }
+  )
+  return bolson ?? null
+}
+
+// ── Canal minorista (NanoYA) ───────────────────────────────────────
+// Mismas proyecciones que las queries mayoristas, con tres diferencias:
+//   - precio/descuento salen de los campos minoristas si existen (si no, el
+//     mayorista como ejemplo: en modo maqueta esos campos todavía no existen).
+//   - se excluyen los productos de config.categoriasExcluidas.
+//   - el orden es por el precio proyectado.
+// coalesce(... in $excluidas, false): un producto sin categoría NO se excluye.
+
+async function getProductosMinorista(): Promise<Producto[]> {
+  return client.fetch(
+    `
+    *[_type == "producto" && !coalesce(categoria->slug.current in $excluidas, false)] {
+      _id,
+      idSistema,
+      nombre,
+      marca,
+      descripcion,
+      foto,
+      "precio": coalesce(precioMinorista, precio),
+      "descuento": coalesce(descuentoMinorista, descuento),
+      categoria->{
+        _id,
+        nombre,
+        "slug": slug.current,
+        orden,
+        activa
+      },
+      talle,
+      tallesCombo,
+      presentacion,
+      enStock,
+      vendePorCaja,
+      "slug": slug.current
+    } | order(precio asc)
+  `,
+    { excluidas: config.categoriasExcluidas }
+  )
+}
+
+async function getBolsonPorSlugMinorista(slug: string): Promise<Producto | null> {
+  const bolson = await client.fetch(
+    `
+    *[_type == "producto" && slug.current == $slug && !coalesce(categoria->slug.current in $excluidas, false)][0]{
+      _id,
+      idSistema,
+      nombre,
+      marca,
+      descripcion,
+      foto,
+      "precio": coalesce(precioMinorista, precio),
+      "descuento": coalesce(descuentoMinorista, descuento),
+      categoria->{
+        _id,
+        nombre,
+        "slug": slug.current,
+        orden,
+        activa
+      },
+      talle,
+      tallesCombo,
+      presentacion,
+      enStock,
+      vendePorCaja,
+      "slug": slug.current,
+      productosInternos[]{
+        _key,
+        nombre,
+        descripcionCorta,
+        imagen
+      }
+    }
+  `,
+    { slug, excluidas: config.categoriasExcluidas }
   )
   return bolson ?? null
 }

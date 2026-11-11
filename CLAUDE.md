@@ -88,6 +88,26 @@ esto siempre, en cualquier tarea:
   nano-server corriendo con `SANITY_DATASET=staging`. Nunca contra el
   server de producción.
 
+- ⚠️ Carrusel de destacados (`CarruselDestacados.tsx`): nada que cree
+  containing block alrededor de las cards. El modal de talles de
+  combos (`.combo-overlay`, `position: fixed`, z-index 400) se
+  renderiza ADENTRO del DOM de `CardProducto`; si un ancestro tiene
+  `transform`, `filter`, `backdrop-filter`, `mask`, `will-change`,
+  `contain` o `perspective`, el modal queda atrapado o recortado. No
+  van en `.destacados`, `__track`, `__slide`, `.destacados-sheet` ni
+  `__panel` en reposo (el panel usa `transform` solo durante la
+  animación de entrada, sin `fill-mode forwards`). `overflow-x: auto`
+  no rompe nada. Probarlo abriendo un combo desde el carrusel en
+  desktop y desde la ficha en mobile.
+- ⚠️ `getCarruselDestacados()` usa EXACTAMENTE la misma proyección de
+  producto que `getProductos()` mayorista (el carrito snapshotea el
+  `Producto` completo). Si se suma un campo a `getProductos()`, hay
+  que sumarlo también ahí.
+- ⚠️ El carrusel de destacados es SOLO mayorista. Cuando se integre
+  `feature/nanoya` (`config/canal.ts`), `CarruselDestacados` tiene que
+  devolver `null` en minorista o usar la proyección minorista; si no,
+  NanoYA mostraría precios mayoristas.
+
 ## Qué NO hacer
 
 - No re-decidir el shape de un campo si ya viene definido en el brief.

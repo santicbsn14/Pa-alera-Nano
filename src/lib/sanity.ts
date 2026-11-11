@@ -1,7 +1,7 @@
 // src/lib/sanity.ts
 import { createClient } from '@sanity/client'
 import { createImageUrlBuilder } from '@sanity/image-url'
-import type { Producto, Flete, PreguntaFrecuente, Promo, Categoria } from '../types'
+import type { Producto, Flete, PreguntaFrecuente, Promo, Categoria, CarruselDestacados } from '../types'
 import type { SanityImageSource } from '@sanity/image-url'
 import { ES_MINORISTA, config } from '../config/canal'
 
@@ -231,4 +231,43 @@ export async function getPromos(): Promise<Promo[]> {
       activa
     }
   `)
+}
+
+// Carrusel de destacados (singleton _id "carruselDestacados").
+// ⚠️ La proyección de cada producto es la MISMA que getProductos(): el carrito
+// snapshotea el Producto completo, así que si se suma un campo allá, va acá también.
+// Las referencias son weak: un producto borrado vuelve null y se descarta.
+export async function getCarruselDestacados(): Promise<CarruselDestacados | null> {
+  const doc = await client.fetch<{ titulo?: string; productos?: (Producto | null)[] } | null>(`
+    *[_id == "carruselDestacados" && activo == true][0]{
+      titulo,
+      "productos": productos[]->{
+        _id,
+        idSistema,
+        nombre,
+        marca,
+        descripcion,
+        foto,
+        precio,
+        descuento,
+        categoria->{
+          _id,
+          nombre,
+          "slug": slug.current,
+          orden,
+          activa
+        },
+        talle,
+        tallesCombo,
+        presentacion,
+        enStock,
+        vendePorCaja,
+        "slug": slug.current
+      }
+    }
+  `)
+  if (!doc) return null
+  const productos = (doc.productos ?? []).filter((p): p is Producto => !!p && p.enStock)
+  if (productos.length === 0) return null
+  return { titulo: doc.titulo ?? '', productos }
 }

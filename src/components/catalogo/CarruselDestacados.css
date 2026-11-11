@@ -1,0 +1,393 @@
+/* src/components/catalogo/CarruselDestacados.css */
+
+/* ⚠️ Regla: ninguna clase de este archivo lleva en reposo transform, filter,
+   backdrop-filter, mask, will-change, contain ni perspective. El modal de talles
+   de combos (.combo-overlay, position: fixed) vive DENTRO de CardProducto y
+   quedaría atrapado/recortado. El panel de la ficha usa transform solo
+   durante la animación de entrada (sin fill-mode forwards). */
+
+/* ══ Desktop / tablet (> 768px) ═══════════════════════════════════ */
+.destacados {
+  background: linear-gradient(180deg, var(--color-celeste-subtle) 0%, var(--color-bg) 100%);
+  padding: var(--spacing-xl) 0 var(--spacing-lg);
+}
+
+.destacados + .catalogo__wrap {
+  padding-top: var(--spacing-xl);
+}
+
+.destacados__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.destacados__eyebrow {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-celeste-dark);
+}
+
+.destacados__titulo {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+.destacados__nav {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.destacados__flecha {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.destacados__flecha:hover {
+  background: var(--color-celeste);
+  border-color: var(--color-celeste);
+  color: #fff;
+}
+
+.destacados__track {
+  display: flex;
+  gap: var(--spacing-md);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-block: 6px 18px;
+  scrollbar-width: none;
+}
+
+.destacados__track::-webkit-scrollbar {
+  display: none;
+}
+
+.destacados__slide {
+  scroll-snap-align: start;
+  display: flex;
+  min-width: 0;
+  /* 769–1024px: 3 visibles */
+  flex: 0 0 calc((100% - 2 * var(--spacing-md)) / 3);
+}
+
+@media (min-width: 1025px) {
+  .destacados__slide {
+    flex: 0 0 calc((100% - 3 * var(--spacing-md)) / 4);
+  }
+}
+
+/* Las cards no tienen fondo propio: sobre el degradé quedarían teñidas */
+.destacados__slide .card {
+  background: var(--color-bg);
+  width: 100%;
+}
+
+.destacados__progress {
+  max-width: 160px;
+  height: 3px;
+  margin: var(--spacing-sm) auto 0;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.destacados__progress-bar,
+.destacados-m__progress-bar {
+  width: 0;
+  height: 100%;
+  background: var(--color-celeste);
+  border-radius: var(--radius-full);
+  transition: width 150ms;
+}
+
+/* ══ Mobile (≤ 768px): mosaico compacto ═══════════════════════════ */
+.destacados-m {
+  padding: var(--spacing-md) var(--padding-x) 0;
+}
+
+@media (max-width: 768px) {
+  .destacados-m ~ .cat-mobile {
+    padding-top: var(--spacing-md);
+  }
+}
+
+/* Mide lo mismo que 2 categorías cerradas del acordeón + su gap */
+.destacados-m__tile {
+  height: 152px;
+  box-sizing: border-box;
+  border: 1px solid var(--color-celeste-border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(77, 200, 232, 0.14) 0%, var(--color-bg) 100%);
+  padding: 8px 0 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.destacados-m__head {
+  height: 18px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-right: 12px;
+}
+
+.destacados-m__head-titulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.destacados-m__head-titulo svg {
+  flex-shrink: 0;
+}
+
+.destacados-m__titulo {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.destacados-m__track {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: var(--spacing-sm);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 0;
+  padding-right: 12px;
+  scrollbar-width: none;
+}
+
+.destacados-m__track::-webkit-scrollbar {
+  display: none;
+}
+
+.destacados-m__item {
+  flex: 0 0 236px;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  text-align: left;
+  scroll-snap-align: start;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.destacados-m__img {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--color-bg-section);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+}
+
+.destacados-m__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.destacados-m__badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: #e63946;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  line-height: 1.4;
+}
+
+.destacados-m__texto {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.destacados-m__nombre {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.destacados-m__precios {
+  display: flex;
+  flex-direction: column;
+}
+
+.destacados-m__tachado {
+  font-size: 11px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.destacados-m__precio {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-celeste);
+  line-height: 1.2;
+}
+
+.destacados-m__precio--rebajado {
+  color: #e63946;
+}
+
+.destacados-m__chevron {
+  flex-shrink: 0;
+  color: var(--color-border-light);
+}
+
+.destacados-m__progress {
+  max-width: 96px;
+  width: 100%;
+  height: 3px;
+  flex-shrink: 0;
+  /* centrada respecto del tile (compensa el padding-left de 12px) */
+  margin: 0 auto;
+  position: relative;
+  left: -6px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+/* ══ Ficha mobile (bottom sheet) ══════════════════════════════════ */
+/* z-index 250: arriba de CarritoFlotante (200), debajo de ModalCarrito (300) y Toast (400) */
+.destacados-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  animation: destacados-fade 200ms ease;
+}
+
+.destacados-sheet__panel {
+  position: relative;
+  background: var(--color-bg);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: 10px var(--spacing-md) calc(var(--spacing-lg) + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  /* transform SOLO durante la animación; sin fill-mode forwards */
+  animation: destacados-subir 260ms ease-out;
+}
+
+.destacados-sheet__handle {
+  width: 40px;
+  height: 4px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-border-light);
+}
+
+.destacados-sheet__cerrar {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-text);
+}
+
+.destacados-sheet__cerrar-circulo {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.destacados-sheet__card {
+  width: min(280px, 100%);
+  margin-top: 28px;
+}
+
+.destacados-sheet .card {
+  background: var(--color-bg);
+}
+
+@keyframes destacados-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes destacados-subir {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .destacados-sheet,
+  .destacados-sheet__panel {
+    animation: none;
+  }
+}

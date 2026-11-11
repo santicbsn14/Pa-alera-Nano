@@ -19,6 +19,17 @@ export interface ConfigCanal {
   categoriasExcluidas: string[]
   storageKeyCarrito: string
   textoFooter: string
+  whatsappVisible: string
+  horarios: string
+  zonasEnvio: string[]
+  textos: {
+    linkCatalogo: string
+    ctaHeader: string
+    heroBarDestacado: string
+    heroBarTexto: string
+    heroBarBoton: string
+    contactoSubtitulo: string
+  }
 }
 
 export const CONFIG_POR_CANAL: Record<Canal, ConfigCanal> = {
@@ -33,16 +44,39 @@ export const CONFIG_POR_CANAL: Record<Canal, ConfigCanal> = {
     textoFooter:
       'Distribuimos pañales, artículos de bebé, limpieza y perfumería al mejor precio mayorista. ' +
       'Trabajamos directo de fábrica con las principales marcas y llegamos a negocios de todo el país.',
+    whatsappVisible: '+5493412479055',
+    horarios: 'Lun a Sab · 9:00 — 12:30 y 17:00 — 20:30',
+    zonasEnvio: [],
+    textos: {
+      linkCatalogo: 'Pedidos Nano',
+      ctaHeader: 'Pedidos Nano',
+      heroBarDestacado: 'Abastecé tu negocio al mejor precio!',
+      heroBarTexto: 'Armá tu pedido en Pedidos Nano.',
+      heroBarBoton: 'Ir a Pedidos Nano',
+      contactoSubtitulo: 'Estamos en Villa Constitución, Santa Fe. Hacemos envíos a todo el país.',
+    },
   },
   minorista: {
     marca: { nombre: 'Nano', sub: 'YA' },
     tituloPagina: 'NanoYA — Pañalera Nano',
-    whatsapp: '', // placeholder: Lean todavía no pasó el número de NanoYA
+    whatsapp: '5493400588073',
     minimoCompra: 0,
     ventaPorCaja: false,
     categoriasExcluidas: ['combos'],
     storageKeyCarrito: 'nanoya_carrito_v1',
     textoFooter: 'Pañales, artículos de bebé, limpieza y perfumería con envío a domicilio por Uber.',
+    whatsappVisible: '+54 9 3400 58-8073',
+    horarios: 'Lun a Sab · 9:00 — 12:30 y 17:00 — 20:30',
+    zonasEnvio: ['San Nicolás', 'Villa Constitución', 'Empalme Villa Constitución'],
+    textos: {
+      linkCatalogo: 'Productos',
+      ctaHeader: 'Hacer mi pedido',
+      heroBarDestacado: 'Todo para tu bebé, sin salir de casa.',
+      heroBarTexto: 'Pedí online y te lo llevamos con Uber.',
+      heroBarBoton: 'Ver productos',
+      contactoSubtitulo:
+        'Estamos en Villa Constitución, Santa Fe. Enviamos con Uber a San Nicolás, Villa Constitución y Empalme Villa Constitución.',
+    },
   },
 }
 

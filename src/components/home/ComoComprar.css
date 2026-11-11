@@ -1,0 +1,158 @@
+/* src/components/home/ComoComprar.css */
+
+/* ── Pasos ────────────────────────────────────────────────────── */
+.como-comprar__pasos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-lg);
+}
+
+.como-comprar__paso {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  min-width: 0;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.como-comprar__paso:hover {
+  border-color: var(--color-celeste-border);
+  box-shadow: var(--shadow-celeste);
+}
+
+.como-comprar__numero {
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-celeste);
+  margin-bottom: var(--spacing-xs);
+}
+
+.como-comprar__paso-titulo {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.como-comprar__paso-texto {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* ── Tarjetas de info ─────────────────────────────────────────── */
+.como-comprar__info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
+}
+
+.como-comprar__card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
+.como-comprar__icono {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--color-celeste-subtle);
+  border: 1px solid var(--color-celeste-border);
+  color: var(--color-celeste);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.como-comprar__card-titulo {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.como-comprar__card-texto {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.como-comprar__zonas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.como-comprar__zona {
+  padding: 4px 12px;
+  background: var(--color-celeste-subtle);
+  border: 1px solid var(--color-celeste-border);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-celeste-dark);
+}
+
+.como-comprar__btn-wa {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+  padding: 10px 18px;
+  background: #25D366;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.como-comprar__btn-wa:hover {
+  background: #1ebe5d;
+  transform: translateY(-1px);
+}
+
+/* ── CTA ──────────────────────────────────────────────────────── */
+.como-comprar__cta {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-2xl);
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .como-comprar__pasos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .como-comprar__info {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .como-comprar__pasos {
+    grid-template-columns: 1fr;
+  }
+
+  .como-comprar__numero {
+    font-size: 36px;
+  }
+}

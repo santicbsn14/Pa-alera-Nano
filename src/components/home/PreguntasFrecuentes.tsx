@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { getPreguntas } from '../../lib/sanity'
 import type { PreguntaFrecuente } from '../../types'
+import { config } from '../../config/canal'
 import './PreguntasFrecuentes.css'
 
 export default function PreguntasFrecuentes() {
@@ -55,7 +56,7 @@ export default function PreguntasFrecuentes() {
         <div className="faq__cta">
           <p>¿Tenés alguna otra consulta?</p>
           <a
-            href="https://wa.me/5493412479055"
+            href={`https://wa.me/${config.whatsapp}`}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary"

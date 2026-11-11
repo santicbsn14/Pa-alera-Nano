@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { getPromos } from '../../lib/sanity'
 import { urlFor } from '../../lib/sanity'
 import type { Promo } from '../../types'
+import { config } from '../../config/canal'
 import './Hero.css'
 
 export default function Hero() {
@@ -111,12 +112,12 @@ export default function Hero() {
       {/* Barra CTA */}
       <div className="hero__bar">
         <p className="hero__bar-text">
-          <span>Abastecé tu negocio al mejor precio!</span>
-          Armá tu pedido en Pedidos Nano.
+          <span>{config.textos.heroBarDestacado}</span>
+          {config.textos.heroBarTexto}
         </p>
         <div className="hero__bar-actions">
           <Link to="/catalogo" className="btn-primary">
-            Ir a Pedidos Nano
+            {config.textos.heroBarBoton}
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>

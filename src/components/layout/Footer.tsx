@@ -1,7 +1,7 @@
 // src/components/layout/Footer.tsx
 import { NavLink } from 'react-router-dom'
 import './Footer.css'
-import { config } from '../../config/canal'
+import { config, ES_MINORISTA } from '../../config/canal'
 
 export default function Footer() {
   const año = new Date().getFullYear()
@@ -37,7 +37,7 @@ export default function Footer() {
               </svg>
             </a>
             <a
-              href="https://wa.me/5493412479055"
+              href={`https://wa.me/${config.whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
               className="footer__social"
@@ -56,11 +56,20 @@ export default function Footer() {
           <h4 className="footer__links-title">Navegación</h4>
           <ul className="footer__links-list">
             <li><NavLink to="/">Inicio</NavLink></li>
-            <li><NavLink to="/catalogo">Pedidos Nano</NavLink></li>
-            <li><a href="/#precios">Precios</a></li>
-            <li><a href="/#logistica">Envíos</a></li>
-            <li><a href="/#faq">Preguntas frecuentes</a></li>
-            <li><a href="/#contacto">Contacto</a></li>
+            <li><NavLink to="/catalogo">{config.textos.linkCatalogo}</NavLink></li>
+            {ES_MINORISTA ? (
+              <>
+                <li><a href="/#como-comprar">Cómo comprar</a></li>
+                <li><a href="/#contacto">Contacto</a></li>
+              </>
+            ) : (
+              <>
+                <li><a href="/#precios">Precios</a></li>
+                <li><a href="/#logistica">Envíos</a></li>
+                <li><a href="/#faq">Preguntas frecuentes</a></li>
+                <li><a href="/#contacto">Contacto</a></li>
+              </>
+            )}
           </ul>
         </div>
 
@@ -79,14 +88,14 @@ export default function Footer() {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
               </svg>
-              <a href="https://wa.me/5493412479055" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+              <a href={`https://wa.me/${config.whatsapp}`} target="_blank" rel="noopener noreferrer">WhatsApp</a>
             </li>
             <li>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <polyline points="12 6 12 12 16 14" />
               </svg>
-              Lun a Sab · 9:00 — 12:30 y 17:00 — 20:30
+              {config.horarios}
             </li>
           </ul>
         </div>

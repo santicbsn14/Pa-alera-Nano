@@ -1,7 +1,8 @@
 // src/components/home/Contacto.tsx
 import './Contacto.css'
+import { config } from '../../config/canal'
 
-const WHATSAPP = '5493412479055'
+const WHATSAPP = config.whatsapp
 const INSTAGRAM = 'panaleranano'
 const DIRECCION = 'Belgrano 2046, Villa Constitución, Santa Fe'
 const MAPS_EMBED = 'https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3348.123!2d-60.324278!3d-33.234917!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMzPCsDE0JzA1LjciUyA2MMKwMTknMjcuNCJX!5e0!3m2!1ses!2sar!4v1234567890'
@@ -24,7 +25,7 @@ const infoItems = [
       </svg>
     ),
     titulo: 'WhatsApp',
-    valor: `+${WHATSAPP}`,
+    valor: config.whatsappVisible,
     link: `https://wa.me/${WHATSAPP}`,
   },
   {
@@ -44,7 +45,7 @@ const infoItems = [
       </svg>
     ),
     titulo: 'Horarios',
-    valor: 'Lun a Sab · 9:00 — 12:30 y 17:00 — 20:30',
+    valor: config.horarios,
     link: null,
   },
 ]
@@ -56,7 +57,7 @@ export default function Contacto() {
 
         <div className="badge">Contacto</div>
         <h2 className="section-title">¿Dónde <span>encontrarnos?</span></h2>
-        <p className="section-subtitle">Estamos en Villa Constitución, Santa Fe. Hacemos envíos a todo el país.</p>
+        <p className="section-subtitle">{config.textos.contactoSubtitulo}</p>
 
         <div className="contacto__inner">
 

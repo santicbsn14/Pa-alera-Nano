@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { NavLink, useLocation, Link } from 'react-router-dom'
 import { useCarrito } from '../../context/CarritoContext'
 import bebe from '../../assets/bebe.png'
-import { config } from '../../config/canal'
+import { config, ES_MINORISTA } from '../../config/canal'
 import './Header.css'
 
 export default function Header() {
@@ -48,12 +48,21 @@ export default function Header() {
             Inicio
           </NavLink>
           <NavLink to="/catalogo" className={({ isActive }) => `header__link ${isActive ? 'header__link--active' : ''}`}>
-            Pedidos Nano
+            {config.textos.linkCatalogo}
           </NavLink>
-          <a href="/#precios" className="header__link">Precios</a>
-          <a href="/#logistica" className="header__link">Envios</a>
-          <a href="/#faq" className="header__link">Preguntas Frecuentes</a>
-          <a href="/#contacto" className="header__link">Contacto</a>
+          {ES_MINORISTA ? (
+            <>
+              <a href="/#como-comprar" className="header__link">Cómo comprar</a>
+              <a href="/#contacto" className="header__link">Contacto</a>
+            </>
+          ) : (
+            <>
+              <a href="/#precios" className="header__link">Precios</a>
+              <a href="/#logistica" className="header__link">Envios</a>
+              <a href="/#faq" className="header__link">Preguntas Frecuentes</a>
+              <a href="/#contacto" className="header__link">Contacto</a>
+            </>
+          )}
         </nav>
 
         {/* Carrito */}
@@ -69,7 +78,7 @@ export default function Header() {
 
         {/* CTA desktop */}
         <Link to="/catalogo" className="btn-primary header__cta">
-          Pedidos Nano
+          {config.textos.ctaHeader}
         </Link>
 
         {/* Hamburguesa mobile */}
@@ -91,15 +100,24 @@ export default function Header() {
             Inicio
           </NavLink>
           <NavLink to="/catalogo" className={({ isActive }) => `header__mobile-link ${isActive ? 'header__mobile-link--active' : ''}`}>
-            Pedidos Nano
+            {config.textos.linkCatalogo}
           </NavLink>
-          <a href="/#precios" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Precios</a>
-          <a href="/#logistica" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Envios</a>
-          <a href="/#faq" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Preguntas Frecuentes</a>
-          <a href="/#contacto" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Contacto</a>
+          {ES_MINORISTA ? (
+            <>
+              <a href="/#como-comprar" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Cómo comprar</a>
+              <a href="/#contacto" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Contacto</a>
+            </>
+          ) : (
+            <>
+              <a href="/#precios" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Precios</a>
+              <a href="/#logistica" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Envios</a>
+              <a href="/#faq" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Preguntas Frecuentes</a>
+              <a href="/#contacto" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Contacto</a>
+            </>
+          )}
 
           <Link to="/catalogo" className="btn-primary header__mobile-cta" onClick={() => setMenuOpen(false)}>
-            Armá tu pedido ahora
+            {ES_MINORISTA ? config.textos.ctaHeader : 'Armá tu pedido ahora'}
           </Link>
         </nav>
       </div>

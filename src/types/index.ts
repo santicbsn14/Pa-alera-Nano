@@ -89,3 +89,8 @@ export interface FiltrosCatalogo {
   soloOfertas: boolean
   busqueda: string
 }
+
+export interface CarruselDestacados {
+  titulo: string
+  productos: Producto[]
+}

@@ -88,3 +88,42 @@ Con este avance son 7 archivos.
    - **Reduced motion:** sin autoplay.
    - **Doc inexistente** (respuesta interceptada con `result: null`): no se renderiza nada y los paddings quedan como hoy (`.catalogo__wrap` 100px, `.cat-mobile` 24px).
 3. `npm run build` OK. `eslint` sin errores en los archivos tocados (el error preexistente de `GridProductos.tsx` sigue igual y no se tocó).
+
+## Ajuste C — alto 152px
+
+Solo cambió `src/components/catalogo/CarruselDestacados.css`, con los valores del brief:
+
+| Regla | Antes | Ahora |
+|---|---|---|
+| `.destacados-m__tile` `height` | 166px | 152px |
+| `.destacados-m__tile` `padding` | 10px 0 10px 12px | 8px 0 8px 12px |
+| `.destacados-m__tile` `gap` | 8px | 6px |
+| `.destacados-m__item` `padding` | 8px | 6px |
+
+### Medidas reales (Chromium headless, staging, 360 y 390, iguales en los dos anchos)
+- **Tile:** 152px.
+- **Categoría cerrada:** 72px. 2 categorías + gap = **152px** (72 + 8 + 72). Coincide con el tile.
+- **Track:** 101px.
+- **Item:** 101px (ocupa todo el track; arriba y abajo 0px de diferencia con el track).
+- **Foto:** 88×88, con 6.5px libres arriba y abajo dentro del item.
+- **Barra de progreso:** 3px de alto, a 140px del borde superior del tile, centrada (0px de desvío) y dentro del tile.
+
+### ⚠️ La fuente Inter no se carga en el sitio
+`--font-sans` declara `'Inter'`, pero el repo no la carga en ningún lado: no hay `@font-face`, ni link a Google Fonts, ni paquete `fontsource`. Por eso cada visitante ve la fuente de su sistema: Roboto en Android, San Francisco en iOS y Segoe UI en Windows, salvo que tenga Inter instalada. Medí las tres variantes inyectando la fuente solo en la página de prueba, sin tocar el repo:
+
+| Fuente | Categoría | 2 cat. + gap |
+|---|---|---|
+| Respaldo de Windows (Segoe UI) | 72px | 152px |
+| Roboto (Android) | 72px | 152px |
+| Inter (inyectada a mano) | 71px | 150px |
+
+**Decisión: dejé 152px.** El brief pedía medir con Inter, pero hoy ningún visitante la ve, y con Roboto (la mayoría de los clientes, en Android) da 152. Si ponía 150 para que coincidiera con Inter, quedaba 2px corrido de lo que ve la gente y además había que achicar la foto (el track bajaba a 99px). Si en algún momento se carga Inter de verdad, el tile pasa a 150px y la foto a 87px. No probé San Francisco (iOS) porque no se puede cargar en Chromium.
+
+### Contenido del item
+- **Nombre:** en 2 líneas (33.8px = 2 × 16.9). Los nombres largos se cortan con `…` en la segunda línea, como antes.
+- **Precio:** completo.
+- **Badge y tachado:** ningún producto del carrusel de staging tiene descuento. Lo simulé interceptando la respuesta de Sanity en la prueba (`descuento: 25`, sin tocar datos). El badge `-25%` queda sobre la foto, y nombre, tachado y precio entran completos: precio a 12.2px del borde inferior del item. Verificado en 360 y 390.
+
+### Verificación
+- `npm run build` OK.
+- No se tocó el `.tsx`, desktop ni la ficha.

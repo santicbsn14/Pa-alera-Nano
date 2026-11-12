@@ -1,8 +1,9 @@
 // src/components/carrito/CarritoFlotante.tsx
 import { useCarrito } from '../../context/CarritoContext'
+import { config } from '../../config/canal'
 import './CarritoFlotante.css'
 
-const MINIMO = 150000
+const MINIMO = config.minimoCompra
 
 export default function CarritoFlotante() {
   const { items, abrirCarrito } = useCarrito()
@@ -11,7 +12,9 @@ export default function CarritoFlotante() {
 
   if (items.length === 0) return null
 
-  const progreso = Math.min((total / MINIMO) * 100, 100)
+  // Sin mínimo (NanoYA): ni barra de progreso ni estado de mínimo
+  const hayMinimo = MINIMO > 0
+  const progreso = hayMinimo ? Math.min((total / MINIMO) * 100, 100) : 100
   const minimoAlcanzado = total >= MINIMO
   const falta = MINIMO - total
 
@@ -24,7 +27,11 @@ export default function CarritoFlotante() {
             <span className="carrito-flotante__total">
               ${total.toLocaleString('es-AR')}
             </span>
-            {minimoAlcanzado ? (
+            {!hayMinimo ? (
+              <span className="carrito-flotante__estado">
+                Envío por Uber · se coordina por WhatsApp
+              </span>
+            ) : minimoAlcanzado ? (
               <span className="carrito-flotante__estado carrito-flotante__estado--ok">
                 ✓ Mínimo alcanzado
               </span>
@@ -44,12 +51,14 @@ export default function CarritoFlotante() {
           </button>
         </div>
 
-        <div className="carrito-flotante__barra-wrap">
-          <div
-            className={`carrito-flotante__barra ${minimoAlcanzado ? 'carrito-flotante__barra--ok' : ''}`}
-            style={{ width: `${progreso}%` }}
-          />
-        </div>
+        {hayMinimo && (
+          <div className="carrito-flotante__barra-wrap">
+            <div
+              className={`carrito-flotante__barra ${minimoAlcanzado ? 'carrito-flotante__barra--ok' : ''}`}
+              style={{ width: `${progreso}%` }}
+            />
+          </div>
+        )}
 
       </div>
     </div>

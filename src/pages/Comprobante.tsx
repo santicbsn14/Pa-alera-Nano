@@ -1,5 +1,6 @@
 // src/pages/Comprobante.tsx
 import { useEffect, useState } from 'react'
+import { config, ES_MINORISTA, SIMULAR_PEDIDO } from '../config/canal'
 import './Comprobante.css'
 
 interface ItemPedido {
@@ -34,9 +35,22 @@ const ENVIOS: Record<string, string> = {
   elsalvador: 'Comisiones El Salvador',
   davidromano: 'David Romano Comisión',
   personal: 'Lo retiro personalmente',
+  uber: 'Uber (se abona aparte)',
 }
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL ?? 'https://nano-server-avac.onrender.com'
+const MARCA = config.marcaComprobante
+// Pedido simulado de NanoYA (ModalCarrito lo guarda en sessionStorage, sin pasar por el server)
+const CLAVE_PEDIDO_DEMO = 'nanoya_pedido_demo'
+
+function leerPedidoDemo(): DatosPedido | null {
+  try {
+    const guardado = sessionStorage.getItem(CLAVE_PEDIDO_DEMO)
+    return guardado ? (JSON.parse(guardado) as DatosPedido) : null
+  } catch {
+    return null
+  }
+}
 
 function agruparItems(items: ItemPedido[]): ItemPedido[] {
   const mapa = new Map<string, ItemPedido>()
@@ -59,11 +73,18 @@ export default function Comprobante() {
   const [pedido, setPedido] = useState<DatosPedido | null>(null)
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(false)
+  const [esDemo, setEsDemo] = useState(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const id = params.get('id')
     if (!id) { setError(true); setCargando(false); return }
+    if (SIMULAR_PEDIDO && id === 'demo') {
+      const demo = leerPedidoDemo()
+      if (demo) { setPedido(demo); setEsDemo(true) } else setError(true)
+      setCargando(false)
+      return
+    }
     fetch(`${SERVER_URL}/pedido/${id}`)
       .then((res) => res.json())
       .then((data) => { if (data.error) setError(true); else setPedido(data) })
@@ -72,7 +93,7 @@ export default function Comprobante() {
   }, [])
 
   useEffect(() => {
-    if (pedido) document.title = `Comprobante #${pedido.numeroPedido} — Pañalera Nano`
+    if (pedido) document.title = `Comprobante #${pedido.numeroPedido} — ${ES_MINORISTA ? MARCA.titulo : 'Pañalera Nano'}`
   }, [pedido])
 
   if (cargando) return <div className="comprobante-vacio"><p>Cargando comprobante...</p></div>
@@ -132,8 +153,8 @@ export default function Comprobante() {
       <body>
         <div class="header">
           <div class="marca">
-            <strong>Pañalera Nano Mayorista</strong>
-            <span>panaleranano.com</span>
+            <strong>${MARCA.titulo}</strong>
+            <span>${MARCA.sitio}</span>
           </div>
           <div class="meta">
             <div>${fecha}</div>
@@ -165,13 +186,18 @@ export default function Comprobante() {
   }
 
   return (
-    <div className="comprobante">
+    <div className={`comprobante ${esDemo ? 'comprobante--demo' : ''}`}>
+      {esDemo && (
+        <div className="comprobante__franja-demo">
+          Comprobante de ejemplo — este pedido no se registró
+        </div>
+      )}
       <div className="comprobante__doc">
 
         <div className="comprobante__header">
           <div className="comprobante__marca">
-            <strong>Pañalera Nano Mayorista</strong>
-            <span>panaleranano.com</span>
+            <strong>{MARCA.titulo}</strong>
+            <span>{MARCA.sitio}</span>
           </div>
           <div className="comprobante__meta">
             <span>{fecha}</span>

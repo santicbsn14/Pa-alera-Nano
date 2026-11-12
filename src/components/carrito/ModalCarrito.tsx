@@ -1,12 +1,13 @@
 // src/components/carrito/ModalCarrito.tsx
 import { useEffect, useRef, useState } from 'react'
 import { useCarrito } from '../../context/CarritoContext'
+import { config, ES_MINORISTA, SIMULAR_PEDIDO } from '../../config/canal'
 import './ModalCarrito.css'
 
-const WHATSAPP = '5493412479055'
-const WEB_URL = 'https://panaleranano.com'
+const WHATSAPP = config.whatsapp
+const WEB_URL = config.webUrl
 const SERVER_URL = import.meta.env.VITE_SERVER_URL ?? 'https://nano-server-avac.onrender.com'
-const MINIMO_COMPRA = 150000
+const MINIMO_COMPRA = config.minimoCompra
 const INTENTOS_MAX = 3
 const ESPERAS_REINTENTO = [1000, 3000]
 const TIMEOUT_INTENTO = 15000
@@ -60,10 +61,11 @@ interface DatosEnvio {
   direccion: string
   fecha: string
   turno: 'mañana' | 'tarde' | ''
-  envio: 'viacargo' | 'elsalvador' | 'davidromano' | 'personal' | ''
+  envio: 'viacargo' | 'elsalvador' | 'davidromano' | 'personal' | 'uber' | ''
   aclaracion: string
 }
 
+// En minorista el envío es siempre por Uber y no hay fecha de retiro
 const datosIniciales: DatosEnvio = {
   nombre: '',
   telefono: '',
@@ -71,8 +73,16 @@ const datosIniciales: DatosEnvio = {
   direccion: '',
   fecha: '',
   turno: '',
-  envio: '',
+  envio: ES_MINORISTA ? 'uber' : '',
   aclaracion: '',
+}
+
+const CLAVE_PEDIDO_DEMO = 'nanoya_pedido_demo'
+const ESPERA_SIMULACION = 600
+
+// numeroPedido de ejemplo: 8 caracteres en mayúscula
+function generarNumeroDemo(): string {
+  return Math.random().toString(36).slice(2, 10).toUpperCase().padEnd(8, '0')
 }
 
 const ENVIOS: { value: DatosEnvio['envio']; label: string }[] = [
@@ -101,6 +111,33 @@ function armarMensaje(
   const total = items
     .reduce((acc, i) => acc + i.producto.precio * i.cantidad, 0)
     .toLocaleString('es-AR')
+
+  if (ES_MINORISTA) {
+    return [
+      'Hola! Te hago el siguiente pedido en NanoYA:',
+      '',
+      `Nombre: ${datos.nombre}`,
+      `Teléfono: ${datos.telefono}`,
+      `Ciudad: ${datos.ciudad}`,
+      `Dirección: ${datos.direccion}`,
+      'Envío: Uber (costo a coordinar)',
+      ...(datos.aclaracion ? [`Aclaración: ${datos.aclaracion}`] : []),
+      '',
+      SIMULAR_PEDIDO
+        ? '🧪 PEDIDO DE PRUEBA (maqueta) — no despachar'
+        : pedidoId
+          ? `🔗 Ver comprobante: ${WEB_URL}/comprobante?id=${pedidoId}`
+          : '⚠️ PEDIDO NO REGISTRADO EN EL SISTEMA — cargar manualmente',
+      '',
+      '——————————————',
+      '',
+      ...lineas,
+      '',
+      `Total estimado: $${total}`,
+      '',
+      'Quedo a la espera, gracias!',
+    ].join('\n')
+  }
 
   const envioLabel = ENVIOS.find((e) => e.value === datos.envio)?.label ?? datos.envio
 
@@ -141,6 +178,8 @@ export default function ModalCarrito() {
   const [confirmandoVaciar, setConfirmandoVaciar] = useState(false)
   // Mismo idPedido en todos los reintentos del intento actual: el server no duplica
   const idPedidoRef = useRef<string | null>(null)
+  // Solo SIMULAR_PEDIDO: identifica la simulación en curso para descartarla si se cierra el modal
+  const simulacionRef = useRef<object | null>(null)
 
   const total = items.reduce((acc, i) => acc + i.producto.precio * i.cantidad, 0)
   const minimoAlcanzado = total >= MINIMO_COMPRA
@@ -161,6 +200,7 @@ export default function ModalCarrito() {
       setUrlWhatsapp('')
       setConfirmandoVaciar(false)
       idPedidoRef.current = null
+      simulacionRef.current = null
     }
   }, [abierto])
 
@@ -181,6 +221,12 @@ export default function ModalCarrito() {
     const nuevosErrores: Partial<Record<keyof DatosEnvio, string>> = {}
     if (!datos.nombre.trim()) nuevosErrores.nombre = 'Ingresá tu nombre'
     if (!datos.telefono.trim()) nuevosErrores.telefono = 'Ingresá tu teléfono'
+    if (ES_MINORISTA) {
+      if (!config.zonasEnvio.includes(datos.ciudad)) nuevosErrores.ciudad = 'Elegí tu ciudad'
+      if (!datos.direccion.trim()) nuevosErrores.direccion = 'Ingresá tu dirección'
+      setErrores(nuevosErrores)
+      return Object.keys(nuevosErrores).length === 0
+    }
     if (!datos.ciudad.trim()) nuevosErrores.ciudad = 'Ingresá tu ciudad'
     if (!datos.direccion.trim()) nuevosErrores.direccion = 'Ingresá tu dirección'
     if (!datos.fecha) nuevosErrores.fecha = 'Seleccioná una fecha'
@@ -203,8 +249,55 @@ export default function ModalCarrito() {
     return null
   }
 
+  // NanoYA hasta el brief 06: no se llama a enviarPedido ni se hace ningún fetch.
+  // Se arma un pedido de ejemplo con la forma de GET /pedido/:id para el comprobante demo.
+  const simularPedido = async () => {
+    const token = {}
+    simulacionRef.current = token
+    setEnviando(true)
+
+    const pedidoDemo = {
+      _id: 'demo',
+      numeroPedido: generarNumeroDemo(),
+      fecha: new Date().toISOString(),
+      nombre: datos.nombre,
+      telefono: datos.telefono,
+      ciudad: datos.ciudad,
+      direccion: datos.direccion,
+      fecha_retiro: '',
+      turno: '',
+      envio: 'uber',
+      aclaracion: datos.aclaracion,
+      items: items.map((i) => ({
+        nombre: i.producto.nombre,
+        talle: i.producto.talle,
+        presentacion: i.producto.presentacion,
+        descripcion: i.producto.descripcion,
+        precio: i.producto.precio,
+        cantidad: i.cantidad,
+      })),
+      total,
+    }
+    try {
+      sessionStorage.setItem(CLAVE_PEDIDO_DEMO, JSON.stringify(pedidoDemo))
+    } catch (err) {
+      console.error('No se pudo guardar el pedido de ejemplo:', err)
+    }
+
+    await esperar(ESPERA_SIMULACION)
+    // Se cerró el modal mientras "procesaba": descartar
+    if (simulacionRef.current !== token) return
+    simulacionRef.current = null
+    setEnviando(false)
+
+    const mensaje = armarMensaje(items, datos, 'demo')
+    setUrlWhatsapp(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensaje)}`)
+    setPaso('listo')
+  }
+
   const procesarPedido = async () => {
     if (!validar()) return
+    if (SIMULAR_PEDIDO) return simularPedido()
     if (!idPedidoRef.current) idPedidoRef.current = generarIdPedido()
     const idPedido = idPedidoRef.current
     setEnviando(true)
@@ -301,9 +394,9 @@ export default function ModalCarrito() {
                   <path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6" />
                 </svg>
                 <p>Tu pedido está vacío</p>
-                <span>Agregá productos desde Pedidos Nano</span>
+                <span>{ES_MINORISTA ? 'Agregá productos desde el catálogo' : 'Agregá productos desde Pedidos Nano'}</span>
                 <button className="btn-primary modal__empty-btn" onClick={cerrarCarrito}>
-                  Ir a Pedidos Nano
+                  {ES_MINORISTA ? 'Ver productos' : 'Ir a Pedidos Nano'}
                 </button>
               </div>
             ) : (
@@ -358,7 +451,7 @@ export default function ModalCarrito() {
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                       </svg>
-                      <span>Te faltan <strong>${faltaParaMinimo.toLocaleString('es-AR')}</strong> para alcanzar el mínimo de compra de <strong>$150.000</strong></span>
+                      <span>Te faltan <strong>${faltaParaMinimo.toLocaleString('es-AR')}</strong> para alcanzar el mínimo de compra de <strong>${MINIMO_COMPRA.toLocaleString('es-AR')}</strong></span>
                     </div>
                   )}
                   <button className="modal__pedido-btn" onClick={() => setPaso('checkout')} disabled={!minimoAlcanzado}>
@@ -384,8 +477,64 @@ export default function ModalCarrito() {
           </>
         )}
 
+        {/* ── PASO 2: Checkout (minorista) ── */}
+        {paso === 'checkout' && ES_MINORISTA && (
+          <>
+            <div className="modal__form">
+              <div className="modal__field">
+                <label className="modal__label">Nombre y apellido *</label>
+                <input type="text" className={`modal__input ${errores.nombre ? 'modal__input--error' : ''}`} placeholder="Ej: Juan Pérez" value={datos.nombre} onChange={(e) => actualizar('nombre', e.target.value)} />
+                {errores.nombre && <span className="modal__error">{errores.nombre}</span>}
+              </div>
+              <div className="modal__field">
+                <label className="modal__label">Teléfono *</label>
+                <input type="tel" className={`modal__input ${errores.telefono ? 'modal__input--error' : ''}`} placeholder="Ej: 3412479055" value={datos.telefono} onChange={(e) => actualizar('telefono', e.target.value)} />
+                {errores.telefono && <span className="modal__error">{errores.telefono}</span>}
+              </div>
+              <div className="modal__field">
+                <label className="modal__label">Ciudad *</label>
+                <select className={`modal__input modal__select ${errores.ciudad ? 'modal__input--error' : ''}`} value={datos.ciudad} onChange={(e) => actualizar('ciudad', e.target.value)}>
+                  <option value="">Elegí tu ciudad</option>
+                  {config.zonasEnvio.map((zona) => (
+                    <option key={zona} value={zona}>{zona}</option>
+                  ))}
+                </select>
+                {errores.ciudad && <span className="modal__error">{errores.ciudad}</span>}
+              </div>
+              <div className="modal__field">
+                <label className="modal__label">Dirección *</label>
+                <input type="text" className={`modal__input ${errores.direccion ? 'modal__input--error' : ''}`} placeholder="Ej: Mitre 1234, depto 2B" value={datos.direccion} onChange={(e) => actualizar('direccion', e.target.value)} />
+                {errores.direccion && <span className="modal__error">{errores.direccion}</span>}
+              </div>
+              <div className="modal__envio-uber">
+                <span className="modal__envio-uber-icono" aria-hidden="true">🛵</span>
+                <div>
+                  <p>
+                    <strong>Envío por Uber</strong> a tu domicilio. El costo del envío se abona aparte: te lo pasamos por WhatsApp al confirmar. Despachamos de lunes a sábados en nuestro horario de atención.
+                  </p>
+                  <p className="modal__envio-uber-horario">{config.horarios}</p>
+                </div>
+              </div>
+              <div className="modal__field">
+                <label className="modal__label">Aclaración <span className="modal__opcional">(opcional)</span></label>
+                <textarea className="modal__textarea" placeholder="Ej: timbre, entre calles, horario en que estás" value={datos.aclaracion} onChange={(e) => actualizar('aclaracion', e.target.value)} rows={3} />
+              </div>
+            </div>
+
+            <div className="modal__footer">
+              <div className="modal__total">
+                <span>Total estimado</span>
+                <span className="modal__total-valor">${total.toLocaleString('es-AR')}</span>
+              </div>
+              <button className="modal__pedido-btn" onClick={procesarPedido} disabled={enviando}>
+                {enviando ? textoEnviando : 'Confirmar pedido'}
+              </button>
+            </div>
+          </>
+        )}
+
         {/* ── PASO 2: Checkout ── */}
-        {paso === 'checkout' && (
+        {paso === 'checkout' && !ES_MINORISTA && (
           <>
             <div className="modal__form">
               <div className="modal__field">
@@ -467,6 +616,18 @@ export default function ModalCarrito() {
               </svg>
               Enviar pedido por WhatsApp
             </a>
+            {SIMULAR_PEDIDO && (
+              // rel="opener" a propósito: sin opener, Chrome no copia el sessionStorage a la
+              // pestaña nueva y el comprobante demo no encontraría el pedido
+              <a
+                href="/comprobante?id=demo"
+                target="_blank"
+                rel="opener"
+                className="modal__wsp-btn modal__wsp-btn--secundario"
+              >
+                Ver comprobante de ejemplo
+              </a>
+            )}
           </div>
         )}
 

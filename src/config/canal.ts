@@ -9,6 +9,10 @@ export type Canal = 'mayorista' | 'minorista'
 export const CANAL: Canal = import.meta.env.VITE_CANAL === 'minorista' ? 'minorista' : 'mayorista'
 export const ES_MINORISTA = CANAL === 'minorista'
 export const MODO_MAQUETA = import.meta.env.VITE_MAQUETA === 'true'
+// Hasta el brief 06 (server con canal), NanoYA no registra pedidos: se simulan.
+// NO depende de MODO_MAQUETA a propósito, para que ninguna configuración de NanoYA
+// escriba en producción antes de tiempo.
+export const SIMULAR_PEDIDO = ES_MINORISTA
 
 export interface ConfigCanal {
   marca: { nombre: string; sub: string }
@@ -22,6 +26,8 @@ export interface ConfigCanal {
   whatsappVisible: string
   horarios: string
   zonasEnvio: string[]
+  webUrl: string
+  marcaComprobante: { titulo: string; sitio: string }
   textos: {
     linkCatalogo: string
     ctaHeader: string
@@ -47,6 +53,8 @@ export const CONFIG_POR_CANAL: Record<Canal, ConfigCanal> = {
     whatsappVisible: '+5493412479055',
     horarios: 'Lun a Sab · 9:00 — 12:30 y 17:00 — 20:30',
     zonasEnvio: [],
+    webUrl: 'https://panaleranano.com',
+    marcaComprobante: { titulo: 'Pañalera Nano Mayorista', sitio: 'panaleranano.com' },
     textos: {
       linkCatalogo: 'Pedidos Nano',
       ctaHeader: 'Pedidos Nano',
@@ -68,6 +76,9 @@ export const CONFIG_POR_CANAL: Record<Canal, ConfigCanal> = {
     whatsappVisible: '+54 9 3400 58-8073',
     horarios: 'Lun a Sab · 9:00 — 12:30 y 17:00 — 20:30',
     zonasEnvio: ['San Nicolás', 'Villa Constitución', 'Empalme Villa Constitución'],
+    // El subdominio de NanoYA todavía no está definido
+    webUrl: '',
+    marcaComprobante: { titulo: 'NanoYA — Pañalera Nano', sitio: 'Envíos por Uber' },
     textos: {
       linkCatalogo: 'Productos',
       ctaHeader: 'Hacer mi pedido',

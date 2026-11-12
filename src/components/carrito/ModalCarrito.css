@@ -503,6 +503,40 @@
 .modal__minimo strong {
   color: var(--color-text);
 }
+
+/* ── NanoYA: select de ciudad y aviso de envío por Uber ──────── */
+.modal__select {
+  cursor: pointer;
+}
+
+.modal__envio-uber {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(77, 200, 232, 0.08);
+  border: 1px solid rgba(77, 200, 232, 0.3);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.modal__envio-uber-icono {
+  font-size: 18px;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+.modal__envio-uber strong {
+  color: var(--color-text);
+}
+
+.modal__envio-uber-horario {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
 /* ── Paso listo ───────────────────────────────────────────────── */
 .modal__listo {
   flex: 1;

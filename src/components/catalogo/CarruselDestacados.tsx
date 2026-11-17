@@ -408,6 +408,18 @@ function DestacadosMobile({ titulo, productos }: CarruselData) {
   )
 }
 
+// ── Mezcla (Fisher–Yates sobre una copia, no muta el original) ─────
+function mezclar<T>(lista: T[]): T[] {
+  const copia = lista.slice()
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const tmp = copia[i]
+    copia[i] = copia[j]
+    copia[j] = tmp
+  }
+  return copia
+}
+
 // ── Componente principal ───────────────────────────────────────────
 export default function CarruselDestacados() {
   const [data, setData] = useState<CarruselData | null>(null)
@@ -417,7 +429,8 @@ export default function CarruselDestacados() {
     let cancelado = false
     getCarruselDestacados()
       .then((d) => {
-        if (!cancelado) setData(d)
+        // Orden aleatorio solo de presentación, una vez por montaje (fijo mientras se está en la página).
+        if (!cancelado) setData(d ? { ...d, productos: mezclar(d.productos) } : null)
       })
       .catch(() => {
         if (!cancelado) setData(null)

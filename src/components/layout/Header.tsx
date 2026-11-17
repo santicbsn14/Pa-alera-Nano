@@ -44,19 +44,23 @@ export default function Header() {
 
         {/* Nav desktop */}
         <nav className="header__nav">
-          <NavLink to="/" end className={({ isActive }) => `header__link ${isActive ? 'header__link--active' : ''}`}>
-            Inicio
-          </NavLink>
-          <NavLink to="/catalogo" className={({ isActive }) => `header__link ${isActive ? 'header__link--active' : ''}`}>
-            {config.textos.linkCatalogo}
-          </NavLink>
           {ES_MINORISTA ? (
             <>
-              <a href="/#como-comprar" className="header__link">Cómo comprar</a>
-              <a href="/#contacto" className="header__link">Contacto</a>
+              <NavLink to="/" end className={({ isActive }) => `header__link ${isActive ? 'header__link--active' : ''}`}>
+                {config.textos.linkCatalogo}
+              </NavLink>
+              <NavLink to="/como-comprar" className={({ isActive }) => `header__link ${isActive ? 'header__link--active' : ''}`}>
+                Cómo comprar
+              </NavLink>
             </>
           ) : (
             <>
+              <NavLink to="/" end className={({ isActive }) => `header__link ${isActive ? 'header__link--active' : ''}`}>
+                Inicio
+              </NavLink>
+              <NavLink to="/catalogo" className={({ isActive }) => `header__link ${isActive ? 'header__link--active' : ''}`}>
+                {config.textos.linkCatalogo}
+              </NavLink>
               <a href="/#precios" className="header__link">Precios</a>
               <a href="/#logistica" className="header__link">Envios</a>
               <a href="/#faq" className="header__link">Preguntas Frecuentes</a>
@@ -76,10 +80,12 @@ export default function Header() {
           )}
         </button>
 
-        {/* CTA desktop */}
-        <Link to="/catalogo" className="btn-primary header__cta">
-          {config.textos.ctaHeader}
-        </Link>
+        {/* CTA desktop (en minorista no va: ya estás en el catálogo) */}
+        {!ES_MINORISTA && (
+          <Link to="/catalogo" className="btn-primary header__cta">
+            {config.textos.ctaHeader}
+          </Link>
+        )}
 
         {/* Hamburguesa mobile */}
         <button
@@ -96,19 +102,23 @@ export default function Header() {
       {/* Menú mobile */}
       <div className={`header__mobile ${menuOpen ? 'header__mobile--open' : ''}`}>
         <nav className="header__mobile-nav">
-          <NavLink to="/" end className={({ isActive }) => `header__mobile-link ${isActive ? 'header__mobile-link--active' : ''}`}>
-            Inicio
-          </NavLink>
-          <NavLink to="/catalogo" className={({ isActive }) => `header__mobile-link ${isActive ? 'header__mobile-link--active' : ''}`}>
-            {config.textos.linkCatalogo}
-          </NavLink>
           {ES_MINORISTA ? (
             <>
-              <a href="/#como-comprar" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Cómo comprar</a>
-              <a href="/#contacto" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Contacto</a>
+              <NavLink to="/" end className={({ isActive }) => `header__mobile-link ${isActive ? 'header__mobile-link--active' : ''}`}>
+                {config.textos.linkCatalogo}
+              </NavLink>
+              <NavLink to="/como-comprar" className={({ isActive }) => `header__mobile-link ${isActive ? 'header__mobile-link--active' : ''}`}>
+                Cómo comprar
+              </NavLink>
             </>
           ) : (
             <>
+              <NavLink to="/" end className={({ isActive }) => `header__mobile-link ${isActive ? 'header__mobile-link--active' : ''}`}>
+                Inicio
+              </NavLink>
+              <NavLink to="/catalogo" className={({ isActive }) => `header__mobile-link ${isActive ? 'header__mobile-link--active' : ''}`}>
+                {config.textos.linkCatalogo}
+              </NavLink>
               <a href="/#precios" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Precios</a>
               <a href="/#logistica" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Envios</a>
               <a href="/#faq" className="header__mobile-link" onClick={() => setMenuOpen(false)}>Preguntas Frecuentes</a>
@@ -116,9 +126,11 @@ export default function Header() {
             </>
           )}
 
-          <Link to="/catalogo" className="btn-primary header__mobile-cta" onClick={() => setMenuOpen(false)}>
-            {ES_MINORISTA ? config.textos.ctaHeader : 'Armá tu pedido ahora'}
-          </Link>
+          {!ES_MINORISTA && (
+            <Link to="/catalogo" className="btn-primary header__mobile-cta" onClick={() => setMenuOpen(false)}>
+              Armá tu pedido ahora
+            </Link>
+          )}
         </nav>
       </div>
     </header>

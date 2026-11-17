@@ -55,15 +55,15 @@ export default function Footer() {
         <div className="footer__links">
           <h4 className="footer__links-title">Navegación</h4>
           <ul className="footer__links-list">
-            <li><NavLink to="/">Inicio</NavLink></li>
-            <li><NavLink to="/catalogo">{config.textos.linkCatalogo}</NavLink></li>
             {ES_MINORISTA ? (
               <>
-                <li><a href="/#como-comprar">Cómo comprar</a></li>
-                <li><a href="/#contacto">Contacto</a></li>
+                <li><NavLink to="/" end>{config.textos.linkCatalogo}</NavLink></li>
+                <li><NavLink to="/como-comprar">Cómo comprar</NavLink></li>
               </>
             ) : (
               <>
+                <li><NavLink to="/">Inicio</NavLink></li>
+                <li><NavLink to="/catalogo">{config.textos.linkCatalogo}</NavLink></li>
                 <li><a href="/#precios">Precios</a></li>
                 <li><a href="/#logistica">Envíos</a></li>
                 <li><a href="/#faq">Preguntas frecuentes</a></li>

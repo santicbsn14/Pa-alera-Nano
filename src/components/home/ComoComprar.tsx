@@ -1,5 +1,5 @@
 // src/components/home/ComoComprar.tsx
-// Sección "Cómo comprar" del Home de NanoYA (solo minorista).
+// Sección "Cómo comprar" de NanoYA (solo minorista, página /como-comprar).
 import { Link } from 'react-router-dom'
 import { config } from '../../config/canal'
 import './ComoComprar.css'
@@ -96,7 +96,7 @@ export default function ComoComprar() {
 
         {/* CTA */}
         <div className="como-comprar__cta">
-          <Link to="/catalogo" className="btn-primary">
+          <Link to="/" className="btn-primary">
             Hacer mi pedido
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M12 5l7 7-7 7" />

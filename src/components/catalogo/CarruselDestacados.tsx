@@ -5,7 +5,8 @@
 //   con la CardProducto real.
 // ⚠️ Nada que cree containing block (transform, filter, will-change, contain…) alrededor de
 //   las cards: el modal de talles de combos es position: fixed y vive dentro de CardProducto.
-// ⚠️ Solo canal mayorista: al integrar NanoYA, devolver null en minorista.
+// Se usa en los dos canales: en minorista los datos vienen de getCarruselDestacadosMinorista()
+//   (proyección minorista, sin combos), vía getCarruselDestacados().
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'

@@ -238,6 +238,8 @@ export async function getPromos(): Promise<Promo[]> {
 // snapshotea el Producto completo, así que si se suma un campo allá, va acá también.
 // Las referencias son weak: un producto borrado vuelve null y se descarta.
 export async function getCarruselDestacados(): Promise<CarruselDestacados | null> {
+  if (ES_MINORISTA) return getCarruselDestacadosMinorista()
+
   const doc = await client.fetch<{ titulo?: string; productos?: (Producto | null)[] } | null>(`
     *[_id == "carruselDestacados" && activo == true][0]{
       titulo,
@@ -266,6 +268,48 @@ export async function getCarruselDestacados(): Promise<CarruselDestacados | null
       }
     }
   `)
+  if (!doc) return null
+  const productos = (doc.productos ?? []).filter((p): p is Producto => !!p && p.enStock)
+  if (productos.length === 0) return null
+  return { titulo: doc.titulo ?? '', productos }
+}
+
+
+// Carrusel de destacados para NanoYA: mismo singleton que la mayorista (por ahora),
+// con la proyección minorista de getProductosMinorista() y sin los productos de
+// config.categoriasExcluidas (combos). Mismo post-filtro que la mayorista.
+async function getCarruselDestacadosMinorista(): Promise<CarruselDestacados | null> {
+  const doc = await client.fetch<{ titulo?: string; productos?: (Producto | null)[] } | null>(
+    `
+    *[_id == "carruselDestacados" && activo == true][0]{
+      titulo,
+      "productos": productos[!coalesce(@->categoria->slug.current in $excluidas, false)]->{
+        _id,
+        idSistema,
+        nombre,
+        marca,
+        descripcion,
+        foto,
+        "precio": coalesce(precioMinorista, precio),
+        "descuento": coalesce(descuentoMinorista, descuento),
+        categoria->{
+          _id,
+          nombre,
+          "slug": slug.current,
+          orden,
+          activa
+        },
+        talle,
+        tallesCombo,
+        presentacion,
+        enStock,
+        vendePorCaja,
+        "slug": slug.current
+      }
+    }
+  `,
+    { excluidas: config.categoriasExcluidas }
+  )
   if (!doc) return null
   const productos = (doc.productos ?? []).filter((p): p is Producto => !!p && p.enStock)
   if (productos.length === 0) return null

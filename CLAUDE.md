@@ -103,10 +103,12 @@ esto siempre, en cualquier tarea:
   producto que `getProductos()` mayorista (el carrito snapshotea el
   `Producto` completo). Si se suma un campo a `getProductos()`, hay
   que sumarlo también ahí.
-- ⚠️ El carrusel de destacados es SOLO mayorista. Cuando se integre
-  `feature/nanoya` (`config/canal.ts`), `CarruselDestacados` tiene que
-  devolver `null` en minorista o usar la proyección minorista; si no,
-  NanoYA mostraría precios mayoristas.
+- ⚠️ El carrusel de destacados se usa en los dos canales. En minorista
+  los datos salen de `getCarruselDestacadosMinorista()` (proyección
+  minorista, sin combos). Si se suma un campo a la proyección de
+  productos, sumarlo en las cuatro funciones: `getProductos`,
+  `getProductosMinorista`, `getCarruselDestacados` y
+  `getCarruselDestacadosMinorista`.
 
 ## Qué NO hacer
 

@@ -13,6 +13,11 @@
   padding: var(--spacing-2xl) var(--padding-x);
 }
 
+/* NanoYA: sin columna de navegación → marca + contacto */
+.footer__inner--minorista {
+  grid-template-columns: 2fr 1fr;
+}
+
 /* ── Brand ────────────────────────────────────────────────────── */
 .footer__logo {
   display: flex;

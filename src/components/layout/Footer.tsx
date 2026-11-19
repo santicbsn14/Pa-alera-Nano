@@ -8,7 +8,7 @@ export default function Footer() {
 
   return (
     <footer className="footer">
-      <div className="container footer__inner">
+      <div className={`container footer__inner${ES_MINORISTA ? ' footer__inner--minorista' : ''}`}>
 
         {/* Logo y descripción */}
         <div className="footer__brand">
@@ -51,27 +51,20 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Links */}
-        <div className="footer__links">
-          <h4 className="footer__links-title">Navegación</h4>
-          <ul className="footer__links-list">
-            {ES_MINORISTA ? (
-              <>
-                <li><NavLink to="/" end>{config.textos.linkCatalogo}</NavLink></li>
-                <li><NavLink to="/como-comprar">Cómo comprar</NavLink></li>
-              </>
-            ) : (
-              <>
-                <li><NavLink to="/">Inicio</NavLink></li>
-                <li><NavLink to="/catalogo">{config.textos.linkCatalogo}</NavLink></li>
-                <li><a href="/#precios">Precios</a></li>
-                <li><a href="/#logistica">Envíos</a></li>
-                <li><a href="/#faq">Preguntas frecuentes</a></li>
-                <li><a href="/#contacto">Contacto</a></li>
-              </>
-            )}
-          </ul>
-        </div>
+        {/* Links (solo mayorista: en NanoYA el footer no lleva navegación) */}
+        {!ES_MINORISTA && (
+          <div className="footer__links">
+            <h4 className="footer__links-title">Navegación</h4>
+            <ul className="footer__links-list">
+              <li><NavLink to="/">Inicio</NavLink></li>
+              <li><NavLink to="/catalogo">{config.textos.linkCatalogo}</NavLink></li>
+              <li><a href="/#precios">Precios</a></li>
+              <li><a href="/#logistica">Envíos</a></li>
+              <li><a href="/#faq">Preguntas frecuentes</a></li>
+              <li><a href="/#contacto">Contacto</a></li>
+            </ul>
+          </div>
+        )}
 
         {/* Contacto */}
         <div className="footer__contact">

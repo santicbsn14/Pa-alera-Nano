@@ -4,25 +4,6 @@ import { Link } from 'react-router-dom'
 import { config } from '../../config/canal'
 import './ComoComprar.css'
 
-const pasos = [
-  {
-    titulo: 'Elegí tus productos',
-    texto: 'Entrá a Productos y sumá al carrito lo que necesites. No hay monto mínimo.',
-  },
-  {
-    titulo: 'Enviá tu pedido',
-    texto: 'Completá tus datos y mandanos el pedido por WhatsApp. Te queda un comprobante digital.',
-  },
-  {
-    titulo: 'Coordinamos el pago',
-    texto: 'Te respondemos por WhatsApp para confirmar el pedido, el pago y el costo del envío.',
-  },
-  {
-    titulo: 'Te lo llevamos con Uber',
-    texto: 'Despachamos dentro de nuestro horario de atención. El envío se abona aparte.',
-  },
-]
-
 export default function ComoComprar() {
   return (
     <section className="como-comprar section section-alt" id="como-comprar">
@@ -33,17 +14,6 @@ export default function ComoComprar() {
         <p className="section-subtitle">
           Armás tu pedido en la web, lo confirmás por WhatsApp y te lo enviamos por Uber.
         </p>
-
-        {/* Pasos */}
-        <ol className="como-comprar__pasos">
-          {pasos.map((paso, i) => (
-            <li key={paso.titulo} className="como-comprar__paso">
-              <span className="como-comprar__numero">{i + 1}</span>
-              <h3 className="como-comprar__paso-titulo">{paso.titulo}</h3>
-              <p className="como-comprar__paso-texto">{paso.texto}</p>
-            </li>
-          ))}
-        </ol>
 
         {/* Info */}
         <div className="como-comprar__info">
